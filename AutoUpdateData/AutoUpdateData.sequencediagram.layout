@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<sequenceDesignerDiagram dslVersion="1.0.0.0" absoluteBounds="0, 0, 11, 8.5" name="AutoUpdateData">
+  <SequenceDesignerModelMoniker Id="7db6b145-62d4-49f2-9c25-1f96ed8530d0" />
+  <nestedChildShapes>
+    <lifelineShape Id="8bc75685-a4ba-45f4-a75d-91255335ff19" absoluteBounds="1.5979166666666667, 1, 0.15, 4.416666666666667" visible="true" visualStyleMode="Modified">
+      <lifelineMoniker Id="5d64e062-2e3a-4ac9-996d-b88279b3a3dc" LastKnownName="oracle 11g" />
+      <relativeChildShapes>
+        <dotNetLifelineHeadShape Id="6f593bfd-0de3-4aa6-ac70-af5f87200b87" absoluteBounds="1.1729166666666666, 0.6, 1, 0.4" customColor="184, 204, 215" visualStyleMode="Modified">
+          <lifelineMoniker Id="5d64e062-2e3a-4ac9-996d-b88279b3a3dc" LastKnownName="oracle 11g" />
+          <relativeChildShapes />
+        </dotNetLifelineHeadShape>
+        <lifelineHoverShape Id="9b67953a-a98c-4d5e-a62e-81d6b0eaa155" absoluteBounds="1.5979166666666667, 1, 0, 4.375">
+          <lifelineMoniker Id="5d64e062-2e3a-4ac9-996d-b88279b3a3dc" LastKnownName="oracle 11g" />
+        </lifelineHoverShape>
+      </relativeChildShapes>
+    </lifelineShape>
+    <lifelineShape Id="957fee6b-677a-4188-9c01-a3bb2c4185a3" absoluteBounds="6.5625, 1, 0.15, 4.4375" visible="true" visualStyleMode="Modified">
+      <lifelineMoniker Id="455bca1d-0592-45aa-bbc3-57187104b06f" LastKnownName="SQLServer 2008" />
+      <relativeChildShapes>
+        <dotNetLifelineHeadShape Id="06c33285-a687-4507-bc93-a1f08f64fbaf" absoluteBounds="6.0515249085426328, 0.6, 1.1719501829147339, 0.4" customColor="184, 204, 215" visualStyleMode="Modified">
+          <lifelineMoniker Id="455bca1d-0592-45aa-bbc3-57187104b06f" LastKnownName="SQLServer 2008" />
+          <relativeChildShapes />
+        </dotNetLifelineHeadShape>
+        <lifelineHoverShape Id="eea178d5-e0fd-4c63-b750-d52e8fe614ed" absoluteBounds="6.5625, 1, 0, 4.5">
+          <lifelineMoniker Id="455bca1d-0592-45aa-bbc3-57187104b06f" LastKnownName="SQLServer 2008" />
+        </lifelineHoverShape>
+        <dotNetExecutionSpecificationShape Id="6afec8f6-a6cd-4c3c-81c6-1499c6ee4808" absoluteBounds="6.5625, 2.6354166666666665, 0.125, 2.3000000000000003" customColor="184, 204, 215" visualStyleMode="Modified">
+          <behaviorExecutionSpecificationMoniker Id="47f057b7-eba9-4323-a47f-4ce336d6c749" LastKnownName="BehaviorExecutionSpecification" />
+        </dotNetExecutionSpecificationShape>
+      </relativeChildShapes>
+    </lifelineShape>
+    <commentShape Id="aef0defb-d544-4712-80f5-8bec136f1bdc" absoluteBounds="3.5, 0.625, 1.25, 0.375" customColor="251, 247, 200">
+      <commentMoniker Id="fee4f1a5-7596-4f81-8e93-0d1a49058db9" />
+      <relativeChildShapes />
+    </commentShape>
+    <asyncMessageConnector edgePoints="[(1.67291666666667 : 2.63541666666667); (6.5625 : 2.63541666666667)]" fixedFrom="Caller" fixedTo="Caller" TargetRelationshipDomainClassId="e24617ce-6c7e-4c7d-802a-63014f02e313" customColor="Black" visible="true" visualStyleMode="Modified" messageId="00000000-0000-0000-0000-000000000000">
+      <relativeChildShapes />
+      <nodes>
+        <lifelineShapeMoniker Id="8bc75685-a4ba-45f4-a75d-91255335ff19" />
+        <dotNetExecutionSpecificationShapeMoniker Id="6afec8f6-a6cd-4c3c-81c6-1499c6ee4808" />
+      </nodes>
+    </asyncMessageConnector>
+    <commentShape Id="1f2bd4d9-526d-4fbf-9dcf-32cf316c521d" absoluteBounds="3.625, 3.375, 1.25, 1.375" customColor="251, 247, 200">
+      <commentMoniker Id="b39bd9d4-022a-48ec-a127-cec1d891eed5" />
+      <relativeChildShapes />
+    </commentShape>
+    <commentConnector edgePoints="[(3.625 : 4.0625); (1.74791666666667 : 4.0625)]" fixedFrom="Algorithm" fixedTo="Algorithm" TargetRelationshipDomainClassId="217d6bd0-42ed-4e7f-ad2b-af3ef5142428" customColor="Black">
+      <relativeChildShapes />
+      <nodes>
+        <commentShapeMoniker Id="1f2bd4d9-526d-4fbf-9dcf-32cf316c521d" />
+        <lifelineShapeMoniker Id="8bc75685-a4ba-45f4-a75d-91255335ff19" />
+      </nodes>
+    </commentConnector>
+    <commentShape Id="68331ee5-fdc0-49fc-943d-20aaa6fae3ce" absoluteBounds="0.375, 1.25, 1.25, 1.125" customColor="251, 247, 200">
+      <commentMoniker Id="cb4f4eb8-0c87-49d4-9a76-fabbb9b3d3ef" />
+      <relativeChildShapes />
+    </commentShape>
+    <commentShape Id="f67a7285-aba8-46cf-85ec-5f6f6a69224d" absoluteBounds="6.875, 1.25, 1.25, 1.125" customColor="251, 247, 200">
+      <commentMoniker Id="c1e2f462-a03e-444d-911b-f930bbb67bf1" />
+      <relativeChildShapes />
+    </commentShape>
+  </nestedChildShapes>
+</sequenceDesignerDiagram>

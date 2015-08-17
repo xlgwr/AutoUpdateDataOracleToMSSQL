@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SequenceDesignerModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/Kernel" xmlns:dm2="http://schemas.microsoft.com/dsltools/Component" xmlns:dm3="http://schemas.microsoft.com/dsltools/Activity" xmlns:dm4="http://schemas.microsoft.com/dsltools/Interaction" xmlns:dm5="http://schemas.microsoft.com/dsltools/UseCase" xmlns:dm6="http://schemas.microsoft.com/dsltools/UmlModelLibrary" xmlns:dm7="http://schemas.microsoft.com/dsltools/UmlDiagrams" dslVersion="1.0.0.0" Id="7db6b145-62d4-49f2-9c25-1f96ed8530d0" name="AutoUpdateData" mode="DotNet" xmlns="http://schemas.microsoft.com/VisualStudio/TeamArchitect/SequenceDesigner">
+  <packagedElements>
+    <packageHasNamedElement>
+      <interaction Id="11bd9def-1a1f-4830-827f-accccb8ab769" name="AutoUpdateData" collapseFragmentsFlag="false" isActiveClass="false" isAbstract="false" isLeaf="false" isReentrant="false">
+        <ownedCommentsInternal>
+          <comment Id="fee4f1a5-7596-4f81-8e93-0d1a49058db9">
+            <body>两边表结构相同</body>
+          </comment>
+          <comment Id="b39bd9d4-022a-48ec-a127-cec1d891eed5">
+            <body>每N分钟进行同步
+
+自定义：
+1. N分钟同步时间
+2. 更新方式：
+  1-删除后再追加，   2-直接更新
+3. 分批提交。</body>
+            <annotatedElements>
+              <lifelineMoniker Id="5d64e062-2e3a-4ac9-996d-b88279b3a3dc" LastKnownName="oracle 11g" />
+            </annotatedElements>
+          </comment>
+          <comment Id="cb4f4eb8-0c87-49d4-9a76-fabbb9b3d3ef">
+            <body>Oracle表会有人写入和参考</body>
+          </comment>
+          <comment Id="c1e2f462-a03e-444d-911b-f930bbb67bf1">
+            <body>SQLServer表只有参考，没有其他程序写入</body>
+          </comment>
+        </ownedCommentsInternal>
+        <fragments>
+          <behaviorExecutionSpecification Id="47f057b7-eba9-4323-a47f-4ce336d6c749" name="BehaviorExecutionSpecification">
+            <coveredLifelines>
+              <lifelineMoniker Id="455bca1d-0592-45aa-bbc3-57187104b06f" LastKnownName="SQLServer 2008" />
+            </coveredLifelines>
+            <finish>
+              <executionOccurrenceSpecificationMoniker Id="5bfc2a39-2730-4310-a97b-8dad30184270" LastKnownName="ExecutionOccurrenceSpecification" />
+            </finish>
+            <start>
+              <executionOccurrenceSpecificationMoniker Id="94c6087d-7fd6-40c1-9421-03e1b4473353" LastKnownName="ExecutionOccurrenceSpecification" />
+            </start>
+            <nestedOccurrences>
+              <messageOccurrenceSpecificationMoniker Id="be01789c-6fd3-482f-87f8-22dc57706eda" LastKnownName="MessageOccurrenceSpecification" />
+            </nestedOccurrences>
+          </behaviorExecutionSpecification>
+          <executionOccurrenceSpecification Id="94c6087d-7fd6-40c1-9421-03e1b4473353" name="ExecutionOccurrenceSpecification">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker Id="9c42a36f-6233-43ba-980d-c4bfd481662e" LastKnownName="ExecutionEvent" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker Id="455bca1d-0592-45aa-bbc3-57187104b06f" LastKnownName="SQLServer 2008" />
+            </covered>
+          </executionOccurrenceSpecification>
+          <messageOccurrenceSpecification Id="3a4a064c-d72f-4215-a820-c051dc018531" name="MessageOccurrenceSpecification">
+            <covered>
+              <lifelineMoniker Id="5d64e062-2e3a-4ac9-996d-b88279b3a3dc" LastKnownName="oracle 11g" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <messageOccurrenceSpecification Id="be01789c-6fd3-482f-87f8-22dc57706eda" name="MessageOccurrenceSpecification">
+            <covered>
+              <lifelineMoniker Id="455bca1d-0592-45aa-bbc3-57187104b06f" LastKnownName="SQLServer 2008" />
+            </covered>
+          </messageOccurrenceSpecification>
+          <executionOccurrenceSpecification Id="5bfc2a39-2730-4310-a97b-8dad30184270" name="ExecutionOccurrenceSpecification">
+            <event>
+              <executionOccurrenceSpecificationReferencesEvent>
+                <executionEventMoniker Id="05159108-dda6-429f-8a17-5647fea2012d" LastKnownName="ExecutionEvent" />
+              </executionOccurrenceSpecificationReferencesEvent>
+            </event>
+            <covered>
+              <lifelineMoniker Id="455bca1d-0592-45aa-bbc3-57187104b06f" LastKnownName="SQLServer 2008" />
+            </covered>
+          </executionOccurrenceSpecification>
+        </fragments>
+        <lifelines>
+          <lifeline Id="5d64e062-2e3a-4ac9-996d-b88279b3a3dc" name="oracle 11g" isActor="false" lifelineDisplayName="oracle 11g">
+            <topLevelOccurrences>
+              <messageOccurrenceSpecificationMoniker Id="3a4a064c-d72f-4215-a820-c051dc018531" LastKnownName="MessageOccurrenceSpecification" />
+            </topLevelOccurrences>
+          </lifeline>
+          <lifeline Id="455bca1d-0592-45aa-bbc3-57187104b06f" name="SQLServer 2008" isActor="false" lifelineDisplayName="SQLServer 2008">
+            <topLevelOccurrences>
+              <executionOccurrenceSpecificationMoniker Id="94c6087d-7fd6-40c1-9421-03e1b4473353" LastKnownName="ExecutionOccurrenceSpecification" />
+              <executionOccurrenceSpecificationMoniker Id="5bfc2a39-2730-4310-a97b-8dad30184270" LastKnownName="ExecutionOccurrenceSpecification" />
+            </topLevelOccurrences>
+          </lifeline>
+        </lifelines>
+        <messages>
+          <message Id="8a333dbc-223c-45b4-b03a-643d1b358ace" name="同步：表中的日期大于当天的数据" messageKind="Complete" messageSort="AsynchCall" createSelfMessage="false">
+            <sendEvent>
+              <messageOccurrenceSpecificationMoniker Id="3a4a064c-d72f-4215-a820-c051dc018531" LastKnownName="MessageOccurrenceSpecification" />
+            </sendEvent>
+            <receiveEvent>
+              <messageOccurrenceSpecificationMoniker Id="be01789c-6fd3-482f-87f8-22dc57706eda" LastKnownName="MessageOccurrenceSpecification" />
+            </receiveEvent>
+          </message>
+        </messages>
+      </interaction>
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent Id="9c42a36f-6233-43ba-980d-c4bfd481662e" name="ExecutionEvent" />
+    </packageHasNamedElement>
+    <packageHasNamedElement>
+      <executionEvent Id="05159108-dda6-429f-8a17-5647fea2012d" name="ExecutionEvent" />
+    </packageHasNamedElement>
+  </packagedElements>
+</SequenceDesignerModel>
