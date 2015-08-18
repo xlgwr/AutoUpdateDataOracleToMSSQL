@@ -22,6 +22,7 @@ namespace AutoUpdateData
     public partial class AutoUpdateData : Form
     {
         public static IList<string> _tableList;
+        public static IList<DataSet> _dsList;
         public AutoUpdateData()
         {
             InitializeComponent();
@@ -87,6 +88,7 @@ namespace AutoUpdateData
             this.MaximizeBox = false;
             this.notifyIcon1.ContextMenuStrip = contextMenuStrip1;
             _tableList = new List<string>();
+            _dsList = new List<DataSet>();
 
             tInitIni(false);
             lbl0msg.Text = "";
@@ -119,7 +121,7 @@ namespace AutoUpdateData
                 return;
             }
             this.btn0Save.Enabled = false;
-            var msg = "Synchronization(min):" + txt0Rtime.Text.Trim() + ",\tBatch Number：" + txt1batchNum.Text + ",\tUpdate mode：" + cbox0updateWay.Text;
+            var msg = "Synchronization(min): " + txt0Rtime.Text.Trim() + ",\tBatch Number：" + txt1batchNum.Text + "\nUpdate mode：" + cbox0updateWay.Text;
             if (MessageBox.Show(msg, "notice", MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
             {
                 tInitIni(true);
@@ -146,8 +148,10 @@ namespace AutoUpdateData
                 {
                     File.WriteAllText(tmpfile, "[Set]", System.Text.Encoding.UTF8);
                     ini = new INIFile(tmpfile);
-                    ini.IniWriteValue("Tables", "table", "SHOP_ORDER_OPERATION_TAB|,SHOP_ORD_TAB|,N_TRANSPORT_ORDER_TAB|,N_AIS_SHOP_LIST_PICKED_ACT_TAB|,INVENTORY_TRANSACTION_HIST_TAB|,INVENTORY_PART_TAB|");
-
+                    ini.IniWriteValue("Tables", "table", "SHOP_ORDER_OPERATION_TAB|,SHOP_ORD_TAB|,N_TRANSPORT_ORDER_TAB|,N_AIS_SHOP_LIST_PICKED_ACT_TAB|,INVENTORY_TRANSACTION_HIST_TAB|EXPIRATION_DATE,INVENTORY_PART_TAB|LAST_ACTIVITY_DATE");
+                    ini.IniWriteValue("Common", "retime", "5");
+                    ini.IniWriteValue("Common", "batchNum", "100");
+                    ini.IniWriteValue("Common", "updateWay", "Direct Update");
                 }
                 else
                 {
@@ -233,6 +237,68 @@ namespace AutoUpdateData
         {
             tInitIni(false);
             lbl0msg.Text = "Get Seting Success。" + DateTime.Now;
+        }
+
+        private void btn2GetOracle_Click(object sender, EventArgs e)
+        {
+            if (_tableList.Count > 0)
+            {
+                _dsList.Clear();
+                foreach (var item in _tableList)
+                {
+                    if (item.Contains('|'))
+                    {
+                        var td = item.Split('|');
+                        var tmpwhere = td[1] + ">=to_date(:gxsj,'yyyy-MM-dd HH24:mi:ss')";
+                        OracleParameter[] parameters = { new OracleParameter(":gxsj", OracleDbType.Varchar2, 10) };
+                        parameters[0].Value = DateTime.Now.AddHours(-3).ToString("yyyy-MM-dd HH") + ":00:00";
+
+                        var tmpds = OracleDal.GetData(td[0].Trim(), tmpwhere, 2, parameters);
+                        tmpds.DataSetName = td[0].Trim();
+                        _dsList.Add(tmpds);
+                        dgv01GetData.DataSource = tmpds.Tables[0].DefaultView;
+                        dgv01GetData.Refresh();
+                    }
+                    else
+                    {
+                        var tmpds = OracleDal.GetData(item.Trim(), "", 2);
+                        tmpds.DataSetName = item.Trim();
+                        _dsList.Add(tmpds);
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("no Table,Please check Set.ini,and add Table.");
+            }
+        }
+
+        private void btn3SaveToSQL_Click(object sender, EventArgs e)
+        {
+            var strSQLinsert = new List<String>();
+            if (_dsList.Count > 0)
+            {
+                foreach (var item in _dsList)
+                {
+                    var tmpcolDS = OracleDal.GetTableColumns(item.DataSetName);
+
+                    foreach (DataRow row in item.Tables[0].Rows)
+                    {
+                        var tmpinstall = OracleDal.getSQLColumnsForInsert(tmpcolDS, item.DataSetName, row);
+                        if (!string.IsNullOrEmpty(tmpinstall))
+                        {
+                            strSQLinsert.Add(tmpinstall);
+                        }
+
+                    }
+                }
+
+            }
+            var dd = DbHelperSQL.ExecuteSqlTran(strSQLinsert);
+            if (dd > 0)
+            {
+                MessageBox.Show("Update Count:" + dd.ToString());
+            }
         }
     }
 }

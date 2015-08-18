@@ -10,7 +10,7 @@ using AutoUpdateData.Core.enity;
 
 namespace AutoUpdateData.Core.dal
 {
-    public class OrcleDal
+    public class OracleDal
     {
         //var tmpsrt = "user id=nec;password=nec;data source=xe";
         //   OracleConnection con = new OracleConnection(tmpsrt);
@@ -23,9 +23,9 @@ namespace AutoUpdateData.Core.dal
         {
             StringBuilder sb = new StringBuilder();
             sb.Append("select t.COLUMN_NAME,t.DATA_TYPE,t.DATA_LENGTH,t.NULLABLE,t.COLUMN_ID from user_tab_columns t,user_col_comments c where t.table_name = c.table_name and t.column_name = c.column_name");
-            sb.Append("  and t.table_name = '" + tablename + "';");
+            sb.Append("  and t.table_name = '" + tablename + "'");
 
-            var result = Query(sb.ToString());
+            var result = DbHelperOra.Query(sb.ToString());
             return result;
         }
         /// <summary>
@@ -42,7 +42,7 @@ namespace AutoUpdateData.Core.dal
         public static DataSet GetData(string tablename, string tmpwhere, int rownum)
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append("select * from \"" + tablename + "\"");
+            sb.Append("select * from " + tablename);
             if (!string.IsNullOrEmpty(tmpwhere))
             {
                 sb.Append(" where " + tmpwhere);
@@ -54,31 +54,26 @@ namespace AutoUpdateData.Core.dal
                 sb.Append(" where  rownum<= " + rownum.ToString());
             }
 
-            var result = Query(sb.ToString());
+            var result = DbHelperOra.Query(sb.ToString());
             return result;
         }
-        /// <summary>
-        /// 执行查询语句，返回DataSet
-        /// </summary>
-        /// <param name="SQLString">查询语句</param>
-        /// <returns>DataSet</returns>
-        public static DataSet Query(string SQLString)
+        public static DataSet GetData(string tablename, string tmpwhere, int rownum, params OracleParameter[] cmdParms)
         {
-            using (OracleConnection connection = new OracleConnection(DbHelperOra.connectionString))
+            StringBuilder sb = new StringBuilder();
+            sb.Append("select * from " + tablename);
+            if (!string.IsNullOrEmpty(tmpwhere))
             {
-                DataSet ds = new DataSet();
-                try
-                {
-                    connection.Open();
-                    OracleDataAdapter command = new OracleDataAdapter(SQLString, connection);
-                    command.Fill(ds, "ds");
-                }
-                catch (OracleException ex)
-                {
-                    throw new Exception(ex.Message);
-                }
-                return ds;
+                sb.Append(" where " + tmpwhere);
+                sb.Append(" and rownum<= " + rownum.ToString());
             }
+            else
+            {
+
+                sb.Append(" where  rownum<= " + rownum.ToString());
+            }
+
+            var result = DbHelperOra.Query(sb.ToString(), cmdParms);
+            return result;
         }
         public static Dictionary<string, column> getColumns(DataSet ds)
         {
@@ -104,7 +99,7 @@ namespace AutoUpdateData.Core.dal
                             tmpColumns.Add(tmpcol.COLUMN_NAME, tmpcol);
                         }
                     }
-                    
+
 
                 }
             }
@@ -113,10 +108,10 @@ namespace AutoUpdateData.Core.dal
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="ds"></param>
+        /// <param name="dsColumn"></param>
         /// <param name="strTablename"></param>
         /// <returns></returns>
-        public static string getSQLColumnsForInsert(DataSet ds, string strTablename, DataRow dvalue)
+        public static string getSQLColumnsForInsert(DataSet dsColumn, string strTablename, DataRow dvalue)
         {
 
             //INSERT INTO 
@@ -131,17 +126,19 @@ namespace AutoUpdateData.Core.dal
             sb.Append(" INSERT INTO ");
             sb.Append(" [dbo].[" + strTablename.Trim() + "] (");
 
-            if (ds != null)
+            if (dsColumn != null)
             {
-                if (ds.Tables.Count > 0)
+                if (dsColumn.Tables.Count > 0)
                 {
-                    var tb = ds.Tables[0];
+                    var tb = dsColumn.Tables[0];
                     if (tb.Rows.Count > 0)
                     {
                         var tmpcount = tb.Rows.Count;
                         for (int i = 0; i < tmpcount; i++)
                         {
                             var colname = tb.Rows[i]["COLUMN_NAME"].ToString();
+                            var dd = dvalue[colname].GetType().ToString();
+
                             if (i < tmpcount - 1)
                             {
 
@@ -149,6 +146,7 @@ namespace AutoUpdateData.Core.dal
 
                                 if (dvalue[colname] != null)
                                 {
+                                 
                                     sbvalue.Append("'" + dvalue[colname].ToString() + "',");
                                 }
                                 else
@@ -163,9 +161,10 @@ namespace AutoUpdateData.Core.dal
 
                                 sb.Append(" ) VALUES ( ");
 
+                                //System.DateTime
                                 if (dvalue[colname] != null)
                                 {
-                                    sbvalue.Append("'" + dvalue[colname].ToString() + "' ");
+                                    sbvalue.Append("'" + dvalue[colname].ToString() + "' )");
                                 }
                                 else
                                 {

@@ -46,8 +46,14 @@
             this.txt0Rtime = new System.Windows.Forms.TextBox();
             this.lbl0msg = new System.Windows.Forms.Label();
             this.btn0Re = new System.Windows.Forms.Button();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.dgv01GetData = new System.Windows.Forms.DataGridView();
+            this.btn2GetOracle = new System.Windows.Forms.Button();
+            this.btn3SaveToSQL = new System.Windows.Forms.Button();
             this.contextMenuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
+            this.groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgv01GetData)).BeginInit();
             this.SuspendLayout();
             // 
             // btn0Save
@@ -140,8 +146,8 @@
             // 
             this.cbox0updateWay.FormattingEnabled = true;
             this.cbox0updateWay.Items.AddRange(new object[] {
-            "Deleted First,Then Adding",
-            "Direct Update"});
+            "Direct Update",
+            "Deleted First,Then Adding"});
             this.cbox0updateWay.Location = new System.Drawing.Point(519, 24);
             this.cbox0updateWay.Name = "cbox0updateWay";
             this.cbox0updateWay.Size = new System.Drawing.Size(121, 20);
@@ -193,11 +199,58 @@
             this.btn0Re.UseVisualStyleBackColor = true;
             this.btn0Re.Click += new System.EventHandler(this.btn0Re_Click);
             // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.dgv01GetData);
+            this.groupBox2.Location = new System.Drawing.Point(12, 203);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(725, 287);
+            this.groupBox2.TabIndex = 5;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "groupBox2";
+            // 
+            // dgv01GetData
+            // 
+            this.dgv01GetData.AllowUserToAddRows = false;
+            this.dgv01GetData.AllowUserToDeleteRows = false;
+            this.dgv01GetData.AllowUserToOrderColumns = true;
+            this.dgv01GetData.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgv01GetData.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgv01GetData.Location = new System.Drawing.Point(3, 17);
+            this.dgv01GetData.Name = "dgv01GetData";
+            this.dgv01GetData.ReadOnly = true;
+            this.dgv01GetData.RowTemplate.Height = 23;
+            this.dgv01GetData.Size = new System.Drawing.Size(719, 267);
+            this.dgv01GetData.TabIndex = 0;
+            // 
+            // btn2GetOracle
+            // 
+            this.btn2GetOracle.Location = new System.Drawing.Point(43, 174);
+            this.btn2GetOracle.Name = "btn2GetOracle";
+            this.btn2GetOracle.Size = new System.Drawing.Size(159, 23);
+            this.btn2GetOracle.TabIndex = 6;
+            this.btn2GetOracle.Text = "Get Data From Oracle";
+            this.btn2GetOracle.UseVisualStyleBackColor = true;
+            this.btn2GetOracle.Click += new System.EventHandler(this.btn2GetOracle_Click);
+            // 
+            // btn3SaveToSQL
+            // 
+            this.btn3SaveToSQL.Location = new System.Drawing.Point(274, 174);
+            this.btn3SaveToSQL.Name = "btn3SaveToSQL";
+            this.btn3SaveToSQL.Size = new System.Drawing.Size(187, 23);
+            this.btn3SaveToSQL.TabIndex = 6;
+            this.btn3SaveToSQL.Text = "Save Data To SQL 2008";
+            this.btn3SaveToSQL.UseVisualStyleBackColor = true;
+            this.btn3SaveToSQL.Click += new System.EventHandler(this.btn3SaveToSQL_Click);
+            // 
             // AutoUpdateData
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(749, 502);
+            this.Controls.Add(this.btn3SaveToSQL);
+            this.Controls.Add(this.btn2GetOracle);
+            this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.btn0Re);
             this.Controls.Add(this.lbl0msg);
             this.Controls.Add(this.groupBox1);
@@ -209,6 +262,8 @@
             this.contextMenuStrip1.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dgv01GetData)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -232,6 +287,10 @@
         private System.Windows.Forms.TextBox txt1batchNum;
         private System.Windows.Forms.Label lbl0msg;
         private System.Windows.Forms.Button btn0Re;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.DataGridView dgv01GetData;
+        private System.Windows.Forms.Button btn2GetOracle;
+        private System.Windows.Forms.Button btn3SaveToSQL;
     }
 }
 

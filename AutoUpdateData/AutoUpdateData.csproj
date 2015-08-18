@@ -85,7 +85,7 @@
   <ItemGroup>
     <Compile Include="Basic\LogHelper.cs" />
     <Compile Include="Core\CommandInfo.cs" />
-    <Compile Include="Core\dal\OrcleDal.cs" />
+    <Compile Include="Core\dal\OracleDal.cs" />
     <Compile Include="Core\DbHelperOra.cs" />
     <Compile Include="Core\DbHelperSQL.cs" />
     <Compile Include="Core\enity\column.cs" />
