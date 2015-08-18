@@ -113,6 +113,7 @@ namespace AutoUpdateData
             {
                 if (!_scheduler.IsShutdown)
                 {
+                    _scheduler.DeleteJob(_upload_job.Key);
                     _scheduler.Shutdown();
                     _scheduler = StdSchedulerFactory.GetDefaultScheduler();
                     _scheduler.Start();
