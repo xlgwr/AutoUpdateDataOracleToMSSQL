@@ -83,15 +83,12 @@ namespace AutoUpdateData
         }
         private void Form1_Load(object sender, EventArgs e)
         {
-
-            logger.Debug("====================以下参数修改后需启生效===================");
-
             _scheduler.Start();
+            logger.Info("Quartz服务成功启动");
 
             tmenu0Start.Enabled = false;
             tmenu1Stop.Enabled = true;
             lbl1Flag.Text = "Runing";
-            logger.Info("Quartz服务成功启动");
 
             updateJob(false);
 
@@ -316,7 +313,7 @@ namespace AutoUpdateData
 
         private void tmenu1Stop_Click(object sender, EventArgs e)
         {
-            initSet();
+            //initSet();
 
             _scheduler.PauseAll();
             tmenu1Stop.Enabled = false;
@@ -328,7 +325,7 @@ namespace AutoUpdateData
 
         private void tmenu0Start_Click(object sender, EventArgs e)
         {
-            initSet();
+            //initSet();
 
             _scheduler.ResumeAll();
             tmenu1Stop.Enabled = true;
