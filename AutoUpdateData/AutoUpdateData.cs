@@ -16,16 +16,25 @@ using Oracle.ManagedDataAccess.Types;
 
 using System.IO;
 using AutoUpdateData.Core.dal;
+using Quartz;
+using Quartz.Impl;
 
 namespace AutoUpdateData
 {
     public partial class AutoUpdateData : Form
     {
+        private readonly ILog logger;
+        public static IScheduler scheduler;
+
+
         public static IList<string> _tableList;
         public static IList<DataSet> _dsList;
         public AutoUpdateData()
         {
             InitializeComponent();
+
+            logger = LogManager.GetLogger(GetType());
+            scheduler = StdSchedulerFactory.GetDefaultScheduler();
 
             initfrm();
             this.MinimumSizeChanged += AutoUpdateData_MinimumSizeChanged;
@@ -97,6 +106,10 @@ namespace AutoUpdateData
         private void Form1_Load(object sender, EventArgs e)
         {
 
+            logger.Debug("====================以下参数修改后需重启服务生效===================");
+
+            scheduler.Start();
+            logger.Info("Quartz服务成功启动");
         }
         private void button1_Click(object sender, EventArgs e)
         {
@@ -198,6 +211,12 @@ namespace AutoUpdateData
         }
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            try
+            {
+                scheduler.Shutdown();
+                logger.Info("Quartz服务成功终止");
+            }
+            finally { }
             Application.Exit();
         }
 
@@ -224,6 +243,12 @@ namespace AutoUpdateData
         {
             if (MessageBox.Show("Are you sure to exit！", "notice", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
+                try
+                {
+                    scheduler.Shutdown();
+                    logger.Info("Quartz服务成功终止");
+                }
+                finally { }
                 Application.Exit();
             }
         }
