@@ -43,7 +43,7 @@ namespace AutoUpdateData.Core.dal
         /// <param name="tmpwhere"></param>
         /// <param name="rownum"></param>
         /// <returns></returns>
-        public static DataSet GetData(string tablename, string tmpwhere, int rownum)
+        public static DataSet GetData(string tablename, string tmpwhere, string orderby, int rownum)
         {
             StringBuilder sb = new StringBuilder();
             sb.Append("select * from " + tablename);
@@ -56,13 +56,17 @@ namespace AutoUpdateData.Core.dal
             {
 
                 sb.Append(" where  rownum<= " + rownum.ToString());
+            }
+            if (!string.IsNullOrEmpty(orderby))
+            {
+                sb.Append(" order by " + orderby);
             }
 
             logger.Debug(sb.ToString());
             var result = DbHelperOra.Query(sb.ToString());
             return result;
         }
-        public static DataSet GetData(string tablename, string tmpwhere, int rownum, params OracleParameter[] cmdParms)
+        public static DataSet GetData(string tablename, string tmpwhere,string orderby, int rownum, params OracleParameter[] cmdParms)
         {
             StringBuilder sb = new StringBuilder();
             sb.Append("select * from " + tablename);
@@ -75,6 +79,10 @@ namespace AutoUpdateData.Core.dal
             {
 
                 sb.Append(" where  rownum<= " + rownum.ToString());
+            }
+            if (!string.IsNullOrEmpty(orderby))
+            {
+                sb.Append(" order by " + orderby);
             }
 
             var result = DbHelperOra.Query(sb.ToString(), cmdParms);

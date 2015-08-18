@@ -19,7 +19,7 @@ namespace AutoUpdateData.Service.Job
         public void Execute(Quartz.IJobExecutionContext context)
         {
             logger.DebugFormat("执行更新任务!!!!!!!!!!!!!!!");
-            AutoUpdateData.jobflag("Is Runing,Next Time:"+context.NextFireTimeUtc.Value.DateTime);
+            AutoUpdateData.jobflag("Is Runing,Next Time:" + context.NextFireTimeUtc.Value.DateTime);
             //get
             if (AutoUpdateData._tableList.Count > 0)
             {
@@ -35,13 +35,13 @@ namespace AutoUpdateData.Service.Job
                         OracleParameter[] parameters = { new OracleParameter(":gxsj", OracleDbType.Varchar2, 10) };
                         parameters[0].Value = DateTime.Now.AddHours(-3).ToString("yyyy-MM-dd HH") + ":00:00";
 
-                        var tmpds = OracleDal.GetData(td[0].Trim(), tmpwhere, tmpBathc, parameters);
+                        var tmpds = OracleDal.GetData(td[0].Trim(), tmpwhere, td[1], tmpBathc, parameters);
                         tmpds.DataSetName = td[0].Trim();
                         AutoUpdateData._dsList.Add(tmpds);
                     }
                     else
                     {
-                        var tmpds = OracleDal.GetData(item.Trim(), "", tmpBathc);
+                        var tmpds = OracleDal.GetData(item.Trim(), "", "", tmpBathc);
                         tmpds.DataSetName = item.Trim();
                         AutoUpdateData._dsList.Add(tmpds);
                     }

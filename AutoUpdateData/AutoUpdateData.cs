@@ -290,7 +290,8 @@ namespace AutoUpdateData
 
         private void tmenu2Set_Click(object sender, EventArgs e)
         {
-            this.Show();
+            this.TopMost = true;
+            this.ShowDialog();
         }
 
         private void btn0Re_Click(object sender, EventArgs e)
@@ -373,6 +374,12 @@ namespace AutoUpdateData
             {
                 lbl0msg.Text = "";
             }
+        }
+
+        private void notifyIcon1_DoubleClick(object sender, EventArgs e)
+        {
+            this.TopMost = true;
+            this.ShowDialog();
         }
     }
 }
