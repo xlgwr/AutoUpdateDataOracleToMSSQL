@@ -6,6 +6,8 @@ using System.Data;
 using System.Configuration;
 using Oracle.ManagedDataAccess.Client;
 using Oracle.ManagedDataAccess.Types;
+using log4net;
+using System.Reflection;
 
 namespace AutoUpdateData
 {
@@ -15,8 +17,11 @@ namespace AutoUpdateData
 	/// </summary>
 	public abstract class DbHelperOra
 	{
+        
+        private static readonly ILog logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         //数据库连接字符串(web.config来配置)，可以动态更改connectionString支持多数据库.		
-        public static string connectionString = ConfigurationSettings.AppSettings["DBOracle11"].ToString();
+        public static string connectionString = System.Configuration.ConfigurationManager.AppSettings["DBOracle11"].ToString();
 		public DbHelperOra()
 		{			
 		}
@@ -132,6 +137,7 @@ namespace AutoUpdateData
 						string strsql=SQLStringList[n].ToString();
 						if (strsql.Trim().Length>1)
 						{
+                            logger.Debug(strsql);
 							cmd.CommandText=strsql;
 							cmd.ExecuteNonQuery();
 						}
@@ -215,6 +221,7 @@ namespace AutoUpdateData
 		/// <returns>查询结果（object）</returns>
 		public static object GetSingle(string SQLString)
 		{
+            logger.Debug(SQLString);
 			using (OracleConnection connection = new OracleConnection(connectionString))
 			{
 				using(OracleCommand cmd = new OracleCommand(SQLString,connection))
@@ -360,6 +367,8 @@ namespace AutoUpdateData
 		/// <returns>查询结果（object）</returns>
 		public static object GetSingle(string SQLString,params OracleParameter[] cmdParms)
 		{
+            logger.Debug(SQLString);
+            logger.Debug(cmdParms);
 			using (OracleConnection connection = new OracleConnection(connectionString))
 			{
 				using (OracleCommand cmd = new OracleCommand())
@@ -416,6 +425,8 @@ namespace AutoUpdateData
 		/// <returns>DataSet</returns>
 		public static DataSet Query(string SQLString,params OracleParameter[] cmdParms)
 		{
+            logger.Debug(SQLString);
+            logger.Debug(cmdParms);
 			using (OracleConnection connection = new OracleConnection(connectionString))
 			{
 				OracleCommand cmd = new OracleCommand();

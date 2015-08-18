@@ -7,6 +7,8 @@ using System.Data;
 using System.Text.RegularExpressions;
 using Oracle.ManagedDataAccess.Client;
 using AutoUpdateData.Core.enity;
+using log4net;
+using System.Reflection;
 
 namespace AutoUpdateData.Core.dal
 {
@@ -18,6 +20,7 @@ namespace AutoUpdateData.Core.dal
         //   MessageBox.Show(con.ServerVersion);
         //   con.Close();
         //   con.Dispose();
+        private static readonly ILog logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public static DataSet GetTableColumns(string tablename)
         {
@@ -25,6 +28,7 @@ namespace AutoUpdateData.Core.dal
             sb.Append("select t.COLUMN_NAME,t.DATA_TYPE,t.DATA_LENGTH,t.NULLABLE,t.COLUMN_ID from user_tab_columns t,user_col_comments c where t.table_name = c.table_name and t.column_name = c.column_name");
             sb.Append("  and t.table_name = '" + tablename + "'");
 
+            logger.Debug(sb.ToString());
             var result = DbHelperOra.Query(sb.ToString());
             return result;
         }
@@ -54,6 +58,7 @@ namespace AutoUpdateData.Core.dal
                 sb.Append(" where  rownum<= " + rownum.ToString());
             }
 
+            logger.Debug(sb.ToString());
             var result = DbHelperOra.Query(sb.ToString());
             return result;
         }

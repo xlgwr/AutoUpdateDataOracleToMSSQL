@@ -6,6 +6,8 @@ using System.Data.SqlClient;
 using System.Configuration;
 using System.Data.Common;
 using System.Collections.Generic;
+using log4net;
+using System.Reflection;
 namespace AutoUpdateData
 {
     /// <summary>
@@ -14,8 +16,10 @@ namespace AutoUpdateData
     /// </summary>
     public abstract class DbHelperSQL
     {
+        private static readonly ILog logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         //数据库连接字符串(web.config来配置)，多数据库可使用DbHelperSQLP来实现.
-        public static string connectionString = System.Configuration.ConfigurationSettings.AppSettings["DBMSSQL"].ToString();
+        public static string connectionString = System.Configuration.ConfigurationManager.AppSettings["DBMSSQL"].ToString();
         public DbHelperSQL()
         {            
         }
@@ -177,6 +181,7 @@ namespace AutoUpdateData
         /// <param name="SQLStringList">多条SQL语句</param>		
         public static int ExecuteSqlTran(List<String> SQLStringList)
         {
+           
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 conn.Open();
@@ -192,6 +197,7 @@ namespace AutoUpdateData
                         string strsql = SQLStringList[n];
                         if (strsql.Trim().Length > 1)
                         {
+                            logger.Debug(strsql);
                             cmd.CommandText = strsql;
                             count += cmd.ExecuteNonQuery();
                         }

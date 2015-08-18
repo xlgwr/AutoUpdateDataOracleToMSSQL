@@ -18,13 +18,17 @@ using System.IO;
 using AutoUpdateData.Core.dal;
 using Quartz;
 using Quartz.Impl;
+using AutoUpdateData.Service.Job;
 
 namespace AutoUpdateData
 {
     public partial class AutoUpdateData : Form
     {
         private readonly ILog logger;
-        public static IScheduler scheduler;
+        public static IScheduler _scheduler;
+
+        public static IJobDetail _upload_job;
+        public static ITrigger _upload_trigger;
 
 
         public static IList<string> _tableList;
@@ -34,7 +38,7 @@ namespace AutoUpdateData
             InitializeComponent();
 
             logger = LogManager.GetLogger(GetType());
-            scheduler = StdSchedulerFactory.GetDefaultScheduler();
+            _scheduler = StdSchedulerFactory.GetDefaultScheduler();
 
             initfrm();
             this.MinimumSizeChanged += AutoUpdateData_MinimumSizeChanged;
@@ -64,33 +68,6 @@ namespace AutoUpdateData
                 this.ShowInTaskbar = false;//使Form不在任务栏上显示
             }
         }
-        #region ilog
-
-        public static void log<T>(string msg)
-            where T : class
-        {
-            //第一种记录用法
-            //（1）FormMain是类名称
-            //（2）第二个参数是字符串信息 "测试Log4Net日志是否写入"
-            LogHelper.WriteLog(typeof(T), msg);
-        }
-        public static void log<T>(Exception ex)
-            where T : class
-        {
-            LogHelper.WriteLog(typeof(T), ex);
-
-            //第二种记录用法
-            //（1）FormMain是类名称
-            //（2）第二个参数是需要捕捉的异常块
-            //try { 
-
-            //}catch(Exception ex){
-
-            //    LogHelper.WriteLog(typeof(FormMain), ex);
-
-            //}
-        }
-        #endregion
         void initfrm()
         {
             this.StartPosition = FormStartPosition.CenterScreen;
@@ -101,36 +78,93 @@ namespace AutoUpdateData
 
             tInitIni(false);
             lbl0msg.Text = "";
+            _tmpFlagMsg = lbl0msg;
 
         }
         private void Form1_Load(object sender, EventArgs e)
         {
 
-            logger.Debug("====================以下参数修改后需重启服务生效===================");
+            logger.Debug("====================以下参数修改后需启生效===================");
 
-            scheduler.Start();
+            _scheduler.Start();
+
+            tmenu0Start.Enabled = false;
+            tmenu1Stop.Enabled = true;
+            lbl1Flag.Text = "Runing";
             logger.Info("Quartz服务成功启动");
+
+            updateJob(false);
+
+        }
+        void initSet()
+        {
+            _txt0Rtime = Convert.ToInt32(txt0Rtime.Text);
+            _txt1batchNum = Convert.ToInt32(txt1batchNum.Text);
+            _updatemode = cbox0updateWay.Text;
+
+            logger.Debug("====================以下参数修改后需重启生效===================");
+            logger.DebugFormat("====================Synchronization(min):{0}", _txt0Rtime);
+            logger.DebugFormat("====================Batch Number：{0}", _txt1batchNum);
+            logger.DebugFormat("====================Update mode：{0}", _updatemode);
+        }
+        void updateJob(bool restart)
+        {
+            //init 
+            initSet();
+
+            if (restart)
+            {
+                if (!_scheduler.IsShutdown)
+                {
+                    _scheduler.Shutdown();
+                    _scheduler = StdSchedulerFactory.GetDefaultScheduler();
+                    _scheduler.Start();
+                    lbl0msg.Text = "Save Success,and restart OK.";
+                    logger.Debug("====================以下参数修改后需重启生效===================");
+                    logger.DebugFormat("====================Synchronization(min):{0}", _txt0Rtime);
+                    logger.DebugFormat("====================Batch Number：{0}", _txt1batchNum);
+                    logger.DebugFormat("====================Update mode：{0}", _updatemode);
+                }
+
+            }
+            #region "upload"
+            DateTimeOffset runTime = DateBuilder.EvenSecondDate(DateTimeOffset.Now);
+
+            _upload_job = JobBuilder.Create<updateJob>()
+               .WithIdentity("UploadJob", "UploadGroup")
+               .Build();
+
+            _upload_trigger = TriggerBuilder.Create()
+               .WithIdentity("UploadTrigger", "UploadGroup")
+               .StartAt(runTime)
+               .WithSimpleSchedule(x => x.WithIntervalInMinutes(_txt0Rtime).RepeatForever())
+               .Build();
+
+            // Tell quartz to schedule the job using our trigger
+            _scheduler.ScheduleJob(_upload_job, _upload_trigger);
+
+            #endregion "upload"
         }
         private void button1_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(cbox0updateWay.Text))
             {
                 cbox0updateWay.Focus();
-                lbl0msg.Text = "Please enter the right content 3。";
+                lbl0msg.Text = "Please enter the right content。";
                 return;
             }
             int irtime = 0;
             if (!int.TryParse(txt0Rtime.Text, out irtime))
             {
                 txt0Rtime.Focus();
-                lbl0msg.Text = "Please enter the right number 1。";
+                lbl0msg.Text = "Please enter the right number >=1。";
                 return;
             }
             int ibatch = 0;
             if (!int.TryParse(txt1batchNum.Text, out ibatch))
             {
                 txt1batchNum.Focus();
-                lbl0msg.Text = "Please enter the right number 2。";
+                lbl0msg.Text = "Please enter the right number >=1。";
                 return;
             }
             this.btn0Save.Enabled = false;
@@ -139,6 +173,8 @@ namespace AutoUpdateData
             {
                 tInitIni(true);
                 lbl0msg.Text = "Save OK。" + DateTime.Now;
+
+                updateJob(true);
 
             }
             else
@@ -164,7 +200,7 @@ namespace AutoUpdateData
                     ini.IniWriteValue("Tables", "table", "SHOP_ORDER_OPERATION_TAB|,SHOP_ORD_TAB|,N_TRANSPORT_ORDER_TAB|,N_AIS_SHOP_LIST_PICKED_ACT_TAB|,INVENTORY_TRANSACTION_HIST_TAB|EXPIRATION_DATE,INVENTORY_PART_TAB|LAST_ACTIVITY_DATE");
                     ini.IniWriteValue("Common", "retime", "5");
                     ini.IniWriteValue("Common", "batchNum", "100");
-                    ini.IniWriteValue("Common", "updateWay", "Direct Update");
+                    ini.IniWriteValue("Common", "updateWay", "1-Direct Update");
                 }
                 else
                 {
@@ -183,12 +219,13 @@ namespace AutoUpdateData
                     txt0Rtime.Text = ini.IniReadValue("Common", "retime");
                     txt1batchNum.Text = ini.IniReadValue("Common", "batchNum");
                     cbox0updateWay.Text = ini.IniReadValue("Common", "updateWay");
+
                     getTables(ini);
                 }
             }
             catch (Exception ex)
             {
-                log<AutoUpdateData>(ex);
+                logger.Error(ex);
                 MessageBox.Show(ex.Message);
                 btn0Save.Enabled = true;
             }
@@ -213,7 +250,8 @@ namespace AutoUpdateData
         {
             try
             {
-                scheduler.Shutdown();
+                _scheduler.Shutdown();
+
                 logger.Info("Quartz服务成功终止");
             }
             finally { }
@@ -245,7 +283,7 @@ namespace AutoUpdateData
             {
                 try
                 {
-                    scheduler.Shutdown();
+                    _scheduler.Shutdown();
                     logger.Info("Quartz服务成功终止");
                 }
                 finally { }
@@ -266,63 +304,77 @@ namespace AutoUpdateData
 
         private void btn2GetOracle_Click(object sender, EventArgs e)
         {
-            if (_tableList.Count > 0)
-            {
-                _dsList.Clear();
-                foreach (var item in _tableList)
-                {
-                    if (item.Contains('|'))
-                    {
-                        var td = item.Split('|');
-                        var tmpwhere = td[1] + ">=to_date(:gxsj,'yyyy-MM-dd HH24:mi:ss')";
-                        OracleParameter[] parameters = { new OracleParameter(":gxsj", OracleDbType.Varchar2, 10) };
-                        parameters[0].Value = DateTime.Now.AddHours(-3).ToString("yyyy-MM-dd HH") + ":00:00";
 
-                        var tmpds = OracleDal.GetData(td[0].Trim(), tmpwhere, 2, parameters);
-                        tmpds.DataSetName = td[0].Trim();
-                        _dsList.Add(tmpds);
-                        dgv01GetData.DataSource = tmpds.Tables[0].DefaultView;
-                        dgv01GetData.Refresh();
-                    }
-                    else
-                    {
-                        var tmpds = OracleDal.GetData(item.Trim(), "", 2);
-                        tmpds.DataSetName = item.Trim();
-                        _dsList.Add(tmpds);
-                    }
-                }
-            }
-            else
-            {
-                MessageBox.Show("no Table,Please check Set.ini,and add Table.");
-            }
         }
 
         private void btn3SaveToSQL_Click(object sender, EventArgs e)
         {
-            var strSQLinsert = new List<String>();
-            if (_dsList.Count > 0)
+
+        }
+
+        public int _txt0Rtime { get; set; }
+
+        private void tmenu1Stop_Click(object sender, EventArgs e)
+        {
+            initSet();
+
+            _scheduler.PauseAll();
+            tmenu1Stop.Enabled = false;
+            tmenu0Start.Enabled = true;
+            lbl1Flag.Text = "Stop";
+            lbl0msg.Text = "Stop Success." + DateTime.Now.ToString();
+            logger.Info("Quartz服务成功停止");
+        }
+
+        private void tmenu0Start_Click(object sender, EventArgs e)
+        {
+            initSet();
+
+            _scheduler.ResumeAll();
+            tmenu1Stop.Enabled = true;
+            tmenu0Start.Enabled = false;
+            lbl1Flag.Text = "Running";
+            lbl0msg.Text = "Run Success." + DateTime.Now.ToString();
+            logger.Info("Quartz服务成功重新开始");
+        }
+        public static Label _tmpFlagMsg;
+        public static void jobflag(string msg)
+        {
+            _tmpFlagMsg.Invoke(new MethodInvoker(delegate()
             {
-                foreach (var item in _dsList)
-                {
-                    var tmpcolDS = OracleDal.GetTableColumns(item.DataSetName);
+                _tmpFlagMsg.Text = msg;
+            }));
+        }
 
-                    foreach (DataRow row in item.Tables[0].Rows)
-                    {
-                        var tmpinstall = OracleDal.getSQLColumnsForInsert(tmpcolDS, item.DataSetName, row);
-                        if (!string.IsNullOrEmpty(tmpinstall))
-                        {
-                            strSQLinsert.Add(tmpinstall);
-                        }
+        public static int _txt1batchNum { get; set; }
 
-                    }
-                }
+        public static string _updatemode { get; set; }
 
+        private void txt0Rtime_TextChanged(object sender, EventArgs e)
+        {
+            var tmpdd = 0;
+            if (!int.TryParse(txt0Rtime.Text, out tmpdd))
+            {
+                lbl0msg.Text = "Please enter a right number. >=1 (min).";
+                txt0Rtime.Focus();
             }
-            var dd = DbHelperSQL.ExecuteSqlTran(strSQLinsert);
-            if (dd > 0)
+            else
             {
-                MessageBox.Show("Update Count:" + dd.ToString());
+                lbl0msg.Text = "";
+            }
+        }
+
+        private void txt1batchNum_TextChanged(object sender, EventArgs e)
+        {
+            var tmpdd = 0;
+            if (!int.TryParse(txt1batchNum.Text, out tmpdd))
+            {
+                lbl0msg.Text = "Please enter a right number.>=1.";
+                txt1batchNum.Focus();
+            }
+            else
+            {
+                lbl0msg.Text = "";
             }
         }
     }
