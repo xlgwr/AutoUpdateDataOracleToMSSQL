@@ -10,12 +10,18 @@ using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
 
+
+using Oracle.ManagedDataAccess.Client;
+using Oracle.ManagedDataAccess.Types;
+
 using System.IO;
+using AutoUpdateData.Core.dal;
 
 namespace AutoUpdateData
 {
     public partial class AutoUpdateData : Form
     {
+        public static IList<string> _tableList;
         public AutoUpdateData()
         {
             InitializeComponent();
@@ -80,8 +86,11 @@ namespace AutoUpdateData
             this.StartPosition = FormStartPosition.CenterScreen;
             this.MaximizeBox = false;
             this.notifyIcon1.ContextMenuStrip = contextMenuStrip1;
+            _tableList = new List<string>();
+
             tInitIni(false);
             lbl0msg.Text = "";
+
         }
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -95,8 +104,8 @@ namespace AutoUpdateData
                 lbl0msg.Text = "更新方式内容为空。请选择正确的数据。";
                 return;
             }
-            int irtime=0;
-            if (!int.TryParse(txt0Rtime.Text,out irtime))
+            int irtime = 0;
+            if (!int.TryParse(txt0Rtime.Text, out irtime))
             {
                 txt0Rtime.Focus();
                 lbl0msg.Text = "同步时间输入不正确。请输入正确的数字。";
@@ -114,12 +123,12 @@ namespace AutoUpdateData
             if (MessageBox.Show(msg, "提示", MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
             {
                 tInitIni(true);
-                lbl0msg.Text = "保存设置成功。" + DateTime.Now; 
+                lbl0msg.Text = "保存设置成功。" + DateTime.Now;
 
             }
             else
             {
-                lbl0msg.Text = "取消保存设置。" + DateTime.Now; 
+                lbl0msg.Text = "取消保存设置。" + DateTime.Now;
             }
             this.btn0Save.Enabled = true;
         }
@@ -132,23 +141,32 @@ namespace AutoUpdateData
             try
             {
                 var tmpfile = AppDomain.CurrentDomain.BaseDirectory + "\\Set.ini";
+                INIFile ini;
                 if (!File.Exists(tmpfile))
                 {
                     File.WriteAllText(tmpfile, "[Set]", System.Text.Encoding.UTF8);
+                    ini = new INIFile(tmpfile);
+                    ini.IniWriteValue("Tables", "table", "SHOP_ORDER_OPERATION_TAB|,SHOP_ORD_TAB|,N_TRANSPORT_ORDER_TAB|,N_AIS_SHOP_LIST_PICKED_ACT_TAB|,INVENTORY_TRANSACTION_HIST_TAB|,INVENTORY_PART_TAB|");
 
                 }
-                INIFile ini = new INIFile(tmpfile);
+                else
+                {
+                    ini = new INIFile(tmpfile);
+                }
+
                 if (isWriteOrRead)
                 {
                     ini.IniWriteValue("Common", "retime", txt0Rtime.Text);
                     ini.IniWriteValue("Common", "batchNum", txt1batchNum.Text);
                     ini.IniWriteValue("Common", "updateWay", cbox0updateWay.Text);
                 }
+
                 else
                 {
                     txt0Rtime.Text = ini.IniReadValue("Common", "retime");
                     txt1batchNum.Text = ini.IniReadValue("Common", "batchNum");
                     cbox0updateWay.Text = ini.IniReadValue("Common", "updateWay");
+                    getTables(ini);
                 }
             }
             catch (Exception ex)
@@ -159,7 +177,21 @@ namespace AutoUpdateData
             }
 
         }
-
+        public void getTables(INIFile ini)
+        {
+            //like tab1,tab2,tab3
+            var tmptable = "";
+            tmptable = ini.IniReadValue("Tables", "table");
+            if (!string.IsNullOrEmpty(tmptable))
+            {
+                var tt = tmptable.Split(',');
+                _tableList.Clear();
+                foreach (var item in tt)
+                {
+                    _tableList.Add(item.Trim());
+                }
+            }
+        }
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Application.Exit();

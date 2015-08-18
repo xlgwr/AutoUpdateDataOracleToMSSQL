@@ -2,8 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Data;
-using System.Data.OracleClient;
+//using System.Data.OracleClient;
 using System.Configuration;
+using Oracle.ManagedDataAccess.Client;
+using Oracle.ManagedDataAccess.Types;
 
 namespace AutoUpdateData
 {
@@ -14,7 +16,7 @@ namespace AutoUpdateData
 	public abstract class DbHelperOra
 	{
         //数据库连接字符串(web.config来配置)，可以动态更改connectionString支持多数据库.		
-        public static string connectionString = System.Configuration.ConfigurationSettings.AppSettings["DBOracle11"].ToString();
+        public static string connectionString = ConfigurationSettings.AppSettings["DBOracle11"].ToString();
 		public DbHelperOra()
 		{			
 		}
@@ -101,7 +103,7 @@ namespace AutoUpdateData
 						int rows=cmd.ExecuteNonQuery();
 						return rows;
 					}
-					catch(System.Data.OracleClient.OracleException E)
+					catch(OracleException E)
 					{					
 						connection.Close();
 						throw new Exception(E.Message);
@@ -136,7 +138,7 @@ namespace AutoUpdateData
 					}										
 					tx.Commit();					
 				}
-				catch(System.Data.OracleClient.OracleException E)
+				catch(OracleException E)
 				{		
 					tx.Rollback();
 					throw new Exception(E.Message);
@@ -154,7 +156,7 @@ namespace AutoUpdateData
 			using (OracleConnection connection = new OracleConnection(connectionString))
 			{
 				OracleCommand cmd = new OracleCommand(SQLString,connection);
-                System.Data.OracleClient.OracleParameter myParameter = new System.Data.OracleClient.OracleParameter("@content", OracleType.NVarChar);
+                OracleParameter myParameter = new OracleParameter("@content", OracleDbType.NVarchar2);
 				myParameter.Value = content ;
 				cmd.Parameters.Add(myParameter);
 				try
@@ -163,7 +165,7 @@ namespace AutoUpdateData
 					int rows=cmd.ExecuteNonQuery();
 					return rows;
 				}
-				catch(System.Data.OracleClient.OracleException E)
+				catch(OracleException E)
 				{				
 					throw new Exception(E.Message);
 				}
@@ -185,7 +187,7 @@ namespace AutoUpdateData
 			using (OracleConnection connection = new OracleConnection(connectionString))
 			{
 				OracleCommand cmd = new OracleCommand(strSQL,connection);
-                System.Data.OracleClient.OracleParameter myParameter = new System.Data.OracleClient.OracleParameter("@fs", OracleType.LongRaw);
+                OracleParameter myParameter = new OracleParameter("@fs", OracleDbType.LongRaw);
 				myParameter.Value = fs ;
 				cmd.Parameters.Add(myParameter);
 				try
@@ -194,7 +196,7 @@ namespace AutoUpdateData
 					int rows=cmd.ExecuteNonQuery();
 					return rows;
 				}
-				catch(System.Data.OracleClient.OracleException E)
+				catch(OracleException E)
 				{				
 					throw new Exception(E.Message);
 				}
@@ -230,7 +232,7 @@ namespace AutoUpdateData
 							return obj;
 						}				
 					}
-					catch(System.Data.OracleClient.OracleException e)
+					catch(OracleException e)
 					{						
 						connection.Close();
 						throw new Exception(e.Message);
@@ -253,7 +255,7 @@ namespace AutoUpdateData
                 OracleDataReader myReader = cmd.ExecuteReader(CommandBehavior.CloseConnection);
 				return myReader;
 			}
-			catch(System.Data.OracleClient.OracleException e)
+			catch(OracleException e)
 			{								
 				throw new Exception(e.Message);
 			}			
@@ -275,7 +277,7 @@ namespace AutoUpdateData
 					OracleDataAdapter command = new OracleDataAdapter(SQLString,connection);				
 					command.Fill(ds,"ds");
 				}
-				catch(System.Data.OracleClient.OracleException ex)
+				catch(OracleException ex)
 				{				
 					throw new Exception(ex.Message);
 				}			
@@ -306,7 +308,7 @@ namespace AutoUpdateData
 						cmd.Parameters.Clear();
 						return rows;
 					}
-					catch(System.Data.OracleClient.OracleException E)
+					catch(OracleException E)
 					{				
 						throw new Exception(E.Message);
 					}
@@ -376,7 +378,7 @@ namespace AutoUpdateData
 							return obj;
 						}				
 					}
-					catch(System.Data.OracleClient.OracleException e)
+					catch(OracleException e)
 					{				
 						throw new Exception(e.Message);
 					}					
@@ -400,7 +402,7 @@ namespace AutoUpdateData
 				cmd.Parameters.Clear();
 				return myReader;
 			}
-			catch(System.Data.OracleClient.OracleException e)
+			catch(OracleException e)
 			{								
 				throw new Exception(e.Message);
 			}					
@@ -426,7 +428,7 @@ namespace AutoUpdateData
 						da.Fill(ds,"ds");
 						cmd.Parameters.Clear();
 					}
-					catch(System.Data.OracleClient.OracleException ex)
+					catch(OracleException ex)
 					{				
 						throw new Exception(ex.Message);
 					}			
@@ -545,7 +547,7 @@ namespace AutoUpdateData
 		{
 			OracleCommand command = BuildQueryCommand(connection,storedProcName, parameters );
 			command.Parameters.Add( new OracleParameter ( "ReturnValue",
-                OracleType.Int32, 4, ParameterDirection.ReturnValue,
+                OracleDbType.Int32, 4, ParameterDirection.ReturnValue,
 				false,0,0,string.Empty,DataRowVersion.Default,null ));
 			return command;
 		}
