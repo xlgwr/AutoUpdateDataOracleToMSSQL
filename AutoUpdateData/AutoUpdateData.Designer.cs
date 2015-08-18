@@ -56,7 +56,7 @@
             this.btn0Save.Name = "btn0Save";
             this.btn0Save.Size = new System.Drawing.Size(97, 45);
             this.btn0Save.TabIndex = 0;
-            this.btn0Save.Text = "保存设置";
+            this.btn0Save.Text = "Save(&S)";
             this.btn0Save.UseVisualStyleBackColor = true;
             this.btn0Save.Click += new System.EventHandler(this.button1_Click);
             // 
@@ -114,23 +114,23 @@
             this.groupBox1.Controls.Add(this.txt0Rtime);
             this.groupBox1.Location = new System.Drawing.Point(25, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(615, 68);
+            this.groupBox1.Size = new System.Drawing.Size(658, 68);
             this.groupBox1.TabIndex = 2;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "设置";
+            this.groupBox1.Text = "Seting";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(227, 28);
+            this.label3.Location = new System.Drawing.Point(247, 28);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(77, 12);
+            this.label3.Size = new System.Drawing.Size(89, 12);
             this.label3.TabIndex = 5;
-            this.label3.Text = "分批提交数：";
+            this.label3.Text = "Batch Number：";
             // 
             // txt1batchNum
             // 
-            this.txt1batchNum.Location = new System.Drawing.Point(304, 24);
+            this.txt1batchNum.Location = new System.Drawing.Point(336, 24);
             this.txt1batchNum.Name = "txt1batchNum";
             this.txt1batchNum.Size = new System.Drawing.Size(100, 21);
             this.txt1batchNum.TabIndex = 4;
@@ -140,9 +140,9 @@
             // 
             this.cbox0updateWay.FormattingEnabled = true;
             this.cbox0updateWay.Items.AddRange(new object[] {
-            "删除后再追加",
-            "直接更新"});
-            this.cbox0updateWay.Location = new System.Drawing.Point(476, 24);
+            "Deleted First,Then Adding",
+            "Direct Update"});
+            this.cbox0updateWay.Location = new System.Drawing.Point(519, 24);
             this.cbox0updateWay.Name = "cbox0updateWay";
             this.cbox0updateWay.Size = new System.Drawing.Size(121, 20);
             this.cbox0updateWay.TabIndex = 3;
@@ -150,24 +150,24 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(411, 28);
+            this.label2.Location = new System.Drawing.Point(436, 28);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(65, 12);
+            this.label2.Size = new System.Drawing.Size(83, 12);
             this.label2.TabIndex = 2;
-            this.label2.Text = "更新方式：";
+            this.label2.Text = "Update mode：";
             // 
             // label1
             // 
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(16, 28);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(101, 12);
+            this.label1.Size = new System.Drawing.Size(131, 12);
             this.label1.TabIndex = 1;
-            this.label1.Text = "同步时间(分钟T):";
+            this.label1.Text = "Synchronization(min):";
             // 
             // txt0Rtime
             // 
-            this.txt0Rtime.Location = new System.Drawing.Point(120, 24);
+            this.txt0Rtime.Location = new System.Drawing.Point(147, 24);
             this.txt0Rtime.Name = "txt0Rtime";
             this.txt0Rtime.Size = new System.Drawing.Size(100, 21);
             this.txt0Rtime.TabIndex = 0;
@@ -189,7 +189,7 @@
             this.btn0Re.Name = "btn0Re";
             this.btn0Re.Size = new System.Drawing.Size(75, 23);
             this.btn0Re.TabIndex = 4;
-            this.btn0Re.Text = "刷新设置";
+            this.btn0Re.Text = "Get Set(&G)";
             this.btn0Re.UseVisualStyleBackColor = true;
             this.btn0Re.Click += new System.EventHandler(this.btn0Re_Click);
             // 
@@ -197,7 +197,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(662, 502);
+            this.ClientSize = new System.Drawing.Size(749, 502);
             this.Controls.Add(this.btn0Re);
             this.Controls.Add(this.lbl0msg);
             this.Controls.Add(this.groupBox1);

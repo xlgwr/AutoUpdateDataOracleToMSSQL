@@ -101,34 +101,34 @@ namespace AutoUpdateData
             if (string.IsNullOrEmpty(cbox0updateWay.Text))
             {
                 cbox0updateWay.Focus();
-                lbl0msg.Text = "更新方式内容为空。请选择正确的数据。";
+                lbl0msg.Text = "Please enter the right content 3。";
                 return;
             }
             int irtime = 0;
             if (!int.TryParse(txt0Rtime.Text, out irtime))
             {
                 txt0Rtime.Focus();
-                lbl0msg.Text = "同步时间输入不正确。请输入正确的数字。";
+                lbl0msg.Text = "Please enter the right number 1。";
                 return;
             }
             int ibatch = 0;
             if (!int.TryParse(txt1batchNum.Text, out ibatch))
             {
                 txt1batchNum.Focus();
-                lbl0msg.Text = "分批提交输入不正确。请输入正确的数字。";
+                lbl0msg.Text = "Please enter the right number 2。";
                 return;
             }
             this.btn0Save.Enabled = false;
-            var msg = "确定同步时间：" + txt0Rtime.Text.Trim() + ",\t分批提交数：" + txt1batchNum.Text + ",\t更新方式：" + cbox0updateWay.Text;
-            if (MessageBox.Show(msg, "提示", MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
+            var msg = "Synchronization(min):" + txt0Rtime.Text.Trim() + ",\tBatch Number：" + txt1batchNum.Text + ",\tUpdate mode：" + cbox0updateWay.Text;
+            if (MessageBox.Show(msg, "notice", MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
             {
                 tInitIni(true);
-                lbl0msg.Text = "保存设置成功。" + DateTime.Now;
+                lbl0msg.Text = "Save OK。" + DateTime.Now;
 
             }
             else
             {
-                lbl0msg.Text = "取消保存设置。" + DateTime.Now;
+                lbl0msg.Text = "Cancel OK。" + DateTime.Now;
             }
             this.btn0Save.Enabled = true;
         }
@@ -218,7 +218,7 @@ namespace AutoUpdateData
 
         private void tmenu3Exit_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("是否确认退出！", "提示", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            if (MessageBox.Show("Are you sure to exit！", "notice", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 Application.Exit();
             }
@@ -232,7 +232,7 @@ namespace AutoUpdateData
         private void btn0Re_Click(object sender, EventArgs e)
         {
             tInitIni(false);
-            lbl0msg.Text = "刷新设置成功。" + DateTime.Now;
+            lbl0msg.Text = "Get Seting Success。" + DateTime.Now;
         }
     }
 }
