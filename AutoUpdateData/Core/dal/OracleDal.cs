@@ -12,7 +12,7 @@ using System.Reflection;
 
 namespace AutoUpdateData.Core.dal
 {
-    public class OracleDal
+    public class OracleDal : DbHelperOra
     {
         //var tmpsrt = "user id=nec;password=nec;data source=xe";
         //   OracleConnection con = new OracleConnection(tmpsrt);
@@ -22,6 +22,40 @@ namespace AutoUpdateData.Core.dal
         //   con.Dispose();
         private static readonly ILog logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        public static int GetCount(string TableName, string strwhere)
+        {
+            string strsql = "select count(*) from " + TableName;
+            if (!string.IsNullOrEmpty(strwhere))
+            {
+                strsql += " where " + strwhere;
+            }
+            object obj = GetSingle(strsql);
+            if (obj == null)
+            {
+                return 0;
+            }
+            else
+            {
+                return int.Parse(obj.ToString());
+            }
+        }
+        public static int GetCount(string TableName, string strwhere, params OracleParameter[] cmdParms)
+        {
+            string strsql = "select count(*) from " + TableName;
+            if (!string.IsNullOrEmpty(strwhere))
+            {
+                strsql += " where " + strwhere;
+            }
+            object obj = GetSingle(strsql, cmdParms);
+            if (obj == null)
+            {
+                return 0;
+            }
+            else
+            {
+                return int.Parse(obj.ToString());
+            }
+        }
         public static DataSet GetTableColumns(string tablename)
         {
             StringBuilder sb = new StringBuilder();
@@ -36,6 +70,7 @@ namespace AutoUpdateData.Core.dal
         /// top 10
         /// select * from table where rownum<=10;
         /// more page
+        /// 根椐表及条件，获取前面N条记录
         /// SELECT * FROM ( SELECT A.*, ROWNUM RN 
         //  FROM (SELECT * FROM TABLE_NAME) A WHERE ROWNUM <= 40 ) WHERE RN >= 21
         /// </summary>
@@ -43,19 +78,22 @@ namespace AutoUpdateData.Core.dal
         /// <param name="tmpwhere"></param>
         /// <param name="rownum"></param>
         /// <returns></returns>
-        public static DataSet GetData(string tablename, string tmpwhere, string orderby, int rownum)
+        public static DataSet GetData(string tablename, string tmpwhere, string orderby, int preNum, int rownumBatch)
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append("select * from " + tablename);
+
+            int takeNum = preNum + rownumBatch;
+
+            sb.Append("SELECT * FROM ( SELECT A.*, ROWNUM RN FROM (SELECT * FROM " + tablename + ") A ");
             if (!string.IsNullOrEmpty(tmpwhere))
             {
                 sb.Append(" where " + tmpwhere);
-                sb.Append(" and rownum<= " + rownum.ToString());
+                sb.Append(" and ROWNUM <= " + takeNum.ToString() + ") WHERE RN >=" + preNum.ToString());
             }
             else
             {
 
-                sb.Append(" where  rownum<= " + rownum.ToString());
+                sb.Append(" where ROWNUM <= " + takeNum.ToString() + ") WHERE RN >=" + preNum.ToString());
             }
             if (!string.IsNullOrEmpty(orderby))
             {
@@ -66,25 +104,38 @@ namespace AutoUpdateData.Core.dal
             var result = DbHelperOra.Query(sb.ToString());
             return result;
         }
-        public static DataSet GetData(string tablename, string tmpwhere,string orderby, int rownum, params OracleParameter[] cmdParms)
+        /// <summary>
+        /// 根椐表及条件，获取前面N条记录
+        /// </summary>
+        /// <param name="tablename"></param>
+        /// <param name="tmpwhere"></param>
+        /// <param name="orderby"></param>
+        /// <param name="rownum"></param>
+        /// <param name="cmdParms"></param>
+        /// <returns></returns>
+        public static DataSet GetData(string tablename, string tmpwhere, string orderby, int preNum, int rownumBatch, params OracleParameter[] cmdParms)
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append("select * from " + tablename);
+
+            int takeNum = preNum + rownumBatch;
+
+            sb.Append("SELECT * FROM ( SELECT A.*, ROWNUM RN FROM (SELECT * FROM " + tablename + ") A ");
             if (!string.IsNullOrEmpty(tmpwhere))
             {
                 sb.Append(" where " + tmpwhere);
-                sb.Append(" and rownum<= " + rownum.ToString());
+                sb.Append(" and ROWNUM <= " + takeNum.ToString() + ") WHERE RN >=" + preNum.ToString());
             }
             else
             {
 
-                sb.Append(" where  rownum<= " + rownum.ToString());
+                sb.Append(" where ROWNUM <= " + takeNum.ToString() + ") WHERE RN >=" + preNum.ToString());
             }
             if (!string.IsNullOrEmpty(orderby))
             {
                 sb.Append(" order by " + orderby);
             }
 
+            logger.Debug(sb.ToString());
             var result = DbHelperOra.Query(sb.ToString(), cmdParms);
             return result;
         }
@@ -159,7 +210,7 @@ namespace AutoUpdateData.Core.dal
 
                                 if (dvalue[colname] != null)
                                 {
-                                 
+
                                     sbvalue.Append("'" + dvalue[colname].ToString() + "',");
                                 }
                                 else

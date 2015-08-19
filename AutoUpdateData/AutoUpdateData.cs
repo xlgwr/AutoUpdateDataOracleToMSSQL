@@ -30,19 +30,34 @@ namespace AutoUpdateData
         public static IJobDetail _upload_job;
         public static ITrigger _upload_trigger;
 
-
-        public static IList<string> _tableList;
+        public static string _CONTRACT;
+        public static string _PRIME_COMMODITY;
+        public static Dictionary<string, int> _tableList;
         public static IList<DataSet> _dsList;
+
+        public static bool _isUploading;
+        public static INIFile ini;
+        public static INIFile _iniToday;
+
+
         public AutoUpdateData()
         {
             InitializeComponent();
+            try
+            {
+                logger = LogManager.GetLogger(GetType());
+                _scheduler = StdSchedulerFactory.GetDefaultScheduler();
 
-            logger = LogManager.GetLogger(GetType());
-            _scheduler = StdSchedulerFactory.GetDefaultScheduler();
+                initfrm();
+                this.MinimumSizeChanged += AutoUpdateData_MinimumSizeChanged;
+                this.FormClosing += AutoUpdateData_FormClosing;
+            }
+            catch (Exception ex)
+            {
 
-            initfrm();
-            this.MinimumSizeChanged += AutoUpdateData_MinimumSizeChanged;
-            this.FormClosing += AutoUpdateData_FormClosing;
+                MessageBox.Show(ex.Message); ;
+            }
+
         }
 
         void AutoUpdateData_FormClosing(object sender, FormClosingEventArgs e)
@@ -68,6 +83,8 @@ namespace AutoUpdateData
                 this.ShowInTaskbar = false;//使Form不在任务栏上显示
             }
         }
+
+        #region init set
         void initfrm()
         {
             this.StartPosition = FormStartPosition.CenterScreen;
@@ -75,12 +92,23 @@ namespace AutoUpdateData
             this.notifyIcon1.ContextMenuStrip = contextMenuStrip1;
             this.TopMost = true;
 
-            _tableList = new List<string>();
-            _dsList = new List<DataSet>();
 
+            _tableList = new Dictionary<string, int>();
+            _dsList = new List<DataSet>();
+            _isUploading = false;
+            _CONTRACT = System.Configuration.ConfigurationManager.AppSettings["CONTRACT"].ToString();
+            _PRIME_COMMODITY = System.Configuration.ConfigurationManager.AppSettings["PRIME_COMMODITY"].ToString();
+
+            if (string.IsNullOrEmpty(_CONTRACT))
+            {
+                _CONTRACT = "no CONTRACT,please set,than Run again.";
+            }
             tInitIni(false);
+            tInitIniToday();
             lbl0msg.Text = "";
             _tmpFlagMsg = lbl0msg;
+
+            this.Text += ",CONTRACT: " + _CONTRACT;
 
         }
 
@@ -102,6 +130,7 @@ namespace AutoUpdateData
         {
             _scheduler.Start();
             logger.Info("Quartz服务成功启动");
+            notifyIcon1.Text = "AutoUpdateDate is Running.";
 
             tmenu0Start.Enabled = false;
             tmenu1Stop.Enabled = true;
@@ -114,7 +143,7 @@ namespace AutoUpdateData
         {
             _txt0Rtime = Convert.ToInt32(txt0Rtime.Text);
             _txt1batchNum = Convert.ToInt32(txt1batchNum.Text);
-            _updatemode = cbox0updateWay.Text;
+            //_updatemode = cbox0updateWay.Text;
 
             logger.Debug("====================以下参数修改后需重启生效===================");
             logger.DebugFormat("====================Synchronization(min):{0}", _txt0Rtime);
@@ -160,14 +189,16 @@ namespace AutoUpdateData
 
             #endregion "upload"
         }
+
+        #endregion
         private void button1_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(cbox0updateWay.Text))
-            {
-                cbox0updateWay.Focus();
-                lbl0msg.Text = "Please enter the right content。";
-                return;
-            }
+            //if (string.IsNullOrEmpty(cbox0updateWay.Text))
+            //{
+            //    cbox0updateWay.Focus();
+            //    lbl0msg.Text = "Please enter the right content。";
+            //    return;
+            //}
             int irtime = 0;
             if (!int.TryParse(txt0Rtime.Text, out irtime))
             {
@@ -183,7 +214,7 @@ namespace AutoUpdateData
                 return;
             }
             this.btn0Save.Enabled = false;
-            var msg = "Synchronization(min): " + txt0Rtime.Text.Trim() + ",\tBatch Number：" + txt1batchNum.Text + "\nUpdate mode：" + cbox0updateWay.Text;
+            var msg = "Synchronization(min): " + txt0Rtime.Text.Trim() + ",\tBatch Number：" + txt1batchNum.Text;// +"\nUpdate mode：" + cbox0updateWay.Text;
             if (MessageBox.Show(msg, "notice", MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
             {
                 tInitIni(true);
@@ -198,6 +229,48 @@ namespace AutoUpdateData
             }
             this.btn0Save.Enabled = true;
         }
+        public void tInitIniToday()
+        {
+            try
+            {
+                var tmpnameToday = DateTime.Now.ToString("yyyyMMdd");
+                var tmpfilePath = AppDomain.CurrentDomain.BaseDirectory + "\\TableUploadNum";
+
+                var tmpfile = tmpfilePath + "\\TableUploadNum" + tmpnameToday + ".ini";
+
+                if (!Directory.Exists(tmpfilePath))
+                {
+                    Directory.CreateDirectory(tmpfilePath);
+                }
+
+                if (!File.Exists(tmpfile))
+                {
+
+                    File.WriteAllText(tmpfile, "[Set for today Upload Num for each Table]", System.Text.Encoding.UTF8);
+                    _iniToday = new INIFile(tmpfile);
+                    foreach (var item in _tableList.Keys)
+                    {
+                        var tmpkey = item;
+                        if (item.IndexOf('|') > 0)
+                        {
+                            var dd = item.Split('|');
+                            tmpkey = dd[0];
+                        }
+                        _iniToday.IniWriteValue("TableTakeDataNum", tmpkey, "0");
+                    }
+                }
+                else
+                {
+                    _iniToday = new INIFile(tmpfile);
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex);
+                MessageBox.Show(ex.Message);
+                btn0Save.Enabled = true;
+            }
+        }
         /// <summary>
         /// ture: write,false:read
         /// </summary>
@@ -207,15 +280,21 @@ namespace AutoUpdateData
             try
             {
                 var tmpfile = AppDomain.CurrentDomain.BaseDirectory + "\\Set.ini";
-                INIFile ini;
+
                 if (!File.Exists(tmpfile))
                 {
                     File.WriteAllText(tmpfile, "[Set]", System.Text.Encoding.UTF8);
                     ini = new INIFile(tmpfile);
-                    ini.IniWriteValue("Tables", "table", "SHOP_ORDER_OPERATION_TAB|,SHOP_ORD_TAB|,N_TRANSPORT_ORDER_TAB|,N_AIS_SHOP_LIST_PICKED_ACT_TAB|,INVENTORY_TRANSACTION_HIST_TAB|EXPIRATION_DATE,INVENTORY_PART_TAB|LAST_ACTIVITY_DATE");
+                    ini.IniWriteValue("Tables", "table1", "INVENTORY_PART_TAB|CONTRACT|PRIME_COMMODITY");//delete then add
+                    ini.IniWriteValue("Tables", "table2", "INVENTORY_TRANSACTION_HIST_TAB|TRANSACTION_ID");//追加累积更新,id
+                    ini.IniWriteValue("Tables", "table3", "N_AIS_SHOP_LIST_PICKED_ACT_TAB|N_CREATED_DATE|CONTRACT,N_SHOP_LIST_ID,PART_NO,LOT_BATCH_NO*N_TRANSPORT_ORDER_TAB|N_TRANSPORT_DATE|CONTRACT,N_TRANSPORT_ORDER_NO");//追加累积更新,time table|where|order by
+                    ini.IniWriteValue("Tables", "table4", "SHOP_ORD_TAB|ORG_START_DATE|ORDER_NO*SHOP_ORDER_OPERATION_TAB|ORDER_NO");//父子表更新
+
+                    //ini.IniWriteValue("Tables", "CONTRACT", "sh");//sh：上海,tai:泰国,jp:日本
+
                     ini.IniWriteValue("Common", "retime", "5");
                     ini.IniWriteValue("Common", "batchNum", "100");
-                    ini.IniWriteValue("Common", "updateWay", "1-Direct Update");
+                    //ini.IniWriteValue("Common", "updateWay", "1-Direct Update");
                 }
                 else
                 {
@@ -226,14 +305,14 @@ namespace AutoUpdateData
                 {
                     ini.IniWriteValue("Common", "retime", txt0Rtime.Text);
                     ini.IniWriteValue("Common", "batchNum", txt1batchNum.Text);
-                    ini.IniWriteValue("Common", "updateWay", cbox0updateWay.Text);
+                    //ini.IniWriteValue("Common", "updateWay", cbox0updateWay.Text);
                 }
 
                 else
                 {
                     txt0Rtime.Text = ini.IniReadValue("Common", "retime");
                     txt1batchNum.Text = ini.IniReadValue("Common", "batchNum");
-                    cbox0updateWay.Text = ini.IniReadValue("Common", "updateWay");
+                    //cbox0updateWay.Text = ini.IniReadValue("Common", "updateWay");
 
                     getTables(ini);
                 }
@@ -249,16 +328,27 @@ namespace AutoUpdateData
         public void getTables(INIFile ini)
         {
             //like tab1,tab2,tab3
-            var tmptable = "";
-            tmptable = ini.IniReadValue("Tables", "table");
+
+            var tmptable1 = ini.IniReadValue("Tables", "table1");
+            var tmptable2 = ini.IniReadValue("Tables", "table2");
+            var tmptable3 = ini.IniReadValue("Tables", "table3");
+            var tmptable4 = ini.IniReadValue("Tables", "table4");
+            _tableList.Clear();
+            init_tableList(tmptable1, 1);
+            init_tableList(tmptable2, 2);
+            init_tableList(tmptable3, 3);
+            init_tableList(tmptable4, 4);
+        }
+        void init_tableList(string tmptable, int flag)
+        {
             if (!string.IsNullOrEmpty(tmptable))
             {
-                var tt = tmptable.Split(',');
-                _tableList.Clear();
+                var tt = tmptable.Split('*');
                 foreach (var item in tt)
                 {
-                    _tableList.Add(item.Trim());
+                    _tableList.Add(item.Trim(), flag);
                 }
+
             }
         }
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -311,23 +401,6 @@ namespace AutoUpdateData
             this.Visible = true;
         }
 
-        private void btn0Re_Click(object sender, EventArgs e)
-        {
-            tInitIni(false);
-            lbl0msg.Text = "Get Seting Success。" + DateTime.Now;
-        }
-
-        private void btn2GetOracle_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void btn3SaveToSQL_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        public int _txt0Rtime { get; set; }
 
         private void tmenu1Stop_Click(object sender, EventArgs e)
         {
@@ -339,6 +412,8 @@ namespace AutoUpdateData
             lbl1Flag.Text = "Stop";
             lbl0msg.Text = "Stop Success." + DateTime.Now.ToString();
             logger.Info("Quartz服务成功停止");
+
+            notifyIcon1.Text = "AutoUpdateDate is Stop.";
         }
 
         private void tmenu0Start_Click(object sender, EventArgs e)
@@ -351,20 +426,8 @@ namespace AutoUpdateData
             lbl1Flag.Text = "Running";
             lbl0msg.Text = "Run Success." + DateTime.Now.ToString();
             logger.Info("Quartz服务成功重新开始");
+            notifyIcon1.Text = "AutoUpdateDate is Running.";
         }
-        public static Label _tmpFlagMsg;
-        public static void jobflag(string msg)
-        {
-            _tmpFlagMsg.Invoke(new MethodInvoker(delegate()
-            {
-                _tmpFlagMsg.Text = msg;
-            }));
-        }
-
-        public static int _txt1batchNum { get; set; }
-
-        public static string _updatemode { get; set; }
-
         private void txt0Rtime_TextChanged(object sender, EventArgs e)
         {
             var tmpdd = 0;
@@ -393,5 +456,20 @@ namespace AutoUpdateData
             }
         }
 
+
+        public static void jobflag(string msg)
+        {
+            _tmpFlagMsg.Invoke(new MethodInvoker(delegate()
+            {
+                _tmpFlagMsg.Text = msg;
+            }));
+        }
+
+        public static int _txt1batchNum { get; set; }
+        public static string _updatemode { get; set; }
+        public static Label _tmpFlagMsg;
+        public int _txt0Rtime { get; set; }
+
+        public string tmptable1 { get; set; }
     }
 }
