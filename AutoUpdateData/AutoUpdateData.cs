@@ -73,6 +73,8 @@ namespace AutoUpdateData
             this.StartPosition = FormStartPosition.CenterScreen;
             this.MaximizeBox = false;
             this.notifyIcon1.ContextMenuStrip = contextMenuStrip1;
+            this.TopMost = true;
+
             _tableList = new List<string>();
             _dsList = new List<DataSet>();
 
@@ -80,6 +82,21 @@ namespace AutoUpdateData
             lbl0msg.Text = "";
             _tmpFlagMsg = lbl0msg;
 
+        }
+
+        private void notifyIcon1_DoubleClick(object sender, EventArgs e)
+        {
+            this.TopMost = true;
+            this.Visible = true;
+        }
+
+        private void notifyIcon1_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                this.Visible = true;
+                this.WindowState = FormWindowState.Normal;
+            }
         }
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -291,8 +308,7 @@ namespace AutoUpdateData
 
         private void tmenu2Set_Click(object sender, EventArgs e)
         {
-            this.TopMost = true;
-            this.ShowDialog();
+            this.Visible = true;
         }
 
         private void btn0Re_Click(object sender, EventArgs e)
@@ -377,10 +393,5 @@ namespace AutoUpdateData
             }
         }
 
-        private void notifyIcon1_DoubleClick(object sender, EventArgs e)
-        {
-            this.TopMost = true;
-            this.ShowDialog();
-        }
     }
 }
