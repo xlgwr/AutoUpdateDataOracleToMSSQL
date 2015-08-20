@@ -24,6 +24,7 @@ namespace AutoUpdateData.Service.Job
                 return;
             }
             AutoUpdateData._isUploading = true;
+            _is1 = false;
 
             logger.DebugFormat("执行更新任务!!!!!!!!!!!!!!!");
             AutoUpdateData.jobflag("Is Runing,Next Time:" + context.NextFireTimeUtc.Value.DateTime);
@@ -475,7 +476,7 @@ namespace AutoUpdateData.Service.Job
             //1-删除后再追加 2-直接更新
             if (AutoUpdateData._updatemode.StartsWith("1-"))
             {
-
+                _is1 = true;
                 //get all key for table
                 var tmpKeyname = item.DataSetName + "_KEY";
                 if (!AutoUpdateData._tableKeyList.ContainsKey(tmpKeyname))
@@ -504,7 +505,7 @@ namespace AutoUpdateData.Service.Job
             }
             else if (AutoUpdateData._updatemode.StartsWith("2-"))
             {
-
+               
             }
         }
         private static void updateToMSSQL(DataSet item, List<string> strSQLinsert, string setLastValue, string msg)
@@ -512,7 +513,7 @@ namespace AutoUpdateData.Service.Job
             try
             {
 
-                var dd = DbHelperSQL.ExecuteSqlTran(strSQLinsert);
+                var dd = DbHelperSQL.ExecuteSqlTran(strSQLinsert,_is1);
 
                 if (dd > 0)
                 {
@@ -549,5 +550,7 @@ namespace AutoUpdateData.Service.Job
             }
 
         }
+
+        public static bool _is1 { get; set; }
     }
 }

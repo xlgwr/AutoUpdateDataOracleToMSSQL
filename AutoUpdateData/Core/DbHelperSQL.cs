@@ -179,10 +179,14 @@ namespace AutoUpdateData
         /// 执行多条SQL语句，实现数据库事务。
         /// </summary>
         /// <param name="SQLStringList">多条SQL语句</param>		
-        public static int ExecuteSqlTran(List<String> SQLStringList)
+        public static int ExecuteSqlTran(List<String> SQLStringList,bool is1or2)
         {
-
-            logger.DebugFormat("********************马上执行SQL 条数：{0}。", (SQLStringList.Count / 2));
+            var tmpcount=SQLStringList.Count;
+            if (is1or2)
+            {
+                tmpcount = tmpcount / 2;
+            }
+            logger.DebugFormat("********************马上执行SQL 条数：{0}。", tmpcount);
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 conn.Open();
