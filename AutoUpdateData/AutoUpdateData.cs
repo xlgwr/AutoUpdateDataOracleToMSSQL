@@ -40,7 +40,6 @@ namespace AutoUpdateData
         public static INIFile ini;
         public static INIFile _iniToday;
 
-
         public AutoUpdateData()
         {
             InitializeComponent();
@@ -301,7 +300,8 @@ namespace AutoUpdateData
 
                     ini.IniWriteValue("Common", "retime", "5");
                     ini.IniWriteValue("Common", "batchNum", "100");
-                    ini.IniWriteValue("Common", "updateWay", "1-Direct Update");
+                    //1-删除后再追加 2-直接更新
+                    ini.IniWriteValue("Common", "updateWay", "1-Deleted First,Then Adding");//2-Direct Update
                 }
                 else
                 {
@@ -498,7 +498,7 @@ namespace AutoUpdateData
         }
 
         public static int _txt1batchNum { get; set; }
-        public static string _updatemode { get; set; }
+        public static string _updatemode { get; set; }//1-删除后再追加 2-直接更新
         public static Label _tmpFlagMsg;
         public int _txt0Rtime { get; set; }
 

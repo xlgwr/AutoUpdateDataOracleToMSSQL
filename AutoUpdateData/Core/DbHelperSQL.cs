@@ -21,7 +21,7 @@ namespace AutoUpdateData
         //数据库连接字符串(web.config来配置)，多数据库可使用DbHelperSQLP来实现.
         public static string connectionString = System.Configuration.ConfigurationManager.AppSettings["DBMSSQL"].ToString();
         public DbHelperSQL()
-        {            
+        {
         }
 
         #region 公用方法
@@ -174,7 +174,7 @@ namespace AutoUpdateData
                     }
                 }
             }
-        }      
+        }
         /// <summary>
         /// 执行多条SQL语句，实现数据库事务。
         /// </summary>
@@ -182,7 +182,7 @@ namespace AutoUpdateData
         public static int ExecuteSqlTran(List<String> SQLStringList)
         {
 
-            logger.DebugFormat("********************马上执行SQL 条数：{0}。",SQLStringList.Count);
+            logger.DebugFormat("********************马上执行SQL 条数：{0}。", (SQLStringList.Count / 2));
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 conn.Open();
@@ -391,7 +391,7 @@ namespace AutoUpdateData
             catch (System.Data.SqlClient.SqlException e)
             {
                 throw e;
-            }   
+            }
 
         }
         /// <summary>
@@ -516,14 +516,15 @@ namespace AutoUpdateData
                 {
                     SqlCommand cmd = new SqlCommand();
                     try
-                    { int count = 0;
+                    {
+                        int count = 0;
                         //循环
                         foreach (CommandInfo myDE in cmdList)
                         {
                             string cmdText = myDE.CommandText;
                             SqlParameter[] cmdParms = (SqlParameter[])myDE.Parameters;
                             PrepareCommand(cmd, conn, trans, cmdText, cmdParms);
-                           
+
                             if (myDE.EffentNextType == EffentNextType.WhenHaveContine || myDE.EffentNextType == EffentNextType.WhenNoHaveContine)
                             {
                                 if (myDE.CommandText.ToLower().IndexOf("count(") == -1)
@@ -802,7 +803,7 @@ namespace AutoUpdateData
             command.CommandType = CommandType.StoredProcedure;
             returnReader = command.ExecuteReader(CommandBehavior.CloseConnection);
             return returnReader;
-            
+
         }
 
 

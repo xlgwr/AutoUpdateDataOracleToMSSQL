@@ -38,14 +38,14 @@
             this.tmenu2Set = new System.Windows.Forms.ToolStripMenuItem();
             this.tmenu3Exit = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.cbox0updateWay = new System.Windows.Forms.ComboBox();
             this.lbl1Flag = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.txt1batchNum = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.txt0Rtime = new System.Windows.Forms.TextBox();
             this.lbl0msg = new System.Windows.Forms.Label();
-            this.cbox0updateWay = new System.Windows.Forms.ComboBox();
-            this.label2 = new System.Windows.Forms.Label();
             this.contextMenuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
@@ -124,6 +124,26 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Seting";
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(48, 104);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(83, 12);
+            this.label2.TabIndex = 7;
+            this.label2.Text = "Update Mode：";
+            // 
+            // cbox0updateWay
+            // 
+            this.cbox0updateWay.FormattingEnabled = true;
+            this.cbox0updateWay.Items.AddRange(new object[] {
+            "1-Deleted First,Then Adding",
+            "2-Direct Update"});
+            this.cbox0updateWay.Location = new System.Drawing.Point(147, 101);
+            this.cbox0updateWay.Name = "cbox0updateWay";
+            this.cbox0updateWay.Size = new System.Drawing.Size(182, 20);
+            this.cbox0updateWay.TabIndex = 6;
+            // 
             // lbl1Flag
             // 
             this.lbl1Flag.AutoSize = true;
@@ -180,26 +200,6 @@
             this.lbl0msg.Size = new System.Drawing.Size(55, 14);
             this.lbl0msg.TabIndex = 3;
             this.lbl0msg.Text = "notice";
-            // 
-            // cbox0updateWay
-            // 
-            this.cbox0updateWay.FormattingEnabled = true;
-            this.cbox0updateWay.Items.AddRange(new object[] {
-            "1-Direct Update",
-            "2-Deleted First,Then Adding"});
-            this.cbox0updateWay.Location = new System.Drawing.Point(147, 101);
-            this.cbox0updateWay.Name = "cbox0updateWay";
-            this.cbox0updateWay.Size = new System.Drawing.Size(182, 20);
-            this.cbox0updateWay.TabIndex = 6;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(48, 104);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(83, 12);
-            this.label2.TabIndex = 7;
-            this.label2.Text = "Update Mode：";
             // 
             // AutoUpdateData
             // 

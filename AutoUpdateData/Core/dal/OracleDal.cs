@@ -42,7 +42,7 @@ namespace AutoUpdateData.Core.dal
         public static int GetCount(string TableName, string strwhere, params OracleParameter[] cmdParms)
         {
 
-            
+
             string strsql = "select count(*) from " + TableName;
             if (!string.IsNullOrEmpty(strwhere))
             {
@@ -241,6 +241,60 @@ namespace AutoUpdateData.Core.dal
                         }
 
                         return sb.Append(sbvalue.ToString()).ToString();
+                    }
+                }
+            }
+            return null;
+
+        }
+
+        public static string getSQLColumnsForDeleteByKeys(DataSet dsColumn, string strTablename, string[] tmpkeys, DataRow dvalue)
+        {
+
+            //delete dbo.INVENTORY_PART_TAB where dd='xx' and bb='ddd'
+
+
+
+            if (tmpkeys.Count() <= 0)
+            {
+                logger.DebugFormat("*************************表：{0} 的主键 为空：{1}。", strTablename, tmpkeys);
+            }
+            else
+            {
+                //logger.DebugFormat("*************************表：{0} 的主键：{1}。", strTablename, tmpkeys);
+                var sb = new StringBuilder();
+                var sbvalue = new StringBuilder();
+
+                sb.Append(" delete ");
+                sb.Append(" [dbo].[" + strTablename.Trim() + "] where ");
+
+                if (dsColumn != null)
+                {
+                    if (dsColumn.Tables.Count > 0)
+                    {
+                        var tb = dsColumn.Tables[0];
+
+                        var p = dvalue;
+                        if (tmpkeys.Count() == 1)
+                        {
+                            sb.Append(tmpkeys[0] + "='" + p[tmpkeys[0]].ToString().Trim() + "'");
+                        }
+                        else
+                        {
+                            for (int i = 0; i < tmpkeys.Count(); i++)
+                            {
+                                if (i == 0)
+                                {
+                                    sb.Append(tmpkeys[0] + "='" + p[tmpkeys[0]].ToString().Trim() + "'");
+                                }
+                                else
+                                {
+                                    sb.Append(" and " + tmpkeys[i] + "='" + p[tmpkeys[i]].ToString().Trim() + "'");
+                                }
+                            }
+                        }
+                        return sb.Append(sbvalue.ToString()).ToString();
+
                     }
                 }
             }
