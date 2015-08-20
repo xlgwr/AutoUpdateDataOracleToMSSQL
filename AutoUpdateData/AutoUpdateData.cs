@@ -90,7 +90,7 @@ namespace AutoUpdateData
             this.StartPosition = FormStartPosition.CenterScreen;
             this.MaximizeBox = false;
             this.notifyIcon1.ContextMenuStrip = contextMenuStrip1;
-            this.TopMost = true;
+            ////this.TopMost = true;
 
 
             _tableList = new Dictionary<string, int>();
@@ -115,7 +115,7 @@ namespace AutoUpdateData
 
         private void notifyIcon1_DoubleClick(object sender, EventArgs e)
         {
-            this.TopMost = true;
+            //this.TopMost = true;
             this.Visible = true;
         }
 

@@ -524,7 +524,13 @@ namespace AutoUpdateData.Service.Job
                     {
                         getNum = 0;
                     }
-                    int tmpcountNum = getNum + strSQLinsert.Count;
+                    var tmpcount = strSQLinsert.Count;
+                    if (_is1)
+                    {
+                        tmpcount = tmpcount / 2;
+                    }
+                    int tmpcountNum = getNum + tmpcount;
+
                     AutoUpdateData._iniToday.IniWriteValue("TableTakeDataNum", item.DataSetName, tmpcountNum.ToString());
 
 

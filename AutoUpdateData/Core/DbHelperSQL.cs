@@ -207,6 +207,10 @@ namespace AutoUpdateData
                         }
                     }
                     tx.Commit();
+                    if (is1or2)
+                    {
+                        count = count / 2;
+                    }
                     return count;
                 }
                 catch
