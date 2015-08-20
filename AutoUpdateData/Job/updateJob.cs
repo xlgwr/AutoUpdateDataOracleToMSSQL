@@ -29,6 +29,8 @@ namespace AutoUpdateData.Service.Job
             AutoUpdateData.jobflag("Is Runing,Next Time:" + context.NextFireTimeUtc.Value.DateTime);
             try
             {
+                //init even tInitIniToday
+                AutoUpdateData.tInitIniToday(DateTime.Now.ToString("yyyyMMdd"));
                 //get
                 if (AutoUpdateData._tableList.Count > 0)
                 {
@@ -37,162 +39,269 @@ namespace AutoUpdateData.Service.Job
                     AutoUpdateData._dsList.Clear();
                     foreach (var item in AutoUpdateData._tableList)
                     {
-                        if (item.Key.Contains('|'))
+                        try
                         {
-                            var td = item.Key.Split('|');
-                            var tmpwhere = "";
-                            int preNum = 0;
-                            var tmpds = new DataSet();
-
-                            switch (item.Value)
+                            if (item.Key.Contains('|'))
                             {
-                                case 1:
-                                    break;
-                                case 3:
-                                    //key: table|where|order by
-                                    tmpwhere = td[1] + ">=to_date(:gxsj,'yyyy-MM-dd HH24:mi:ss')";
-                                    OracleParameter[] parameters = { new OracleParameter(":gxsj", OracleDbType.Varchar2, 10) };
-                                    parameters[0].Value = DateTime.Now.ToString("yyyy-MM-dd") + " 00:00:00";// HH
+                                var td = item.Key.Split('|');
+                                var tmpcontarct = AutoUpdateData._CONTRACT;
+                                var tmpwhere = " CONTRACT='" + tmpcontarct + "'";
 
-                                    var tmpTableTakeDataNum = AutoUpdateData._iniToday.IniReadValue("TableTakeDataNum", td[0].Trim());
+                                var tmpTableTakeDataNum = "";
+                                int preNum = 0;
+                                var allCount = 0;
 
-                                    if (!int.TryParse(tmpTableTakeDataNum, out preNum))
-                                    {
-                                        preNum = 0;
-                                    }
+                                var tmpKeyLast = td[0].Trim() + "." + td[1].Trim();
 
-                                    var allCount = OracleDal.GetCount(td[0].Trim(), tmpwhere, parameters);
-                                    logger.DebugFormat("*********已上传：{0} ,Oracle 现在有数据：{1}.", preNum, allCount);
+                                var tmpds = new DataSet();
+                                tmpds.DataSetName = td[0].Trim();
 
-                                    if (preNum >= allCount)
-                                    {
-                                        logger.DebugFormat("*********(已上传数) {0} >= {1} (Oracle 现在有数据),无需更新.", preNum, allCount);
-                                    }
-                                    else
-                                    {
-                                        var tmptoUpdate = (allCount - preNum);
-                                        logger.DebugFormat("*********需更新数.", tmptoUpdate);
-                                        tmpds = OracleDal.GetData(td[0].Trim(), tmpwhere, td[2], preNum, tmptoUpdate, parameters);
+                                switch (item.Value)
+                                {
+                                    case 1:
+                                        //key: 0 table | where 1 | order by 2 from config file
+                                        tmpwhere += " and " + td[1].Trim() + "='" + AutoUpdateData._PRIME_COMMODITY + "' ";
+
+                                        //pre update number
+                                        tmpTableTakeDataNum = AutoUpdateData._iniToday.IniReadValue("TableTakeDataNum", td[0].Trim());
+
+                                        if (!int.TryParse(tmpTableTakeDataNum, out preNum))
+                                        {
+                                            preNum = 0;
+                                        }
+                                        //get all count form oracle db
+
+                                        allCount = OracleDal.GetCount(td[0].Trim(), tmpwhere);
+                                        logger.DebugFormat("*********Table: {0},已上传：{1} ,Oracle 现在有数据：{2}.当日：{3}", td[0], preNum, allCount, DateTime.Now.ToString("yyyyMMdd"));
+
+                                        if (preNum >= allCount)
+                                        {
+                                            logger.DebugFormat("*********(已上传数) {0} >= {1} (Oracle 现在有数据),无需更新.", preNum, allCount);
+                                        }
+                                        else
+                                        {
+                                            var tmptoUpdate = (allCount - preNum);
+                                            logger.DebugFormat("*********需更新数:{0}.", tmptoUpdate);
+                                            var tmporderby = td[2].Trim();
+                                            if (td[2].Trim().ToLower().Equals("no"))
+                                            {
+                                                tmporderby = "";
+                                            }
+                                            tmpds = OracleDal.GetData(td[0].Trim(), tmpwhere, tmporderby, preNum, tmptoUpdate);
+
+                                        }
                                         tmpds.DataSetName = td[0].Trim();
-                                    }
+                                        break;
+                                    case 2:
+                                        //key: 0 table | add Id 2 | order by 3 from config file
+                                        //get the last ID
+                                        var tmpTRANSACTION_ID = AutoUpdateData._iniToday.IniReadValue("TableKeyLastValue", tmpKeyLast);
+                                        double lastPreId = 0;
 
+                                        if (!double.TryParse(tmpTRANSACTION_ID, out lastPreId))
+                                        {
+                                            lastPreId = 0;
+                                        }
 
-                                    break;
-                                default:
-                                    break;
-                            }
-                            if (tmpds.Tables.Count > 0)
-                            {
-                                AutoUpdateData._dsList.Add(tmpds);
-                            }
+                                        // get last where
+                                        tmpwhere += " and " + td[1].Trim() + ">'" + lastPreId + "' ";
 
-                        }
-                        else
-                        {
-                            var tmpTableTakeDataNum = AutoUpdateData._iniToday.IniReadValue("TableTakeDataNum", item.Key.Trim());
-                            int preNum = 0;
-                            if (!int.TryParse(tmpTableTakeDataNum, out preNum))
-                            {
-                                preNum = 0;
-                            }
+                                        //pre update number
+                                        tmpTableTakeDataNum = AutoUpdateData._iniToday.IniReadValue("TableTakeDataNum", td[0].Trim());
 
-                            var allCount = OracleDal.GetCount(item.Key, "");
+                                        if (!int.TryParse(tmpTableTakeDataNum, out preNum))
+                                        {
+                                            preNum = 0;
+                                        }
 
-                            logger.DebugFormat("*********已上传：{0} ,Oracle 现在有数据：{1}.", preNum, allCount);
+                                        //get all count form oracle db
 
-                            if (preNum >= allCount)
-                            {
-                                logger.DebugFormat("*********(已上传数) {0} >= {1} (Oracle 现在有数据),无需更新.", preNum, allCount);
+                                        allCount = OracleDal.GetCount(td[0].Trim(), tmpwhere);
+                                        logger.DebugFormat("*********Table: {0},已上传：{1} ,Oracle 现在有数据：{2}.当日：{3}", td[0], preNum, allCount, DateTime.Now.ToString("yyyyMMdd"));
+
+                                        if (preNum >= allCount)
+                                        {
+                                            logger.DebugFormat("*********(已上传数) {0} >= {1} (Oracle 现在有数据),无需更新.", preNum, allCount);
+                                        }
+                                        else
+                                        {
+                                            var tmptoUpdate = (allCount - preNum);
+                                            logger.DebugFormat("*********需更新数:{0}.", tmptoUpdate);
+                                            var tmporderby = td[2].Trim();
+                                            if (td[2].Trim().ToLower().Equals("no"))
+                                            {
+                                                tmporderby = "";
+                                            }
+                                            tmpds = OracleDal.GetData(td[0].Trim(), tmpwhere, tmporderby, preNum, tmptoUpdate);
+
+                                        }
+
+                                        tmpds.DataSetName = td[0].Trim();
+                                        break;
+                                    case 3:
+                                        //key: 0 table|1 where|2 order by
+                                        //get per last datetime
+
+                                        var tmpLastWhere = AutoUpdateData._iniToday.IniReadValue("TableKeyLastValue", tmpKeyLast);
+
+                                        var tmpLastWhereDateTime = DateTime.Now;
+                                        if (!DateTime.TryParse(tmpLastWhere, out tmpLastWhereDateTime))
+                                        {
+                                            tmpLastWhereDateTime = DateTime.Now;
+                                            AutoUpdateData._iniToday.IniWriteValue("TableKeyLastValue", tmpKeyLast, tmpLastWhereDateTime.ToString());
+                                        }
+
+                                        tmpwhere += " and " + td[1] + ">=to_date(:gxsj,'yyyy-MM-dd HH24:mi:ss')";
+                                        OracleParameter[] parameters3 = { new OracleParameter(":gxsj", OracleDbType.Varchar2, 10) };
+                                        //no time
+                                        // parameters[0].Value = DateTime.Now.ToString("yyyy-MM-dd") + " 00:00:00";// HH
+                                        parameters3[0].Value = tmpLastWhereDateTime.ToString("yyyy-MM-dd") + " 00:00:00";// HH
+
+                                        //pre update number
+                                        tmpTableTakeDataNum = AutoUpdateData._iniToday.IniReadValue("TableTakeDataNum", td[0].Trim());
+
+                                        if (!int.TryParse(tmpTableTakeDataNum, out preNum))
+                                        {
+                                            preNum = 0;
+                                        }
+
+                                        allCount = OracleDal.GetCount(td[0].Trim(), tmpwhere, parameters3);
+                                        logger.DebugFormat("*********Table: {0},已上传：{1} ,Oracle 现在有数据：{2}.当日：{3}", td[0], preNum, allCount, DateTime.Now.ToString("yyyyMMdd"));
+
+                                        if (preNum >= allCount)
+                                        {
+                                            logger.DebugFormat("*********(已上传数) {0} >= {1} (Oracle 现在有数据),无需更新.", preNum, allCount);
+                                        }
+                                        else
+                                        {
+                                            var tmptoUpdate = (allCount - preNum);
+                                            logger.DebugFormat("*********需更新数:{0}.", tmptoUpdate);
+                                            var tmporderby = td[2].Trim();
+                                            if (td[2].Trim().ToLower().Equals("no"))
+                                            {
+                                                tmporderby = "";
+                                            }
+                                            tmpds = OracleDal.GetData(td[0].Trim(), tmpwhere, tmporderby, preNum, tmptoUpdate, parameters3);
+
+                                        }
+
+                                        tmpds.DataSetName = td[0].Trim();
+                                        break;
+                                    case 4:
+                                        //key: P|where|C get P：父，C: 子 根据P的Key得到C.的数据。
+                                        //get the last ID
+                                        var tmpORG_START = AutoUpdateData._iniToday.IniReadValue("TableKeyLastValue", tmpKeyLast);
+                                        DateTime tmpORG_START_DATE = DateTime.Now;
+
+                                        if (!DateTime.TryParse(tmpORG_START, out tmpORG_START_DATE))
+                                        {
+                                            tmpORG_START_DATE = DateTime.Now;
+                                        }
+                                        // set tmpwhere
+                                        tmpwhere += " and " + td[1] + ">=to_date(:gxsj,'yyyy-MM-dd HH24:mi:ss')";
+                                        OracleParameter[] parameters4 = { new OracleParameter(":gxsj", OracleDbType.Varchar2, 10) };
+                                        //no time
+                                        // parameters[0].Value = DateTime.Now.ToString("yyyy-MM-dd") + " 00:00:00";// HH
+                                        parameters4[0].Value = tmpORG_START_DATE.ToString("yyyy-MM-dd") + " 00:00:00";// HH
+
+                                        //pre update number
+                                        tmpTableTakeDataNum = AutoUpdateData._iniToday.IniReadValue("TableTakeDataNum", td[0].Trim());
+
+                                        if (!int.TryParse(tmpTableTakeDataNum, out preNum))
+                                        {
+                                            preNum = 0;
+                                        }
+
+                                        //get all count form oracle db
+
+                                        allCount = OracleDal.GetCount(td[0].Trim(), tmpwhere, parameters4);
+                                        logger.DebugFormat("*********Table: {0},已上传：{1} ,Oracle 现在有数据：{2}.当日：{3}", td[0], preNum, allCount, DateTime.Now.ToString("yyyyMMdd"));
+
+                                        if (preNum >= allCount)
+                                        {
+                                            logger.DebugFormat("*********(已上传数) {0} >= {1} (Oracle 现在有数据),无需更新.", preNum, allCount);
+                                        }
+                                        else
+                                        {
+                                            var tmptoUpdate = (allCount - preNum);
+                                            logger.DebugFormat("*********需更新数:{0}.", tmptoUpdate);
+                                            var tmporderby = td[2].Trim();
+                                            if (td[2].Trim().ToLower().Equals("no"))
+                                            {
+                                                tmporderby = "";
+                                            }
+                                            tmpds = OracleDal.GetData(td[0].Trim(), tmpwhere, tmporderby, preNum, tmptoUpdate, parameters4);
+
+                                        }
+
+                                        tmpds.DataSetName = td[0].Trim();
+                                        //to Get C
+                                        var tmpKeyname = td[0].Trim() + "_KEY";
+                                        if (!AutoUpdateData._tableKeyList.ContainsKey(tmpKeyname))
+                                        {
+                                            logger.DebugFormat("*************************表：{0} 没有设置主键，无法更新子表:{1}。", td[0], td[3]);
+                                        }
+                                        else
+                                        {
+                                            var tmpkeyValue = AutoUpdateData._tableKeyList[tmpKeyname];
+                                            var tmpkeys = tmpkeyValue.Split(',');
+                                            logger.DebugFormat("*************************表：{0} 的主键：{1}。", td[0], tmpkeyValue);
+
+                                        }
+                                        break;
+                                    default:
+
+                                        tmpds.DataSetName = td[0].Trim();
+                                        break;
+                                }
+                                //**************************同步表
+                                StartToMSSQL(tmpds, tmpKeyLast);
+
                             }
                             else
                             {
+                                var tmpTableTakeDataNum = AutoUpdateData._iniToday.IniReadValue("TableTakeDataNum", item.Key.Trim());
+                                int preNum = 0;
+                                if (!int.TryParse(tmpTableTakeDataNum, out preNum))
+                                {
+                                    preNum = 0;
+                                }
 
-                                var tmptoUpdate = (allCount - preNum);
-                                logger.DebugFormat("*********需更新数:{0}", tmptoUpdate);
+                                var allCount = OracleDal.GetCount(item.Key, "");
 
-                                var tmpds = OracleDal.GetData(item.Key, "", "", preNum, tmptoUpdate);
-                                tmpds.DataSetName = item.Key;
-                                AutoUpdateData._dsList.Add(tmpds);
+                                logger.DebugFormat("*********Table: {0},已上传：{1} ,Oracle 现在有数据：{2}.", item.Key, preNum, allCount);
+
+                                if (preNum >= allCount)
+                                {
+                                    logger.DebugFormat("*********(已上传数) {0} >= {1} (Oracle 现在有数据),无需更新.", preNum, allCount);
+                                }
+                                else
+                                {
+
+                                    var tmptoUpdate = (allCount - preNum);
+                                    logger.DebugFormat("*********需更新数:{0}", tmptoUpdate);
+
+                                    var tmpds = OracleDal.GetData(item.Key, "", "", preNum, tmptoUpdate);
+                                    tmpds.DataSetName = item.Key;
+
+                                    StartToMSSQL(tmpds, "");
+
+                                }
                             }
+
                         }
+                        catch (Exception ex)
+                        {
+                            logger.DebugFormat("{0}表同步有问题，开始同步下个表。Error:{1}.", item.Key, ex.Message);
+                            continue;
+                        }
+
                     }
                 }
                 else
                 {
                     logger.Error("no Table,Please check Set.ini,and add Table.");
                 }
-
-
-                if (AutoUpdateData._dsList.Count > 0)
-                {
-                    foreach (var item in AutoUpdateData._dsList)
-                    {
-
-
-                        //get colmuns
-                        var tmpcolDS = OracleDal.GetTableColumns(item.DataSetName);
-
-                        //get Allcount
-                        var allCount = item.Tables[0].Rows.Count;
-
-                        //gen sql
-
-                        if (allCount <= AutoUpdateData._txt1batchNum)
-                        {
-                            //init str
-                            var strSQLinsert = new List<String>();
-
-                            foreach (DataRow row in item.Tables[0].Rows)
-                            {
-                                var tmpinstall = OracleDal.getSQLColumnsForInsert(tmpcolDS, item.DataSetName, row);
-                                if (!string.IsNullOrEmpty(tmpinstall))
-                                {
-                                    strSQLinsert.Add(tmpinstall);
-                                }
-                            }
-                            //upload to mssql 
-                            updateToMSSQL(item, strSQLinsert);
-
-                        }
-                        else
-                        {
-                            var nextdiffCount = 0;
-
-                            var tmpCount = 1;
-                            do
-                            {
-                                //init str
-                                var strSQLinsert = new List<String>();
-                                for (int i = nextdiffCount; i < allCount; i++)
-                                {
-                                    var tmpinstall = OracleDal.getSQLColumnsForInsert(tmpcolDS, item.DataSetName, item.Tables[0].Rows[i]);
-                                    if (!string.IsNullOrEmpty(tmpinstall))
-                                    {
-                                        strSQLinsert.Add(tmpinstall);
-                                    }
-
-                                    if (i + 1 % AutoUpdateData._txt1batchNum == 0)
-                                    {
-                                        nextdiffCount += AutoUpdateData._txt1batchNum;
-                                        break;
-                                    }
-                                }
-
-                                //upload to mssql 
-                                updateToMSSQL(item, strSQLinsert);
-
-                                
-                                tmpCount++;
-
-                            } while (nextdiffCount < allCount);
-
-                        }
-
-
-
-                    }
-                }
-
 
             }
             catch (Exception ex)
@@ -205,29 +314,120 @@ namespace AutoUpdateData.Service.Job
             }
 
         }
-
-        private static void updateToMSSQL(DataSet item, List<string> strSQLinsert)
+        public void StartToMSSQL(DataSet item, string setLastValue)
         {
-            var dd = DbHelperSQL.ExecuteSqlTran(strSQLinsert);
-
-            if (dd > 0)
+            if (item.Tables.Count <= 0)
             {
-                //save upload count for each;
-                var tmpTableTakeDataNum = AutoUpdateData._iniToday.IniReadValue("TableTakeDataNum", item.DataSetName);
-                int getNum = 0;
-                if (!int.TryParse(tmpTableTakeDataNum, out getNum))
+                logger.DebugFormat("开始同步表：{0},表中无任何记录。", item.DataSetName);
+                return;
+            }
+            logger.DebugFormat("开始同步表：{0}，更新条数为：{1}。", item.DataSetName, item.Tables[0].Rows.Count);
+            try
+            {
+                //get colmuns
+                var tmpcolDS = OracleDal.GetTableColumns(item.DataSetName);
+
+                //get Allcount
+                var allCount = item.Tables[0].Rows.Count;
+
+                //gen sql
+
+                if (allCount <= AutoUpdateData._txt1batchNum)
                 {
-                    getNum = 0;
-                }
-                int tmpcountNum = getNum + strSQLinsert.Count;
-                AutoUpdateData._iniToday.IniWriteValue("TableTakeDataNum", item.DataSetName, tmpcountNum.ToString());
+                    //init str
+                    var strSQLinsert = new List<String>();
 
-                logger.DebugFormat("Update Success Count:{0}", dd);
+                    foreach (DataRow row in item.Tables[0].Rows)
+                    {
+                        var tmpinstall = OracleDal.getSQLColumnsForInsert(tmpcolDS, item.DataSetName, row);
+                        if (!string.IsNullOrEmpty(tmpinstall))
+                        {
+                            strSQLinsert.Add(tmpinstall);
+                        }
+                    }
+                    //upload to mssql 
+                    updateToMSSQL(item, strSQLinsert, setLastValue);
+
+                }
+                else
+                {
+                    var nextdiffCount = 0;
+
+                    var tmpCount = 1;
+                    do
+                    {
+                        //init str
+                        var strSQLinsert = new List<String>();
+                        for (int i = nextdiffCount; i < allCount; i++)
+                        {
+                            nextdiffCount++;
+                            var tmpinstall = OracleDal.getSQLColumnsForInsert(tmpcolDS, item.DataSetName, item.Tables[0].Rows[i]);
+                            if (!string.IsNullOrEmpty(tmpinstall))
+                            {
+                                strSQLinsert.Add(tmpinstall);
+                            }
+
+                            if (nextdiffCount % AutoUpdateData._txt1batchNum == 0)
+                            {
+                                break;
+                            }
+                        }
+
+                        //upload to mssql 
+                        updateToMSSQL(item, strSQLinsert, setLastValue);
+
+
+                        tmpCount++;
+
+                    } while (nextdiffCount < allCount);
+
+                }
             }
-            else
+            catch (Exception ex)
             {
-                logger.DebugFormat("Update Fails Count:{0}", dd);
+                logger.DebugFormat("*************{0}:更新出现问题，继续同步下个表.error：{1}", item.DataSetName, ex.Message);
             }
+        }
+        private static void updateToMSSQL(DataSet item, List<string> strSQLinsert, string setLastValue)
+        {
+            try
+            {
+                var dd = DbHelperSQL.ExecuteSqlTran(strSQLinsert);
+
+                if (dd > 0)
+                {
+                    //save upload count for each;
+                    var tmpTableTakeDataNum = AutoUpdateData._iniToday.IniReadValue("TableTakeDataNum", item.DataSetName);
+                    int getNum = 0;
+                    if (!int.TryParse(tmpTableTakeDataNum, out getNum))
+                    {
+                        getNum = 0;
+                    }
+                    int tmpcountNum = getNum + strSQLinsert.Count;
+                    AutoUpdateData._iniToday.IniWriteValue("TableTakeDataNum", item.DataSetName, tmpcountNum.ToString());
+
+
+                    if (!string.IsNullOrEmpty(setLastValue))
+                    {
+                        var count = item.Tables[0].Rows.Count - 1;
+                        var tmpkey = setLastValue.Split('.');
+                        var lastvalue = item.Tables[0].Rows[count][tmpkey[1].ToString()];
+                        AutoUpdateData._iniToday.IniWriteValue("TableKeyLastValue", setLastValue, lastvalue.ToString());
+                    }
+                    logger.DebugFormat("Update Table:[{0}],Success Count:{1}", item.DataSetName, dd);
+                }
+                else
+                {
+                    logger.DebugFormat("Update Fails Table:[{0}],Success Count:{1}", item.DataSetName, dd);
+                }
+
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception(ex.Message);
+            }
+
         }
     }
 }

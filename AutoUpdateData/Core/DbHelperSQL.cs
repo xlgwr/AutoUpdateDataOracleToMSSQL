@@ -181,7 +181,8 @@ namespace AutoUpdateData
         /// <param name="SQLStringList">多条SQL语句</param>		
         public static int ExecuteSqlTran(List<String> SQLStringList)
         {
-           
+
+            logger.DebugFormat("********************马上执行SQL 条数：{0}。",SQLStringList.Count);
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 conn.Open();
@@ -197,7 +198,6 @@ namespace AutoUpdateData
                         string strsql = SQLStringList[n];
                         if (strsql.Trim().Length > 1)
                         {
-                            logger.Debug(strsql);
                             cmd.CommandText = strsql;
                             count += cmd.ExecuteNonQuery();
                         }

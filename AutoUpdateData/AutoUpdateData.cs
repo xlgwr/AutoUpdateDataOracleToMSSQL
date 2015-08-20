@@ -33,6 +33,7 @@ namespace AutoUpdateData
         public static string _CONTRACT;
         public static string _PRIME_COMMODITY;
         public static Dictionary<string, int> _tableList;
+        public static Dictionary<string, string> _tableKeyList;
         public static IList<DataSet> _dsList;
 
         public static bool _isUploading;
@@ -94,6 +95,7 @@ namespace AutoUpdateData
 
 
             _tableList = new Dictionary<string, int>();
+            _tableKeyList = new Dictionary<string, string>();
             _dsList = new List<DataSet>();
             _isUploading = false;
             _CONTRACT = System.Configuration.ConfigurationManager.AppSettings["CONTRACT"].ToString();
@@ -104,11 +106,11 @@ namespace AutoUpdateData
                 _CONTRACT = "no CONTRACT,please set,than Run again.";
             }
             tInitIni(false);
-            tInitIniToday();
+            tInitIniToday(DateTime.Now.ToString("yyyyMMdd"));
             lbl0msg.Text = "";
             _tmpFlagMsg = lbl0msg;
 
-            this.Text += ",CONTRACT: " + _CONTRACT;
+            this.Text += ",C:[" + _CONTRACT + "], P_C:" + _PRIME_COMMODITY;
 
         }
 
@@ -143,7 +145,7 @@ namespace AutoUpdateData
         {
             _txt0Rtime = Convert.ToInt32(txt0Rtime.Text);
             _txt1batchNum = Convert.ToInt32(txt1batchNum.Text);
-            //_updatemode = cbox0updateWay.Text;
+            _updatemode = cbox0updateWay.Text;
 
             logger.Debug("====================以下参数修改后需重启生效===================");
             logger.DebugFormat("====================Synchronization(min):{0}", _txt0Rtime);
@@ -193,12 +195,12 @@ namespace AutoUpdateData
         #endregion
         private void button1_Click(object sender, EventArgs e)
         {
-            //if (string.IsNullOrEmpty(cbox0updateWay.Text))
-            //{
-            //    cbox0updateWay.Focus();
-            //    lbl0msg.Text = "Please enter the right content。";
-            //    return;
-            //}
+            if (string.IsNullOrEmpty(cbox0updateWay.Text))
+            {
+                cbox0updateWay.Focus();
+                lbl0msg.Text = "Please enter the right content。";
+                return;
+            }
             int irtime = 0;
             if (!int.TryParse(txt0Rtime.Text, out irtime))
             {
@@ -214,7 +216,7 @@ namespace AutoUpdateData
                 return;
             }
             this.btn0Save.Enabled = false;
-            var msg = "Synchronization(min): " + txt0Rtime.Text.Trim() + ",\tBatch Number：" + txt1batchNum.Text;// +"\nUpdate mode：" + cbox0updateWay.Text;
+            var msg = "Synchronization(min): " + txt0Rtime.Text.Trim() + ",\tBatch Number：" + txt1batchNum.Text + "\nUpdate mode：" + cbox0updateWay.Text;
             if (MessageBox.Show(msg, "notice", MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
             {
                 tInitIni(true);
@@ -229,11 +231,11 @@ namespace AutoUpdateData
             }
             this.btn0Save.Enabled = true;
         }
-        public void tInitIniToday()
+        public static void tInitIniToday(string tmpnameToday)
         {
             try
             {
-                var tmpnameToday = DateTime.Now.ToString("yyyyMMdd");
+                //var tmpnameToday = DateTime.Now.ToString("yyyyMMdd");
                 var tmpfilePath = AppDomain.CurrentDomain.BaseDirectory + "\\TableUploadNum";
 
                 var tmpfile = tmpfilePath + "\\TableUploadNum" + tmpnameToday + ".ini";
@@ -246,7 +248,7 @@ namespace AutoUpdateData
                 if (!File.Exists(tmpfile))
                 {
 
-                    File.WriteAllText(tmpfile, "[Set for today Upload Num for each Table]", System.Text.Encoding.UTF8);
+                    File.WriteAllText(tmpfile, "********************Set for today Upload Num for each Table******************:" + tmpnameToday, System.Text.Encoding.UTF8);
                     _iniToday = new INIFile(tmpfile);
                     foreach (var item in _tableList.Keys)
                     {
@@ -266,9 +268,7 @@ namespace AutoUpdateData
             }
             catch (Exception ex)
             {
-                logger.Error(ex);
-                MessageBox.Show(ex.Message);
-                btn0Save.Enabled = true;
+                throw new Exception(ex.Message);
             }
         }
         /// <summary>
@@ -285,16 +285,23 @@ namespace AutoUpdateData
                 {
                     File.WriteAllText(tmpfile, "[Set]", System.Text.Encoding.UTF8);
                     ini = new INIFile(tmpfile);
-                    ini.IniWriteValue("Tables", "table1", "INVENTORY_PART_TAB|CONTRACT|PRIME_COMMODITY");//delete then add
-                    ini.IniWriteValue("Tables", "table2", "INVENTORY_TRANSACTION_HIST_TAB|TRANSACTION_ID");//追加累积更新,id
-                    ini.IniWriteValue("Tables", "table3", "N_AIS_SHOP_LIST_PICKED_ACT_TAB|N_CREATED_DATE|CONTRACT,N_SHOP_LIST_ID,PART_NO,LOT_BATCH_NO*N_TRANSPORT_ORDER_TAB|N_TRANSPORT_DATE|CONTRACT,N_TRANSPORT_ORDER_NO");//追加累积更新,time table|where|order by
-                    ini.IniWriteValue("Tables", "table4", "SHOP_ORD_TAB|ORG_START_DATE|ORDER_NO*SHOP_ORDER_OPERATION_TAB|ORDER_NO");//父子表更新
+                    ini.IniWriteValue("Tables", "table1", "INVENTORY_PART_TAB|PRIME_COMMODITY|no");//delete then add
+                    ini.IniWriteValue("Tables", "table2", "INVENTORY_TRANSACTION_HIST_TAB|TRANSACTION_ID|TRANSACTION_ID asc");//追加累积更新,id
+                    //CONTRACT,N_SHOP_LIST_ID,PART_NO,LOT_BATCH_NO //CONTRACT,N_TRANSPORT_ORDER_NO
+                    ini.IniWriteValue("Tables", "table3", "N_AIS_SHOP_LIST_PICKED_ACT_TAB|N_CREATED_DATE|no*N_TRANSPORT_ORDER_TAB|N_TRANSPORT_DATE|no");//追加累积更新,time table|where|order by
+                    //P|where|order by|C get key
+                    ini.IniWriteValue("Tables", "table4", "SHOP_ORD_TAB|ORG_START_DATE|no|SHOP_ORDER_OPERATION_TAB");//父子表更新
+                    //init key of tables
+                    ini.IniWriteValue("TablesKey", "tableKeys1", "INVENTORY_PART_TAB_KEY|CONTRACT,PART_NO");//delete then add
+                    ini.IniWriteValue("TablesKey", "tableKeys2", "INVENTORY_TRANSACTION_HIST_TAB_KEY|TRANSACTION_ID");//追加累积更新,id
+                    ini.IniWriteValue("TablesKey", "tableKeys3", "N_AIS_SHOP_LIST_PICKED_ACT_TAB_KEY|CONTRACT,N_SHOP_LIST_ID,PART_NO,LOT_BATCH_NO*N_TRANSPORT_ORDER_TAB_KEY|CONTRACT,N_TRANSPORT_ORDER_NO");//追加累积更新,time table|where|order by
+                    ini.IniWriteValue("TablesKey", "tableKeys4", "SHOP_ORD_TAB_KEY|ORDER_NO,RELEASE_NO,SEQUENCE_NO*SHOP_ORDER_OPERATION_TAB_KEY|ORDER_NO,RELEASE_NO,SEQUENCE_NO,OPERATION_NO");//父子表更新
 
                     //ini.IniWriteValue("Tables", "CONTRACT", "sh");//sh：上海,tai:泰国,jp:日本
 
                     ini.IniWriteValue("Common", "retime", "5");
                     ini.IniWriteValue("Common", "batchNum", "100");
-                    //ini.IniWriteValue("Common", "updateWay", "1-Direct Update");
+                    ini.IniWriteValue("Common", "updateWay", "1-Direct Update");
                 }
                 else
                 {
@@ -305,14 +312,14 @@ namespace AutoUpdateData
                 {
                     ini.IniWriteValue("Common", "retime", txt0Rtime.Text);
                     ini.IniWriteValue("Common", "batchNum", txt1batchNum.Text);
-                    //ini.IniWriteValue("Common", "updateWay", cbox0updateWay.Text);
+                    ini.IniWriteValue("Common", "updateWay", cbox0updateWay.Text);
                 }
 
                 else
                 {
                     txt0Rtime.Text = ini.IniReadValue("Common", "retime");
                     txt1batchNum.Text = ini.IniReadValue("Common", "batchNum");
-                    //cbox0updateWay.Text = ini.IniReadValue("Common", "updateWay");
+                    cbox0updateWay.Text = ini.IniReadValue("Common", "updateWay");
 
                     getTables(ini);
                 }
@@ -333,11 +340,23 @@ namespace AutoUpdateData
             var tmptable2 = ini.IniReadValue("Tables", "table2");
             var tmptable3 = ini.IniReadValue("Tables", "table3");
             var tmptable4 = ini.IniReadValue("Tables", "table4");
+            //key
+            var tableKeys1 = ini.IniReadValue("TablesKey", "tableKeys1");
+            var tableKeys2 = ini.IniReadValue("TablesKey", "tableKeys2");
+            var tableKeys3 = ini.IniReadValue("TablesKey", "tableKeys3");
+            var tableKeys4 = ini.IniReadValue("TablesKey", "tableKeys4");
+
             _tableList.Clear();
             init_tableList(tmptable1, 1);
             init_tableList(tmptable2, 2);
             init_tableList(tmptable3, 3);
             init_tableList(tmptable4, 4);
+            //for key
+            init_tableKeyList(tableKeys1);
+            init_tableKeyList(tableKeys2);
+            init_tableKeyList(tableKeys3);
+            init_tableKeyList(tableKeys4);
+
         }
         void init_tableList(string tmptable, int flag)
         {
@@ -347,6 +366,19 @@ namespace AutoUpdateData
                 foreach (var item in tt)
                 {
                     _tableList.Add(item.Trim(), flag);
+                }
+
+            }
+        }
+        void init_tableKeyList(string tmptable)
+        {
+            if (!string.IsNullOrEmpty(tmptable))
+            {
+                var tt = tmptable.Split('*');
+                foreach (var item in tt)
+                {
+                    var tmpKeys = item.Split('|');
+                    _tableKeyList.Add(tmpKeys[0], tmpKeys[1]);
                 }
 
             }

@@ -65,6 +65,13 @@ namespace AutoUpdateData
 
         public static bool Exists(string strSql, params OracleParameter[] cmdParms)
         {
+
+            logger.Debug(strSql);
+            foreach (var item in cmdParms)
+            {
+                logger.DebugFormat("{0}：{1}", item.ParameterName, item.Value);
+
+            }
             object obj = GetSingle(strSql, cmdParms);
             int cmdresult;
             if ((Object.Equals(obj, null)) || (Object.Equals(obj, System.DBNull.Value)))
@@ -304,6 +311,13 @@ namespace AutoUpdateData
         /// <returns>影响的记录数</returns>
         public static int ExecuteSql(string SQLString, params OracleParameter[] cmdParms)
         {
+
+            logger.Debug(SQLString);
+            foreach (var item in cmdParms)
+            {
+                logger.DebugFormat("{0}：{1}", item.ParameterName, item.Value);
+
+            }
             using (OracleConnection connection = new OracleConnection(connectionString))
             {
                 using (OracleCommand cmd = new OracleCommand())
@@ -378,7 +392,11 @@ namespace AutoUpdateData
         public static object GetSingle(string SQLString, params OracleParameter[] cmdParms)
         {
             logger.Debug(SQLString);
-            logger.Debug(cmdParms);
+            foreach (var item in cmdParms)
+            {
+                logger.DebugFormat("{0}：{1}", item.ParameterName, item.Value);
+
+            }
             using (OracleConnection connection = new OracleConnection(connectionString))
             {
                 using (OracleCommand cmd = new OracleCommand())
@@ -412,6 +430,13 @@ namespace AutoUpdateData
         /// <returns>OracleDataReader</returns>
         public static OracleDataReader ExecuteReader(string SQLString, params OracleParameter[] cmdParms)
         {
+
+            logger.Debug(SQLString);
+            foreach (var item in cmdParms)
+            {
+                logger.DebugFormat("{0}：{1}", item.ParameterName, item.Value);
+
+            }
             OracleConnection connection = new OracleConnection(connectionString);
             OracleCommand cmd = new OracleCommand();
             try
@@ -438,7 +463,11 @@ namespace AutoUpdateData
             try
             {
                 logger.Debug(SQLString);
-                logger.Debug(cmdParms);
+                foreach (var item in cmdParms)
+                {
+                    logger.DebugFormat("{0}：{1}", item.ParameterName, item.Value);
+
+                }
                 using (OracleConnection connection = new OracleConnection(connectionString))
                 {
                     OracleCommand cmd = new OracleCommand();
@@ -470,6 +499,11 @@ namespace AutoUpdateData
 
         private static void PrepareCommand(OracleCommand cmd, OracleConnection conn, OracleTransaction trans, string cmdText, OracleParameter[] cmdParms)
         {
+            foreach (var item in cmdParms)
+            {
+                logger.DebugFormat("{0}：{1}", item.ParameterName, item.Value);
+
+            }
             if (conn.State != ConnectionState.Open)
                 conn.Open();
             cmd.Connection = conn;

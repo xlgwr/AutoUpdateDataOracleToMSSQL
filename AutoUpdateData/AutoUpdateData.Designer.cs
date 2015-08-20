@@ -44,13 +44,15 @@
             this.label1 = new System.Windows.Forms.Label();
             this.txt0Rtime = new System.Windows.Forms.TextBox();
             this.lbl0msg = new System.Windows.Forms.Label();
+            this.cbox0updateWay = new System.Windows.Forms.ComboBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.contextMenuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // btn0Save
             // 
-            this.btn0Save.Location = new System.Drawing.Point(135, 120);
+            this.btn0Save.Location = new System.Drawing.Point(159, 158);
             this.btn0Save.Name = "btn0Save";
             this.btn0Save.Size = new System.Drawing.Size(97, 45);
             this.btn0Save.TabIndex = 0;
@@ -108,6 +110,8 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.label2);
+            this.groupBox1.Controls.Add(this.cbox0updateWay);
             this.groupBox1.Controls.Add(this.lbl1Flag);
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.txt1batchNum);
@@ -115,7 +119,7 @@
             this.groupBox1.Controls.Add(this.txt0Rtime);
             this.groupBox1.Location = new System.Drawing.Point(12, 4);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(335, 110);
+            this.groupBox1.Size = new System.Drawing.Size(407, 148);
             this.groupBox1.TabIndex = 2;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Seting";
@@ -125,7 +129,7 @@
             this.lbl1Flag.AutoSize = true;
             this.lbl1Flag.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.lbl1Flag.ForeColor = System.Drawing.Color.Red;
-            this.lbl1Flag.Location = new System.Drawing.Point(244, 0);
+            this.lbl1Flag.Location = new System.Drawing.Point(249, 0);
             this.lbl1Flag.Name = "lbl1Flag";
             this.lbl1Flag.Size = new System.Drawing.Size(62, 16);
             this.lbl1Flag.TabIndex = 5;
@@ -171,11 +175,31 @@
             this.lbl0msg.AutoSize = true;
             this.lbl0msg.Font = new System.Drawing.Font("宋体", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.lbl0msg.ForeColor = System.Drawing.Color.Red;
-            this.lbl0msg.Location = new System.Drawing.Point(41, 182);
+            this.lbl0msg.Location = new System.Drawing.Point(35, 216);
             this.lbl0msg.Name = "lbl0msg";
             this.lbl0msg.Size = new System.Drawing.Size(55, 14);
             this.lbl0msg.TabIndex = 3;
             this.lbl0msg.Text = "notice";
+            // 
+            // cbox0updateWay
+            // 
+            this.cbox0updateWay.FormattingEnabled = true;
+            this.cbox0updateWay.Items.AddRange(new object[] {
+            "1-Direct Update",
+            "2-Deleted First,Then Adding"});
+            this.cbox0updateWay.Location = new System.Drawing.Point(147, 101);
+            this.cbox0updateWay.Name = "cbox0updateWay";
+            this.cbox0updateWay.Size = new System.Drawing.Size(182, 20);
+            this.cbox0updateWay.TabIndex = 6;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(48, 104);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(83, 12);
+            this.label2.TabIndex = 7;
+            this.label2.Text = "Update Mode：";
             // 
             // AutoUpdateData
             // 
@@ -183,7 +207,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(366, 216);
+            this.ClientSize = new System.Drawing.Size(426, 249);
             this.Controls.Add(this.lbl0msg);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.btn0Save);
@@ -216,6 +240,8 @@
         private System.Windows.Forms.TextBox txt1batchNum;
         private System.Windows.Forms.Label lbl1Flag;
         public System.Windows.Forms.Label lbl0msg;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.ComboBox cbox0updateWay;
     }
 }
 

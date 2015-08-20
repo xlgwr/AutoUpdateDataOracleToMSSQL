@@ -41,6 +41,8 @@ namespace AutoUpdateData.Core.dal
         }
         public static int GetCount(string TableName, string strwhere, params OracleParameter[] cmdParms)
         {
+
+            
             string strsql = "select count(*) from " + TableName;
             if (!string.IsNullOrEmpty(strwhere))
             {
@@ -88,12 +90,12 @@ namespace AutoUpdateData.Core.dal
             if (!string.IsNullOrEmpty(tmpwhere))
             {
                 sb.Append(" where " + tmpwhere);
-                sb.Append(" and ROWNUM <= " + takeNum.ToString() + ") WHERE RN >=" + preNum.ToString());
+                sb.Append(" and ROWNUM <= " + takeNum.ToString() + ") WHERE RN >" + preNum.ToString());
             }
             else
             {
 
-                sb.Append(" where ROWNUM <= " + takeNum.ToString() + ") WHERE RN >=" + preNum.ToString());
+                sb.Append(" where ROWNUM <= " + takeNum.ToString() + ") WHERE RN >" + preNum.ToString());
             }
             if (!string.IsNullOrEmpty(orderby))
             {
@@ -123,12 +125,12 @@ namespace AutoUpdateData.Core.dal
             if (!string.IsNullOrEmpty(tmpwhere))
             {
                 sb.Append(" where " + tmpwhere);
-                sb.Append(" and ROWNUM <= " + takeNum.ToString() + ") WHERE RN >=" + preNum.ToString());
+                sb.Append(" and ROWNUM <= " + takeNum.ToString() + ") WHERE RN >" + preNum.ToString());
             }
             else
             {
 
-                sb.Append(" where ROWNUM <= " + takeNum.ToString() + ") WHERE RN >=" + preNum.ToString());
+                sb.Append(" where ROWNUM <= " + takeNum.ToString() + ") WHERE RN >" + preNum.ToString());
             }
             if (!string.IsNullOrEmpty(orderby))
             {
