@@ -51,9 +51,14 @@ namespace AutoUpdateData.Service.Job
                                 int preNum = 0;
                                 var allCount = 0;
 
+                                var tmpKeyname = td[0].Trim() + "_KEY";
                                 var tmpKeyLast = td[0].Trim() + "." + td[1].Trim();
 
                                 var tmpds = new DataSet();
+                                //father and son
+                                var isSon = false;
+                                var tmpdsForFatherSon = new DataSet();
+
                                 tmpds.DataSetName = td[0].Trim();
 
                                 switch (item.Value)
@@ -236,17 +241,17 @@ namespace AutoUpdateData.Service.Job
 
                                         tmpds.DataSetName = td[0].Trim();
                                         //to Get C
-                                        var tmpKeyname = td[0].Trim() + "_KEY";
                                         if (!AutoUpdateData._tableKeyList.ContainsKey(tmpKeyname))
                                         {
+                                            isSon = false;
                                             logger.DebugFormat("*************************表：{0} 没有设置主键，无法更新子表:{1}。", td[0], td[3]);
                                         }
                                         else
                                         {
-                                            var tmpkeyValue = AutoUpdateData._tableKeyList[tmpKeyname];
-                                            var tmpkeys = tmpkeyValue.Split(',');
-                                            logger.DebugFormat("*************************表：{0} 的主键：{1}。", td[0], tmpkeyValue);
-
+                                            //var tmpkeyValue = AutoUpdateData._tableKeyList[tmpKeyname];
+                                            //var tmpkeys = tmpkeyValue.Split(',');
+                                            //logger.DebugFormat("*************************表：{0} 的主键：{1}。", td[0], tmpkeyValue);
+                                            isSon = true;
                                         }
                                         break;
                                     default:
@@ -256,6 +261,75 @@ namespace AutoUpdateData.Service.Job
                                 }
                                 //**************************同步表
                                 StartToMSSQL(tmpds, tmpKeyLast);
+
+                                //for father and son
+                                if (isSon)
+                                {
+                                    if (tmpds.Tables.Count > 0)
+                                    {
+                                        var tmpkeyValue = AutoUpdateData._tableKeyList[tmpKeyname];
+                                        var tmpkeys = tmpkeyValue.Split(',');
+                                        if (tmpkeys.Count() <= 0)
+                                        {
+                                            logger.DebugFormat("*************************表：{0} 的主键 为空：{1}。", td[0], tmpkeyValue);
+                                        }
+                                        else
+                                        {
+                                            logger.DebugFormat("*************************表：{0} 的主键：{1}。", td[0], tmpkeyValue);
+                                            logger.DebugFormat("*************************开始更新表：{0}，子表：{1}。", td[0], td[3]);
+
+                                            foreach (DataRow p in tmpds.Tables[0].Rows)
+                                            {
+                                                try
+                                                {
+                                                    var tmpsonwhere = "SELECT * FROM " + td[3].Trim() + " where ";
+                                                    if (tmpkeys.Count() > 0)
+                                                    {
+                                                        if (tmpkeys.Count() == 1)
+                                                        {
+                                                            tmpsonwhere += tmpkeys[0] + "='" + p[tmpkeys[0]].ToString().Trim() + "'";
+                                                        }
+                                                        else
+                                                        {
+                                                            for (int i = 0; i < tmpkeys.Count(); i++)
+                                                            {
+                                                                if (i == 0)
+                                                                {
+                                                                    tmpsonwhere += tmpkeys[0] + "='" + p[tmpkeys[0]].ToString().Trim() + "'";
+                                                                }
+                                                                else
+                                                                {
+                                                                    tmpsonwhere += " and " + tmpkeys[i] + "='" + p[tmpkeys[i]].ToString().Trim() + "'";
+                                                                }
+                                                            }
+                                                        }
+
+                                                    }
+                                                    //get data
+                                                    var tmpSon = OracleDal.Query(tmpsonwhere);
+                                                    tmpSon.DataSetName = td[3].Trim();
+
+                                                    //**************************同步子表
+                                                    StartToMSSQL(tmpSon, "");
+                                                }
+                                                catch (Exception ex)
+                                                {
+                                                    logger.DebugFormat("****************************更新主表：{0},记录：{1}  -->的子表失败。{2}", td[0], (p[0].ToString() + "," + p[1].ToString() + "," + p[2].ToString()),ex.Message);
+                                                    continue;
+                                                }
+
+
+                                            }
+
+                                        }
+
+                                    }
+                                    else
+                                    {
+                                        logger.DebugFormat("*************************表：{0} 的数据 为空。", td[0]);
+                                    }
+
+                                }
 
                             }
                             else

@@ -282,6 +282,7 @@ namespace AutoUpdateData
         /// <returns>DataSet</returns>
         public static DataSet Query(string SQLString)
         {
+            logger.DebugFormat(SQLString);
             using (OracleConnection connection = new OracleConnection(connectionString))
             {
                 DataSet ds = new DataSet();
