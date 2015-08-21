@@ -96,7 +96,7 @@ namespace AutoUpdateData
             this.notifyIcon1.ContextMenuStrip = contextMenuStrip1;
             this.btn0InitFirst.Visible = false;
             this.btn0InitFirst.Enabled = false;
-            ////this.TopMost = true;
+            this.TopMost = true;
             this.btn0Save.Enabled = false;
             this.groupBox1.Enabled = false;
 
@@ -451,6 +451,7 @@ namespace AutoUpdateData
 
         private void tmenu3Exit_Click(object sender, EventArgs e)
         {
+            this.TopMost = false;
             if (MessageBox.Show("Are you sure to exit！", "notice", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 try

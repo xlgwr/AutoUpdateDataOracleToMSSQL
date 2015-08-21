@@ -4,9 +4,9 @@
 "ProjectType" = "8:{978C614F-708E-4E1A-B201-565925725DBA}"
 "IsWebType" = "8:FALSE"
 "ProjectName" = "8:AutoUpdateDataSetup"
-"LanguageId" = "3:1041"
-"CodePage" = "3:932"
-"UILanguageId" = "3:1041"
+"LanguageId" = "3:0"
+"CodePage" = "3:1252"
+"UILanguageId" = "3:0"
 "SccProjectName" = "8:"
 "SccLocalPath" = "8:"
 "SccAuxPath" = "8:"
@@ -1314,7 +1314,7 @@
         }
         "MsiBootstrapper"
         {
-        "LangId" = "3:1041"
+        "LangId" = "3:0"
         "RequiresElevation" = "11:FALSE"
         }
         "Product"
@@ -1322,7 +1322,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:AutoUpdateDataSetup"
         "ProductCode" = "8:{C96A8A3E-4273-4A12-A8D7-96245A8C39E1}"
-        "PackageCode" = "8:{FB6D7E6B-8730-4AF3-9EA7-EEAFE10D88B5}"
+        "PackageCode" = "8:{8718F2E4-3FA1-4BDC-8326-122758081F3D}"
         "UpgradeCode" = "8:{A5925E97-B34C-4363-A6A5-4CB635FD9750}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -1442,6 +1442,20 @@
         }
         "Shortcut"
         {
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_41BF6897A7F446FF860EED8696FF4CF7"
+            {
+            "Name" = "8:Edit AutoUpdateData.exe.config"
+            "Arguments" = "8:"
+            "Description" = "8:Edit init Config"
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:0"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_4AB3155FC04B465D80FD278AE5C06B9E"
+            "Folder" = "8:_CE001D3D7B0149B29EDF3112C3F0FCD4"
+            "WorkingFolder" = "8:_2B3A4770923D4493B5449F49EE333BF1"
+            "Icon" = "8:"
+            "Feature" = "8:"
+            }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_88DB7CABF0594C95B621AB00C1B94B0E"
             {
             "Name" = "8:AutoUpdateData"

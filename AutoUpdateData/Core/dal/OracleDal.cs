@@ -496,7 +496,7 @@ namespace AutoUpdateData.Core.dal
             try
             {
                 var tmpilogsql = "INSERT INTO [dbo].[iLog] ([lName],[ltype],[lDesc],[lvalue],[ldate],[remark]) VALUES (";
-                tmpilogsql += "'" + tmpTableName + "','" + itype + "','" + idesc + "','" + count.ToString() + "',',Getdate(),'" + iremark + "')";
+                tmpilogsql += "'" + tmpTableName + "','" + itype + "','" + idesc + "','" + count.ToString() + "',Getdate(),'" + iremark + "')";
                 var tmptoIn = DbHelperSQL.ExecuteSql(tmpilogsql);
             }
             catch (Exception ex)
