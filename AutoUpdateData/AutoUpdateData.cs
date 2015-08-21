@@ -131,6 +131,7 @@ namespace AutoUpdateData
         {
             if (e.Button == MouseButtons.Left)
             {
+                this.TopMost = true;
                 this.Visible = true;
                 this.WindowState = FormWindowState.Normal;
             }
@@ -439,6 +440,7 @@ namespace AutoUpdateData
 
             if (e.Button == MouseButtons.Left)
             {
+                this.TopMost = true;
                 this.Visible = true;
                 this.WindowState = FormWindowState.Normal;
             }
