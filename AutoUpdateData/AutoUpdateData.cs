@@ -9,6 +9,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
+using System.Resources;
 
 
 using Oracle.ManagedDataAccess.Client;
@@ -37,7 +38,7 @@ namespace AutoUpdateData
         public static IList<DataSet> _dsList;
 
         public static bool _isUploading;
-        public static INIFile ini;
+        public static INIFile _ini;
         public static INIFile _iniToday;
 
         public AutoUpdateData()
@@ -54,7 +55,7 @@ namespace AutoUpdateData
             }
             catch (Exception ex)
             {
-
+                AutoUpdateData.jobflag("Error:" + ex.Message);
                 MessageBox.Show(ex.Message); ;
             }
 
@@ -90,7 +91,11 @@ namespace AutoUpdateData
             this.StartPosition = FormStartPosition.CenterScreen;
             this.MaximizeBox = false;
             this.notifyIcon1.ContextMenuStrip = contextMenuStrip1;
+            this.btn0InitFirst.Visible = false;
+            this.btn0InitFirst.Enabled = false;
             ////this.TopMost = true;
+            this.btn0Save.Enabled = false;
+            this.groupBox1.Enabled = false;
 
 
             _tableList = new Dictionary<string, int>();
@@ -129,15 +134,27 @@ namespace AutoUpdateData
         }
         private void Form1_Load(object sender, EventArgs e)
         {
-            _scheduler.Start();
-            logger.Info("Quartz服务成功启动");
-            notifyIcon1.Text = "AutoUpdateDate is Running.";
+            try
+            {
+                _scheduler.Start();
+                logger.Info("Quartz服务成功启动");
+                notifyIcon1.Text = "AutoUpdateDate is Running.";
 
-            tmenu0Start.Enabled = false;
-            tmenu1Stop.Enabled = true;
-            lbl1Flag.Text = "Runing";
+                tmenu0Start.Enabled = false;
+                tmenu1Stop.Enabled = true;
+                lbl1Flag.Text = "Runing";
 
-            updateJob(false);
+                notifyIcon1.Icon = Properties.Resources.run;
+
+                updateJob(false);
+                this.btn0Save.Enabled = false;
+                this.tmenu2Set.Visible = false;
+            }
+            catch (Exception ex)
+            {
+
+                AutoUpdateData.jobflag("Error:" + ex.Message);
+            }
 
         }
         void initSet()
@@ -283,46 +300,56 @@ namespace AutoUpdateData
                 if (!File.Exists(tmpfile))
                 {
                     File.WriteAllText(tmpfile, "[Set]", System.Text.Encoding.UTF8);
-                    ini = new INIFile(tmpfile);
-                    ini.IniWriteValue("Tables", "table1", "INVENTORY_PART_TAB|PRIME_COMMODITY|no");//delete then add
-                    ini.IniWriteValue("Tables", "table2", "INVENTORY_TRANSACTION_HIST_TAB|TRANSACTION_ID|TRANSACTION_ID asc");//追加累积更新,id
-                    //CONTRACT,N_SHOP_LIST_ID,PART_NO,LOT_BATCH_NO //CONTRACT,N_TRANSPORT_ORDER_NO
-                    ini.IniWriteValue("Tables", "table3", "N_AIS_SHOP_LIST_PICKED_ACT_TAB|N_CREATED_DATE|no*N_TRANSPORT_ORDER_TAB|N_TRANSPORT_DATE|no");//追加累积更新,time table|where|order by
-                    //P|where|order by|C get key
-                    ini.IniWriteValue("Tables", "table4", "SHOP_ORD_TAB|ORG_START_DATE|no|SHOP_ORDER_OPERATION_TAB");//父子表更新
-                    //init key of tables
-                    ini.IniWriteValue("TablesKey", "tableKeys1", "INVENTORY_PART_TAB_KEY|CONTRACT,PART_NO");//delete then add
-                    ini.IniWriteValue("TablesKey", "tableKeys2", "INVENTORY_TRANSACTION_HIST_TAB_KEY|TRANSACTION_ID");//追加累积更新,id
-                    ini.IniWriteValue("TablesKey", "tableKeys3", "N_AIS_SHOP_LIST_PICKED_ACT_TAB_KEY|CONTRACT,N_SHOP_LIST_ID,PART_NO,LOT_BATCH_NO*N_TRANSPORT_ORDER_TAB_KEY|CONTRACT,N_TRANSPORT_ORDER_NO");//追加累积更新,time table|where|order by
-                    ini.IniWriteValue("TablesKey", "tableKeys4", "SHOP_ORD_TAB_KEY|ORDER_NO,RELEASE_NO,SEQUENCE_NO*SHOP_ORDER_OPERATION_TAB_KEY|ORDER_NO,RELEASE_NO,SEQUENCE_NO,OPERATION_NO");//父子表更新
-
-                    //ini.IniWriteValue("Tables", "CONTRACT", "sh");//sh：上海,tai:泰国,jp:日本
-
-                    ini.IniWriteValue("Common", "retime", "5");
-                    ini.IniWriteValue("Common", "batchNum", "100");
-                    //1-删除后再追加 2-直接更新
-                    ini.IniWriteValue("Common", "updateWay", "1-Deleted First,Then Adding");//2-Direct Update
+                    _ini = new INIFile(tmpfile);
                 }
                 else
                 {
-                    ini = new INIFile(tmpfile);
+                    _ini = new INIFile(tmpfile);
                 }
+
+                _ini.IniWriteValue("Tables", "table1", System.Configuration.ConfigurationManager.AppSettings["Tables.table1"]);//delete then add
+                _ini.IniWriteValue("Tables", "table2", System.Configuration.ConfigurationManager.AppSettings["Tables.table2"]);//追加累积更新,id
+                //CONTRACT,N_SHOP_LIST_ID,PART_NO,LOT_BATCH_NO //CONTRACT,N_TRANSPORT_ORDER_NO
+                _ini.IniWriteValue("Tables", "table3", System.Configuration.ConfigurationManager.AppSettings["Tables.table3"]);//追加累积更新,time table|where|order by
+                //P|where|order by|C get key
+                _ini.IniWriteValue("Tables", "table4", System.Configuration.ConfigurationManager.AppSettings["Tables.table4"]); //父子表更新
+                //init key of tables
+                _ini.IniWriteValue("TablesKey", "tableKeys1", System.Configuration.ConfigurationManager.AppSettings["TablesKey.tableKeys1"]);//delete then add
+                _ini.IniWriteValue("TablesKey", "tableKeys2", System.Configuration.ConfigurationManager.AppSettings["TablesKey.tableKeys2"]);//追加累积更新,id
+                _ini.IniWriteValue("TablesKey", "tableKeys3", System.Configuration.ConfigurationManager.AppSettings["TablesKey.tableKeys3"]);//追加累积更新,time table|where|order by
+                _ini.IniWriteValue("TablesKey", "tableKeys4", System.Configuration.ConfigurationManager.AppSettings["TablesKey.tableKeys4"]);//父子表更新
+
+                //ini.IniWriteValue("Tables", "CONTRACT", "sh");//sh：上海,tai:泰国,jp:日本
+
+                _ini.IniWriteValue("Common", "retime", System.Configuration.ConfigurationManager.AppSettings["Common.retime"]);
+                _ini.IniWriteValue("Common", "batchNum", System.Configuration.ConfigurationManager.AppSettings["Common.batchNum"]);
+                //1-删除后再追加 2-直接更新
+                _ini.IniWriteValue("Common", "updateWay", System.Configuration.ConfigurationManager.AppSettings["Common.updateWay"]);//2-Direct Update
+
+                //init first
+                //_ini.IniWriteValue("InitFirst", "FristDownload", "0");//System.Configuration.ConfigurationManager.AppSettings["InitFirst.FristDownload"]);//0:没有首次导入，1：已首次导入。
+                //_ini.IniWriteValue("InitFirst", "FristDownloadtime", System.Configuration.ConfigurationManager.AppSettings["InitFirst.FristDownloadtime"]);
+
 
                 if (isWriteOrRead)
                 {
-                    ini.IniWriteValue("Common", "retime", txt0Rtime.Text);
-                    ini.IniWriteValue("Common", "batchNum", txt1batchNum.Text);
-                    ini.IniWriteValue("Common", "updateWay", cbox0updateWay.Text);
+                    _ini.IniWriteValue("Common", "retime", txt0Rtime.Text);
+                    _ini.IniWriteValue("Common", "batchNum", txt1batchNum.Text);
+                    _ini.IniWriteValue("Common", "updateWay", cbox0updateWay.Text);
                 }
 
                 else
                 {
-                    txt0Rtime.Text = ini.IniReadValue("Common", "retime");
-                    txt1batchNum.Text = ini.IniReadValue("Common", "batchNum");
-                    cbox0updateWay.Text = ini.IniReadValue("Common", "updateWay");
+                    txt0Rtime.Text = _ini.IniReadValue("Common", "retime");
+                    txt1batchNum.Text = _ini.IniReadValue("Common", "batchNum");
+                    cbox0updateWay.Text = _ini.IniReadValue("Common", "updateWay");
 
-                    getTables(ini);
+                    getTables(_ini);
                 }
+                //init falg
+
+                //_getInitFlag = _ini.IniReadValue("InitFirst", "FristDownload");
+                //_getInitFlagTime = _ini.IniReadValue("InitFirst", "FristDownloadtime");
             }
             catch (Exception ex)
             {
@@ -347,11 +374,13 @@ namespace AutoUpdateData
             var tableKeys4 = ini.IniReadValue("TablesKey", "tableKeys4");
 
             _tableList.Clear();
+
             init_tableList(tmptable1, 1);
             init_tableList(tmptable2, 2);
             init_tableList(tmptable3, 3);
             init_tableList(tmptable4, 4);
             //for key
+            _tableKeyList.Clear();
             init_tableKeyList(tableKeys1);
             init_tableKeyList(tableKeys2);
             init_tableKeyList(tableKeys3);
@@ -438,6 +467,7 @@ namespace AutoUpdateData
         {
             //initSet();
 
+            notifyIcon1.Icon = Properties.Resources.stop;
             _scheduler.PauseAll();
             tmenu1Stop.Enabled = false;
             tmenu0Start.Enabled = true;
@@ -451,7 +481,7 @@ namespace AutoUpdateData
         private void tmenu0Start_Click(object sender, EventArgs e)
         {
             //initSet();
-
+            notifyIcon1.Icon = Properties.Resources.run;
             _scheduler.ResumeAll();
             tmenu1Stop.Enabled = true;
             tmenu0Start.Enabled = false;
@@ -494,14 +524,88 @@ namespace AutoUpdateData
             _tmpFlagMsg.Invoke(new MethodInvoker(delegate()
             {
                 _tmpFlagMsg.Text = msg;
+                if (msg.StartsWith("Error:"))
+                {
+                    _tmpNotifyIcon.Icon = Properties.Resources.stop;
+                }
+                else
+                {
+                    _tmpNotifyIcon.Icon = Properties.Resources.run;
+                }
             }));
         }
 
         public static int _txt1batchNum { get; set; }
         public static string _updatemode { get; set; }//1-删除后再追加 2-直接更新
         public static Label _tmpFlagMsg;
+        public static NotifyIcon _tmpNotifyIcon;
         public int _txt0Rtime { get; set; }
 
         public string tmptable1 { get; set; }
+
+        private void txt0Rtime_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F9 || e.KeyCode == Keys.F10)
+            {
+                //0：没有首次导入，1：已首次导入
+                _getInitFlag = _ini.IniReadValue("InitFirst", "FristDownload");
+                _getInitFlagTime = _ini.IniReadValue("InitFirst", "FristDownloadtime");
+                if (_getInitFlag.Equals("0") || string.IsNullOrEmpty(_getInitFlag))
+                {
+                    this.btn0InitFirst.Visible = true;
+                    this.btn0InitFirst.Enabled = true;
+
+                }
+                else
+                {
+                    lbl0msg.Text = _getInitFlagTime + " already Update." + DateTime.Now;
+                }
+            }
+            else
+            {
+                this.btn0InitFirst.Visible = false;
+                this.btn0InitFirst.Enabled = false;
+            }
+        }
+
+        private void btn0InitFirst_Click(object sender, EventArgs e)
+        {
+            if (_InitFirst.Equals("1"))
+            {
+                if (MessageBox.Show("Notice", "Are you Sure to Update First,That will use some time. Please Wait.", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    //
+                    var tmpcom = " CONTRACT='" + _CONTRACT + "'";
+                    try
+                    {
+                        _scheduler.Shutdown();
+                        //1table INVENTORY_PART_TAB
+                        var tmpsql_INVENTORY_PART_TAB = "select * from INVENTORY_PART_TAB where " + tmpcom;
+                        var allCount = OracleDal.GetCount("INVENTORY_PART_TAB", tmpsql_INVENTORY_PART_TAB);
+                        logger.DebugFormat("*************initFirst INVENTORY_PART_TAB:总有 {0} 条.", allCount);
+
+                        var tmpds_INVENTORY_PART_TAB = OracleDal.Query(tmpsql_INVENTORY_PART_TAB);
+                        tmpds_INVENTORY_PART_TAB.DataSetName = "INVENTORY_PART_TAB";
+
+                        //**************************同步 INVENTORY_PART_TAB
+                        OracleDal.StartToMSSQL(true, tmpds_INVENTORY_PART_TAB, "");
+                        logger.DebugFormat("*************initFirst INVENTORY_PART_TAB 成功.");
+                        //
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.Error("**************更新失败:" + ex.Message);
+                    }
+
+                    //2
+                }
+            }
+        }
+
+        public bool _InitFirst { get; set; }
+
+        public string _getInitFlag { get; set; }
+
+        public string _getInitFlagTime { get; set; }
     }
 }

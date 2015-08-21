@@ -54,6 +54,19 @@ namespace AutoUpdateData
                 return int.Parse(obj.ToString());
             }
         }
+        public static double GetDMaxID(string FieldName, string TableName)
+        {
+            string strsql = "select max(" + FieldName + ")+1 from " + TableName;
+            object obj = GetSingle(strsql);
+            if (obj == null)
+            {
+                return 1;
+            }
+            else
+            {
+                return double.Parse(obj.ToString());
+            }
+        }
         public static bool Exists(string strSql)
         {
             object obj = GetSingle(strSql);

@@ -24,7 +24,21 @@ namespace AutoUpdateData.Service.Job
                 return;
             }
             AutoUpdateData._isUploading = true;
-            _is1 = false;
+
+            //get sql update mode
+            //1-删除后再追加 2-直接更新
+            if (AutoUpdateData._updatemode.StartsWith("1"))
+            {
+                _is1 = true;
+            }
+            else if (AutoUpdateData._updatemode.StartsWith("2"))
+            {
+                _is1 = true;
+            }
+            else
+            {
+                _is1 = false;
+            }
 
             logger.DebugFormat("执行更新任务!!!!!!!!!!!!!!!");
             AutoUpdateData.jobflag("Is Runing,Next Time:" + context.NextFireTimeUtc.Value.DateTime);
@@ -66,8 +80,36 @@ namespace AutoUpdateData.Service.Job
                                 {
                                     case 1:
                                         //key: 0 table | where 1 | order by 2 from config file
-                                        tmpwhere += " and " + td[1].Trim() + "='" + AutoUpdateData._PRIME_COMMODITY + "' ";
+                                        var tmpPC = AutoUpdateData._PRIME_COMMODITY.Split(',');
+                                        if (tmpPC.Count() <= 0)
+                                        {
+                                            logger.ErrorFormat("*********Table: {0} 设置 PRIME_COMMODITY 有问题，value:{1}", td[0], AutoUpdateData._PRIME_COMMODITY);
+                                            continue;
+                                        }
+                                        if (tmpPC.Count() == 1)
+                                        {
+                                            tmpwhere += " and " + td[1].Trim() + "='" + AutoUpdateData._PRIME_COMMODITY + "' ";
 
+                                        }
+                                        else
+                                        {
+                                            //in('1','2')
+                                            var tOr = "";
+
+                                            for (int i = 0; i < tmpPC.Count(); i++)
+                                            {
+                                                if (i == 0)
+                                                {
+                                                    tOr = "'" + tmpPC[i].Trim() + "'";
+                                                }
+                                                else
+                                                {
+                                                    tOr += ",'" + tmpPC[i].Trim() + "'";
+                                                }
+                                            }
+
+                                            tmpwhere += " and " + td[1].Trim() + " in(" + tOr + ")";
+                                        }
                                         //pre update number
                                         tmpTableTakeDataNum = AutoUpdateData._iniToday.IniReadValue("TableTakeDataNum", td[0].Trim());
 
@@ -93,6 +135,7 @@ namespace AutoUpdateData.Service.Job
                                             {
                                                 tmporderby = "";
                                             }
+
                                             tmpds = OracleDal.GetData(td[0].Trim(), tmpwhere, tmporderby, preNum, tmptoUpdate);
 
                                         }
@@ -101,16 +144,13 @@ namespace AutoUpdateData.Service.Job
                                     case 2:
                                         //key: 0 table | add Id 2 | order by 3 from config file
                                         //get the last ID
-                                        var tmpTRANSACTION_ID = AutoUpdateData._iniToday.IniReadValue("TableKeyLastValue", tmpKeyLast);
-                                        double lastPreId = 0;
 
-                                        if (!double.TryParse(tmpTRANSACTION_ID, out lastPreId))
-                                        {
-                                            lastPreId = 0;
-                                        }
+                                        //get from SQL by id;
+                                        //var tmpTRANSACTION_ID = AutoUpdateData._iniToday.IniReadValue("TableKeyLastValue", tmpKeyLast);
+                                        var tmpTRANSACTION_ID = DbHelperSQL.GetDMaxID(td[1], td[0]);
 
                                         // get last where
-                                        tmpwhere += " and " + td[1].Trim() + ">'" + lastPreId + "' ";
+                                        tmpwhere += " and " + td[1].Trim() + ">='" + tmpTRANSACTION_ID + "' ";
 
                                         //pre update number
                                         tmpTableTakeDataNum = AutoUpdateData._iniToday.IniReadValue("TableTakeDataNum", td[0].Trim());
@@ -157,11 +197,13 @@ namespace AutoUpdateData.Service.Job
                                             AutoUpdateData._iniToday.IniWriteValue("TableKeyLastValue", tmpKeyLast, tmpLastWhereDateTime.ToString());
                                         }
 
-                                        tmpwhere += " and " + td[1] + ">=to_date(:gxsj,'yyyy-MM-dd HH24:mi:ss')";
+                                        tmpwhere += " and " + td[1] + ">to_date(:gxsj,'yyyy-MM-dd HH24:mi:ss')";
                                         OracleParameter[] parameters3 = { new OracleParameter(":gxsj", OracleDbType.Varchar2, 10) };
                                         //no time
-                                        // parameters[0].Value = DateTime.Now.ToString("yyyy-MM-dd") + " 00:00:00";// HH
-                                        parameters3[0].Value = tmpLastWhereDateTime.ToString("yyyy-MM-dd") + " 00:00:00";// HH
+
+                                        parameters3[0].Value = DateTime.Now.ToString("yyyy-MM-dd") + " 00:00:00";// HH       
+
+                                        //parameters3[0].Value = tmpLastWhereDateTime.ToString("yyyy-MM-dd") + " 00:00:00";// HH
 
                                         //pre update number
                                         tmpTableTakeDataNum = AutoUpdateData._iniToday.IniReadValue("TableTakeDataNum", td[0].Trim());
@@ -204,11 +246,11 @@ namespace AutoUpdateData.Service.Job
                                             tmpORG_START_DATE = DateTime.Now;
                                         }
                                         // set tmpwhere
-                                        tmpwhere += " and " + td[1] + ">=to_date(:gxsj,'yyyy-MM-dd HH24:mi:ss')";
+                                        tmpwhere += " and " + td[1] + ">to_date(:gxsj,'yyyy-MM-dd HH24:mi:ss')";
                                         OracleParameter[] parameters4 = { new OracleParameter(":gxsj", OracleDbType.Varchar2, 10) };
                                         //no time
-                                        // parameters[0].Value = DateTime.Now.ToString("yyyy-MM-dd") + " 00:00:00";// HH
-                                        parameters4[0].Value = tmpORG_START_DATE.ToString("yyyy-MM-dd") + " 00:00:00";// HH
+                                        parameters4[0].Value = DateTime.Now.ToString("yyyy-MM-dd") + " 00:00:00";// HH
+                                        // parameters4[0].Value = tmpORG_START_DATE.ToString("yyyy-MM-dd") + " 00:00:00";// HH
 
                                         //pre update number
                                         tmpTableTakeDataNum = AutoUpdateData._iniToday.IniReadValue("TableTakeDataNum", td[0].Trim());
@@ -261,7 +303,7 @@ namespace AutoUpdateData.Service.Job
                                         break;
                                 }
                                 //**************************同步表
-                                StartToMSSQL(tmpds, tmpKeyLast);
+                                OracleDal.StartToMSSQL(_is1, tmpds, tmpKeyLast);
 
                                 //for father and son
                                 if (isSon)
@@ -311,11 +353,11 @@ namespace AutoUpdateData.Service.Job
                                                     tmpSon.DataSetName = td[3].Trim();
 
                                                     //**************************同步子表
-                                                    StartToMSSQL(tmpSon, "");
+                                                    OracleDal.StartToMSSQL(_is1, tmpSon, "");
                                                 }
                                                 catch (Exception ex)
                                                 {
-                                                    logger.DebugFormat("****************************更新主表：{0},记录：{1}  -->的子表失败。{2}", td[0], (p[0].ToString() + "," + p[1].ToString() + "," + p[2].ToString()), ex.Message);
+                                                    logger.ErrorFormat("****************************更新主表：{0},记录：{1}  -->的子表失败。{2}", td[0], (p[0].ToString() + "," + p[1].ToString() + "," + p[2].ToString()), ex.Message);
                                                     continue;
                                                 }
 
@@ -359,7 +401,7 @@ namespace AutoUpdateData.Service.Job
                                     var tmpds = OracleDal.GetData(item.Key, "", "", preNum, tmptoUpdate);
                                     tmpds.DataSetName = item.Key;
 
-                                    StartToMSSQL(tmpds, "");
+                                    OracleDal.StartToMSSQL(_is1, tmpds, "");
 
                                 }
                             }
@@ -367,7 +409,8 @@ namespace AutoUpdateData.Service.Job
                         }
                         catch (Exception ex)
                         {
-                            logger.DebugFormat("{0}表同步有问题，开始同步下个表。Error:{1}.", item.Key, ex.Message);
+                            AutoUpdateData.jobflag("Error:"+ex.Message);
+                            logger.ErrorFormat("{0}表同步有问题，开始同步下个表。Error:{1}.", item.Key, ex.Message);
                             continue;
                         }
 
@@ -381,6 +424,7 @@ namespace AutoUpdateData.Service.Job
             }
             catch (Exception ex)
             {
+                AutoUpdateData.jobflag("Error:" + ex.Message);
                 logger.Error(ex);
             }
             finally
@@ -389,174 +433,7 @@ namespace AutoUpdateData.Service.Job
             }
 
         }
-        public void StartToMSSQL(DataSet item, string setLastValue)
-        {
-
-            if (item.Tables.Count <= 0)
-            {
-                logger.DebugFormat("开始同步表：{0},表中无任何记录。", item.DataSetName);
-                return;
-            }
-            logger.DebugFormat("开始同步表：{0}，更新条数为：{1}。更新方式：{2}", item.DataSetName, item.Tables[0].Rows.Count,AutoUpdateData._updatemode);
-            try
-            {
-                //get colmuns
-                var tmpcolDS = OracleDal.GetTableColumns(item.DataSetName);
-
-                //get Allcount
-                var allCount = item.Tables[0].Rows.Count;
-                //gen sql
-
-                if (allCount <= AutoUpdateData._txt1batchNum)
-                {
-                    //init str
-                    var strSQLinsert = new List<String>();
-
-                    foreach (DataRow row in item.Tables[0].Rows)
-                    {
-                        //update mode
-                        updateMode(strSQLinsert, tmpcolDS, item, row);
-                        //gen SQL all
-                        var tmpinstall = OracleDal.getSQLColumnsForInsert(tmpcolDS, item.DataSetName, row);
-                        if (!string.IsNullOrEmpty(tmpinstall))
-                        {
-                            strSQLinsert.Add(tmpinstall);
-                        }
-                    }
-                    //upload to mssql 
-                    updateToMSSQL(item, strSQLinsert, setLastValue, "Upload ");
-
-                }
-                else
-                {
-                    var nextdiffCount = 0;
-
-                    var tmpCount = 1;
-                    do
-                    {
-                        //init str
-                        var strSQLinsert = new List<String>();
-                        for (int i = nextdiffCount; i < allCount; i++)
-                        {
-                            nextdiffCount++;
-
-                            //update mode
-                            updateMode(strSQLinsert, tmpcolDS, item, item.Tables[0].Rows[i]);
-                            //gen sql by batch
-                            var tmpinstall = OracleDal.getSQLColumnsForInsert(tmpcolDS, item.DataSetName, item.Tables[0].Rows[i]);
-                            if (!string.IsNullOrEmpty(tmpinstall))
-                            {
-                                strSQLinsert.Add(tmpinstall);
-                            }
-
-                            if (nextdiffCount % AutoUpdateData._txt1batchNum == 0)
-                            {
-                                break;
-                            }
-                        }
-
-                        //upload to mssql 
-                        updateToMSSQL(item, strSQLinsert, setLastValue, "Upload ");
-
-
-                        tmpCount++;
-
-                    } while (nextdiffCount < allCount);
-
-                }
-            }
-            catch (Exception ex)
-            {
-                logger.DebugFormat("*************{0}:更新出现问题，继续同步下个表.error：{1}", item.DataSetName, ex.Message);
-            }
-        }
-        public static void updateMode(List<String> strSQLinsert, DataSet tmpcolDS, DataSet item, DataRow row)
-        {
-            //get sql update mode
-            //1-删除后再追加 2-直接更新
-            if (AutoUpdateData._updatemode.StartsWith("1-"))
-            {
-                _is1 = true;
-                //get all key for table
-                var tmpKeyname = item.DataSetName + "_KEY";
-                if (!AutoUpdateData._tableKeyList.ContainsKey(tmpKeyname))
-                {
-                    logger.DebugFormat("1*****************表：{0},无主键，无法：1-删除后再追加。", item.DataSetName);
-                }
-                else
-                {
-                    var tmpkeyValue = AutoUpdateData._tableKeyList[tmpKeyname];
-                    var tmpkeys = tmpkeyValue.Split(',');
-                    if (tmpkeys.Count() <= 0)
-                    {
-                        logger.DebugFormat("2*****************表：{0},无主键，无法：1-删除后再追加。", item.DataSetName);
-                    }
-                    else
-                    {
-                        var tmpDeleteForSQL = OracleDal.getSQLColumnsForDeleteByKeys(tmpcolDS, item.DataSetName, tmpkeys, row);
-
-                        if (!string.IsNullOrEmpty(tmpDeleteForSQL))
-                        {
-                            strSQLinsert.Add(tmpDeleteForSQL);
-                        }
-                    }
-                }
-
-            }
-            else if (AutoUpdateData._updatemode.StartsWith("2-"))
-            {
-               
-            }
-        }
-        private static void updateToMSSQL(DataSet item, List<string> strSQLinsert, string setLastValue, string msg)
-        {
-            try
-            {
-
-                var dd = DbHelperSQL.ExecuteSqlTran(strSQLinsert,_is1);
-
-                if (dd > 0)
-                {
-                    //save upload count for each;
-                    var tmpTableTakeDataNum = AutoUpdateData._iniToday.IniReadValue("TableTakeDataNum", item.DataSetName);
-                    int getNum = 0;
-                    if (!int.TryParse(tmpTableTakeDataNum, out getNum))
-                    {
-                        getNum = 0;
-                    }
-                    var tmpcount = strSQLinsert.Count;
-                    if (_is1)
-                    {
-                        tmpcount = tmpcount / 2;
-                    }
-                    int tmpcountNum = getNum + tmpcount;
-
-                    AutoUpdateData._iniToday.IniWriteValue("TableTakeDataNum", item.DataSetName, tmpcountNum.ToString());
-
-
-                    if (!string.IsNullOrEmpty(setLastValue))
-                    {
-                        var count = item.Tables[0].Rows.Count - 1;
-                        var tmpkey = setLastValue.Split('.');
-                        var lastvalue = item.Tables[0].Rows[count][tmpkey[1].ToString()];
-                        AutoUpdateData._iniToday.IniWriteValue("TableKeyLastValue", setLastValue, lastvalue.ToString());
-                    }
-                    logger.DebugFormat(msg + " Table:[{0}],Success Count:{1}", item.DataSetName, dd);
-                }
-                else
-                {
-                    logger.DebugFormat(msg + " Fails Table:[{0}],Success Count:{1}", item.DataSetName, dd);
-                }
-
-            }
-            catch (Exception ex)
-            {
-
-                throw new Exception(ex.Message);
-            }
-
-        }
-
+        //1-删除后再追加 2-直接更新
         public static bool _is1 { get; set; }
     }
 }

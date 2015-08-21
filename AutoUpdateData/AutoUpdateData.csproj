@@ -136,6 +136,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Icon1.ico" />
+    <None Include="Resources\run.ico" />
+    <None Include="Resources\stop.ico" />
+    <None Include="Resources\update.ico" />
     <Content Include="update.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -301,5 +301,175 @@ namespace AutoUpdateData.Core.dal
             return null;
 
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="is1"></param>
+        /// <param name="item"></param>
+        /// <param name="setLastValue"></param>
+        public static void StartToMSSQL(bool is1, DataSet item, string setLastValue)
+        {
+
+            if (item.Tables.Count <= 0)
+            {
+                logger.DebugFormat("开始同步表：{0},表中无任何记录。", item.DataSetName);
+                return;
+            }
+            logger.DebugFormat("开始同步表：{0}，更新条数为：{1}。更新方式：{2}", item.DataSetName, item.Tables[0].Rows.Count, AutoUpdateData._updatemode);
+            try
+            {
+                //get colmuns
+                var tmpcolDS = OracleDal.GetTableColumns(item.DataSetName);
+
+                //get Allcount
+                var allCount = item.Tables[0].Rows.Count;
+                //gen sql
+
+                if (allCount <= AutoUpdateData._txt1batchNum)
+                {
+                    //init str
+                    var strSQLinsert = new List<String>();
+
+                    foreach (DataRow row in item.Tables[0].Rows)
+                    {
+                        //update mode
+                        updateMode(is1, strSQLinsert, tmpcolDS, item, row);
+                        //gen SQL all
+                        var tmpinstall = OracleDal.getSQLColumnsForInsert(tmpcolDS, item.DataSetName, row);
+                        if (!string.IsNullOrEmpty(tmpinstall))
+                        {
+                            strSQLinsert.Add(tmpinstall);
+                        }
+                    }
+                    //upload to mssql 
+                    updateToMSSQL(is1, item, strSQLinsert, setLastValue, "Upload ");
+
+                }
+                else
+                {
+                    var nextdiffCount = 0;
+
+                    var tmpCount = 1;
+                    do
+                    {
+                        //init str
+                        var strSQLinsert = new List<String>();
+                        for (int i = nextdiffCount; i < allCount; i++)
+                        {
+                            nextdiffCount++;
+
+                            //update mode
+                            updateMode(is1, strSQLinsert, tmpcolDS, item, item.Tables[0].Rows[i]);
+                            //gen sql by batch
+                            var tmpinstall = OracleDal.getSQLColumnsForInsert(tmpcolDS, item.DataSetName, item.Tables[0].Rows[i]);
+                            if (!string.IsNullOrEmpty(tmpinstall))
+                            {
+                                strSQLinsert.Add(tmpinstall);
+                            }
+
+                            if (nextdiffCount % AutoUpdateData._txt1batchNum == 0)
+                            {
+                                break;
+                            }
+                        }
+
+                        //upload to mssql 
+                        updateToMSSQL(is1, item, strSQLinsert, setLastValue, "Upload ");
+
+
+                        tmpCount++;
+
+                    } while (nextdiffCount < allCount);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.ErrorFormat("*************{0}:更新出现问题，继续同步下个表.error：{1}", item.DataSetName, ex.Message);
+            }
+        }
+
+        public static void updateMode(bool _is1, List<String> strSQLinsert, DataSet tmpcolDS, DataSet item, DataRow row)
+        {
+
+            //get all key for table
+            var tmpKeyname = item.DataSetName + "_KEY";
+            if (!AutoUpdateData._tableKeyList.ContainsKey(tmpKeyname))
+            {
+                logger.DebugFormat("1*****************表：{0},无主键，无法：1-删除后再追加。", item.DataSetName);
+            }
+            else
+            {
+                var tmpkeyValue = AutoUpdateData._tableKeyList[tmpKeyname];
+                var tmpkeys = tmpkeyValue.Split(',');
+                if (tmpkeys.Count() <= 0)
+                {
+                    logger.DebugFormat("2*****************表：{0},无主键，无法：1-删除后再追加。", item.DataSetName);
+                }
+                else
+                {
+                    var tmpDeleteForSQL = OracleDal.getSQLColumnsForDeleteByKeys(tmpcolDS, item.DataSetName, tmpkeys, row);
+
+                    if (!string.IsNullOrEmpty(tmpDeleteForSQL))
+                    {
+                        strSQLinsert.Add(tmpDeleteForSQL);
+                    }
+                }
+            }
+
+
+        }
+        private static void updateToMSSQL(bool _is1, DataSet item, List<string> strSQLinsert, string setLastValue, string msg)
+        {
+            try
+            {
+
+                var dd = DbHelperSQL.ExecuteSqlTran(strSQLinsert, _is1);
+
+                if (dd > 0)
+                {
+                    //save upload count for each;
+                    var tmpTableTakeDataNum = AutoUpdateData._iniToday.IniReadValue("TableTakeDataNum", item.DataSetName);
+                    int getNum = 0;
+                    if (!int.TryParse(tmpTableTakeDataNum, out getNum))
+                    {
+                        getNum = 0;
+                    }
+                    var tmpcount = strSQLinsert.Count;
+                    if (_is1)
+                    {
+                        tmpcount = tmpcount / 2;
+                    }
+                    int tmpcountNum = 0;// getNum + tmpcount;
+
+                    AutoUpdateData._iniToday.IniWriteValue("TableTakeDataNum", item.DataSetName, tmpcountNum.ToString());
+
+                    
+                    if (!string.IsNullOrEmpty(setLastValue))
+                    {
+                        var count = item.Tables[0].Rows.Count - 1;
+                        var tmpkey = setLastValue.Split('.');
+                        var lastvalue = item.Tables[0].Rows[count][tmpkey[1].ToString()];
+
+                        AutoUpdateData._iniToday.IniWriteValue("TableKeyLastValue", setLastValue, lastvalue.ToString());
+                    }
+                    logger.DebugFormat(msg + " Table:[{0}],Success Count:{1}", item.DataSetName, dd);
+                }
+                else
+                {
+                    logger.DebugFormat(msg + " Fails Table:[{0}],Success Count:{1}", item.DataSetName, dd);
+                }
+
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception(ex.Message);
+            }
+
+        }
+
     }
+
 }
