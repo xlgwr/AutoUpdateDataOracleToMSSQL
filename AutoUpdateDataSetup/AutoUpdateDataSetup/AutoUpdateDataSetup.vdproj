@@ -4,9 +4,9 @@
 "ProjectType" = "8:{978C614F-708E-4E1A-B201-565925725DBA}"
 "IsWebType" = "8:FALSE"
 "ProjectName" = "8:AutoUpdateDataSetup"
-"LanguageId" = "3:2052"
-"CodePage" = "3:936"
-"UILanguageId" = "3:2052"
+"LanguageId" = "3:1041"
+"CodePage" = "3:932"
+"UILanguageId" = "3:1041"
 "SccProjectName" = "8:"
 "SccLocalPath" = "8:"
 "SccAuxPath" = "8:"
@@ -70,6 +70,18 @@
         "Entry"
         {
         "MsmKey" = "8:_50CC10967D594CB09A12A6F69987AE2E"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_5EA186098316480FAE0EDE7DCAF60927"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_66912C9784654CC58729B03E8AB1B21B"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -648,6 +660,46 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_5EA186098316480FAE0EDE7DCAF60927"
+            {
+            "SourcePath" = "8:UnSetUp\\msiexec.exe"
+            "TargetName" = "8:msiexec.exe"
+            "Tag" = "8:"
+            "Folder" = "8:_2B3A4770923D4493B5449F49EE333BF1"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_66912C9784654CC58729B03E8AB1B21B"
+            {
+            "SourcePath" = "8:..\\..\\..\\..\\icon\\unInstall.ico"
+            "TargetName" = "8:unInstall.ico"
+            "Tag" = "8:"
+            "Folder" = "8:_2B3A4770923D4493B5449F49EE333BF1"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_672651A804484C4F8663B5383BED775D"
             {
             "SourcePath" = "8:..\\..\\..\\..\\icon\\update.ico"
@@ -947,7 +999,7 @@
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:AutoUpdateData, Version=1.0.0.3, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:AutoUpdateData, Version=1.0.0.5, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_C9B0DC6D27DC4B22BA1AEEF0A71DF7C8"
@@ -1229,6 +1281,17 @@
             "Property" = "8:ProgramMenuFolder"
                 "Folders"
                 {
+                    "{9EF0B969-E518-4E46-987F-47570745A589}:_CE001D3D7B0149B29EDF3112C3F0FCD4"
+                    {
+                    "Name" = "8:AutoUpdateData"
+                    "AlwaysCreate" = "11:FALSE"
+                    "Condition" = "8:"
+                    "Transitive" = "11:FALSE"
+                    "Property" = "8:_3D9C9043993F454A948C06BDAFA4C52E"
+                        "Folders"
+                        {
+                        }
+                    }
                 }
             }
             "{1525181F-901A-416C-8A58-119130FE478E}:_D52AF6CAA5024DA7B20E99C4F7AA4647"
@@ -1251,7 +1314,7 @@
         }
         "MsiBootstrapper"
         {
-        "LangId" = "3:2052"
+        "LangId" = "3:1041"
         "RequiresElevation" = "11:FALSE"
         }
         "Product"
@@ -1259,7 +1322,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:AutoUpdateDataSetup"
         "ProductCode" = "8:{C96A8A3E-4273-4A12-A8D7-96245A8C39E1}"
-        "PackageCode" = "8:{93438668-E938-4769-9981-887BD6536CAE}"
+        "PackageCode" = "8:{FB6D7E6B-8730-4AF3-9EA7-EEAFE10D88B5}"
         "UpgradeCode" = "8:{A5925E97-B34C-4363-A6A5-4CB635FD9750}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -1267,12 +1330,12 @@
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
         "ProductVersion" = "8:1.0.0"
-        "Manufacturer" = "8:默认公司名称"
+        "Manufacturer" = "8:isec"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
         "Title" = "8:AutoUpdateDataSetup"
         "Subject" = "8:"
-        "ARPCONTACT" = "8:默认公司名称"
+        "ARPCONTACT" = "8:isec"
         "Keywords" = "8:"
         "ARPCOMMENTS" = "8:"
         "ARPURLINFOABOUT" = "8:"
@@ -1402,9 +1465,23 @@
             "IconIndex" = "3:0"
             "Transitive" = "11:FALSE"
             "Target" = "8:_C9B0DC6D27DC4B22BA1AEEF0A71DF7C8"
-            "Folder" = "8:_BE272B5E5C4A47068FE188FFEA94FE71"
+            "Folder" = "8:_CE001D3D7B0149B29EDF3112C3F0FCD4"
             "WorkingFolder" = "8:_2B3A4770923D4493B5449F49EE333BF1"
             "Icon" = "8:_672651A804484C4F8663B5383BED775D"
+            "Feature" = "8:"
+            }
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_8F37EE09E3B14F939D751FD60DC6073B"
+            {
+            "Name" = "8:uninstall AutoUpdateData"
+            "Arguments" = "8:/x {C96A8A3E-4273-4A12-A8D7-96245A8C39E1}"
+            "Description" = "8:"
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:0"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_5EA186098316480FAE0EDE7DCAF60927"
+            "Folder" = "8:_CE001D3D7B0149B29EDF3112C3F0FCD4"
+            "WorkingFolder" = "8:_2B3A4770923D4493B5449F49EE333BF1"
+            "Icon" = "8:_66912C9784654CC58729B03E8AB1B21B"
             "Feature" = "8:"
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_F3D1F95EADC149E494110508B8ED6A93"
