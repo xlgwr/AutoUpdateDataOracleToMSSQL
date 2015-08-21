@@ -148,6 +148,7 @@ namespace AutoUpdateData
         /// <returns>影响的记录数</returns>
         public static int ExecuteSql(string SQLString)
         {
+            logger.Debug(SQLString);
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 using (SqlCommand cmd = new SqlCommand(SQLString, connection))

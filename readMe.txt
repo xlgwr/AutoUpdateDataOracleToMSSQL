@@ -3,6 +3,7 @@
 4、进入AutoUpdateDataBin文件压 打开config文件：AutoUpdateData.exe.config，修改对应的数据库 连接。
    及 Contarct, PRIME_COMMODITY
 5、检查数据库是否正常。
+7、MSSQL 2008建立日记表：ilog,在 ../doc/sql/iLog.SQL 其它SQL为测试用的SQL。
 6、直接运行：AutoUpdateData.exe
 
 

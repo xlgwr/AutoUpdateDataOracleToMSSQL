@@ -41,6 +41,8 @@ namespace AutoUpdateData
         public static INIFile _ini;
         public static INIFile _iniToday;
 
+        public static string _ipAddMac;
+
         public AutoUpdateData()
         {
             InitializeComponent();
@@ -151,6 +153,7 @@ namespace AutoUpdateData
                 updateJob(false);
                 this.btn0Save.Enabled = false;
                 this.tmenu2Set.Visible = false;
+                _ipAddMac = OracleDal.getIp();
             }
             catch (Exception ex)
             {

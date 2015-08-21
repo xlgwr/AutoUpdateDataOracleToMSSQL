@@ -9,6 +9,8 @@ using Oracle.ManagedDataAccess.Client;
 using AutoUpdateData.Core.enity;
 using log4net;
 using System.Reflection;
+using System.Net;
+using System.Management;
 
 namespace AutoUpdateData.Core.dal
 {
@@ -445,7 +447,7 @@ namespace AutoUpdateData.Core.dal
 
                     AutoUpdateData._iniToday.IniWriteValue("TableTakeDataNum", item.DataSetName, tmpcountNum.ToString());
 
-                    
+
                     if (!string.IsNullOrEmpty(setLastValue))
                     {
                         var count = item.Tables[0].Rows.Count - 1;
@@ -454,11 +456,15 @@ namespace AutoUpdateData.Core.dal
 
                         AutoUpdateData._iniToday.IniWriteValue("TableKeyLastValue", setLastValue, lastvalue.ToString());
                     }
+
                     logger.DebugFormat(msg + " Table:[{0}],Success Count:{1}", item.DataSetName, dd);
+                    ilog(item.DataSetName, dd, AutoUpdateData._CONTRACT + ",Success", "AutoUpdateOracleMSSQL:Update Count:" + dd + " Success.", AutoUpdateData._ipAddMac);
+
                 }
                 else
                 {
-                    logger.DebugFormat(msg + " Fails Table:[{0}],Success Count:{1}", item.DataSetName, dd);
+                    ilog(item.DataSetName, dd, AutoUpdateData._CONTRACT + ",Fail", "AutoUpdateOracleMSSQL:Update Count:" + dd + " Fail.", AutoUpdateData._ipAddMac);
+                    logger.DebugFormat(msg + " Fail Table:[{0}],Success Count:{1}", item.DataSetName, dd);
                 }
 
             }
@@ -468,6 +474,72 @@ namespace AutoUpdateData.Core.dal
                 throw new Exception(ex.Message);
             }
 
+        }
+        /// <summary>
+        /// INSERT INTO [dbo].[iLog]
+        ///  ([lName]
+        ///       ,[ltype]
+        ///      ,[lDesc]
+        ///      ,[ldate]
+        ///      ,[remark])
+        ///VALUES
+        ///      (<lName, nvarchar(50),>
+        ///     ,<ltype, nvarchar(50),>
+        ///    ,<lDesc, text,>
+        ///      ,<ldate, datetime,>
+        ///      ,<remark, text,>)
+        /// </summary>
+        /// <param name="tmpTableName"></param>
+        /// <param name="count"></param>
+        public static void ilog(string tmpTableName, int count, string itype, string idesc, string iremark)
+        {
+            try
+            {
+                var tmpilogsql = "INSERT INTO [dbo].[iLog] ([lName],[ltype],[lDesc],[lvalue],[ldate],[remark]) VALUES (";
+                tmpilogsql += "'" + tmpTableName + "','" + itype + "','" + idesc + "','" + count.ToString() + "',',Getdate(),'" + iremark + "')";
+                var tmptoIn = DbHelperSQL.ExecuteSql(tmpilogsql);
+            }
+            catch (Exception ex)
+            {
+                logger.ErrorFormat("**************写入日记失败：{0}", ex.Message);
+            }
+        }
+        /// <summary>
+        /// ip+mac
+        /// </summary>
+        /// <returns></returns>
+        public static string getIp()
+        {
+            string ip = "";
+            ManagementClass mc = new ManagementClass("Win32_NetworkAdapterConfiguration");
+            ManagementObjectCollection nics = mc.GetInstances();
+            foreach (ManagementObject nic in nics)
+            {
+                if (Convert.ToBoolean(nic["ipEnabled"]) == true)
+                {
+                    string mac = nic["MacAddress"].ToString();//Mac地址
+                    ip = (nic["IPAddress"] as String[])[0];//IP地址
+                    ip += "*" + mac;
+                    string ipsubnet = (nic["IPSubnet"] as String[])[0];//子网掩码
+                    string ipgateway = (nic["DefaultIPGateway"] as String[])[0];//默认网关
+                    break;
+                }
+            }
+            return ip;
+        }
+        public static string GetClientInternetIP()
+        {
+            string ipAddress = "";
+            using (WebClient webClient = new WebClient())
+            {
+                ipAddress = webClient.DownloadString("http://www.dxda.com/ip.asp");//站获得IP的网页
+                //判断IP是否合法
+                if (!System.Text.RegularExpressions.Regex.IsMatch(ipAddress, "[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}"))
+                {
+                    ipAddress = webClient.DownloadString("http://www.zu14.cn/ip/");//站获得IP的网页
+                }
+            }
+            return ipAddress;
         }
 
     }
