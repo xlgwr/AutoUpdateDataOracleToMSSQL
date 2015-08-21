@@ -146,6 +146,7 @@ namespace AutoUpdateData
                 lbl1Flag.Text = "Runing";
 
                 notifyIcon1.Icon = Properties.Resources.run;
+                _tmpNotifyIcon = notifyIcon1;
 
                 updateJob(false);
                 this.btn0Save.Enabled = false;
@@ -153,8 +154,9 @@ namespace AutoUpdateData
             }
             catch (Exception ex)
             {
-
-                AutoUpdateData.jobflag("Error:" + ex.Message);
+                MessageBox.Show("首次运行出错：" + ex.Message);
+                logger.Error(ex.Message);
+                //AutoUpdateData.jobflag("Error:" + ex.Message);
             }
 
         }
@@ -518,7 +520,8 @@ namespace AutoUpdateData
                 lbl0msg.Text = "";
             }
         }
-
+        public static Icon _run = Properties.Resources.run;
+        public static Icon _stop = Properties.Resources.stop;
 
         public static void jobflag(string msg)
         {
@@ -527,11 +530,11 @@ namespace AutoUpdateData
                 _tmpFlagMsg.Text = msg;
                 if (msg.StartsWith("Error:"))
                 {
-                    _tmpNotifyIcon.Icon = Properties.Resources.stop;
+                    _tmpNotifyIcon.Icon = _stop;
                 }
                 else
                 {
-                    _tmpNotifyIcon.Icon = Properties.Resources.run;
+                    _tmpNotifyIcon.Icon = _run;
                 }
             }));
         }
