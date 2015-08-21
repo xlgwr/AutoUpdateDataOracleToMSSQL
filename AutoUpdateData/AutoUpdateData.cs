@@ -67,7 +67,7 @@ namespace AutoUpdateData
             {
                 e.Cancel = true;
                 this.ShowInTaskbar = false;
-                this.notifyIcon1.Icon = this.Icon;
+                notifyIcon1.Icon = Properties.Resources.run;
                 this.Hide();
             }
             //throw new NotImplementedException();
@@ -79,6 +79,7 @@ namespace AutoUpdateData
             if (this.WindowState == FormWindowState.Normal && this.Visible == true)
             {
                 this.notifyIcon1.Visible = true;//在通知区显示Form的Icon
+                this.notifyIcon1.Icon = Properties.Resources.run;
                 this.WindowState = FormWindowState.Minimized;
                 this.Visible = false;
                 this.ShowInTaskbar = false;//使Form不在任务栏上显示
