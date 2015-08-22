@@ -575,7 +575,7 @@ namespace AutoUpdateData.Core.dal
             try
             {
 
-                var dd = DbHelperSQL.ExecuteSqlTran(strSQLinsert, _is1);
+                var dd = DbHelperSQL.ExecuteSqlTran(strSQLinsert, _is1, false);
 
                 if (dd > 0)
                 {

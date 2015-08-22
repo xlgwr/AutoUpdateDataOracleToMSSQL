@@ -192,7 +192,7 @@ namespace AutoUpdateData
         /// 执行多条SQL语句，实现数据库事务。
         /// </summary>
         /// <param name="SQLStringList">多条SQL语句</param>		
-        public static int ExecuteSqlTran(List<String> SQLStringList, bool is1or2)
+        public static int ExecuteSqlTran(List<String> SQLStringList, bool is1or2, bool isUsetx)
         {
             var tmpcount = SQLStringList.Count;
             if (is1or2)
@@ -205,11 +205,17 @@ namespace AutoUpdateData
                 conn.Open();
                 SqlCommand cmd = new SqlCommand();
                 cmd.Connection = conn;
-                SqlTransaction tx = conn.BeginTransaction();
-                cmd.Transaction = tx;
+
+                SqlTransaction tx = null;
+                if (isUsetx)
+                {
+                    tx = conn.BeginTransaction();
+                    cmd.Transaction = tx;
+                }
+                int count = 0;
                 try
                 {
-                    int count = 0;
+
                     for (int n = 0; n < SQLStringList.Count; n++)
                     {
                         string strsql = SQLStringList[n];
@@ -219,9 +225,11 @@ namespace AutoUpdateData
                             count += cmd.ExecuteNonQuery();
                         }
                     }
-                    tx.Commit();
-
-                    if (count==1)
+                    if (isUsetx)
+                    {
+                        tx.Commit();
+                    }
+                    if (count == 1)
                     {
                         return count;
                     }
@@ -235,13 +243,17 @@ namespace AutoUpdateData
                     {
                         count = count / 2;
                     }
-                    
+
                     return count;
                 }
                 catch
                 {
-                    tx.Rollback();
-                    return 0;
+                    if (isUsetx)
+                    {
+                        tx.Rollback();
+                        return 0;
+                    }
+                    return count;
                 }
             }
         }
