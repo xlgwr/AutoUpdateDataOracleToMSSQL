@@ -614,12 +614,12 @@ namespace AutoUpdateData.Core.dal
             }
         }
         /// <summary>
-        /// ip+mac
+        /// ip+mac+version
         /// </summary>
         /// <returns></returns>
         public static string getIp()
         {
-            string ip = "";
+            string ip = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
             ManagementClass mc = new ManagementClass("Win32_NetworkAdapterConfiguration");
             ManagementObjectCollection nics = mc.GetInstances();
             foreach (ManagementObject nic in nics)
@@ -627,7 +627,7 @@ namespace AutoUpdateData.Core.dal
                 if (Convert.ToBoolean(nic["ipEnabled"]) == true)
                 {
                     string mac = nic["MacAddress"].ToString();//Mac地址
-                    ip = (nic["IPAddress"] as String[])[0];//IP地址
+                    ip += "*" + (nic["IPAddress"] as String[])[0];//IP地址
                     ip += "*" + mac;
                     string ipsubnet = (nic["IPSubnet"] as String[])[0];//子网掩码
                     string ipgateway = (nic["DefaultIPGateway"] as String[])[0];//默认网关
