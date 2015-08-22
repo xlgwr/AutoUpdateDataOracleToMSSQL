@@ -130,7 +130,9 @@ namespace AutoUpdateData
             lbl0msg.Text = "";
             _tmpFlagMsg = lbl0msg;
 
-            this.Text += ",C:[" + _CONTRACT + "], P_C:" + _PRIME_COMMODITY;
+
+            _ipAddMac = OracleDal.getIp();
+            this.Text = "C:[" + _CONTRACT + "], P_C:" + _PRIME_COMMODITY+" -->AutoUpdate:"+_ipAddMac;
 
         }
 
@@ -167,7 +169,6 @@ namespace AutoUpdateData
                 updateJob(false);
                 this.btn0Save.Enabled = false;
                 this.tmenu2Set.Visible = false;
-                _ipAddMac = OracleDal.getIp();
             }
             catch (Exception ex)
             {

@@ -208,7 +208,7 @@
             this.lbl1Flag.AutoSize = true;
             this.lbl1Flag.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.lbl1Flag.ForeColor = System.Drawing.Color.Red;
-            this.lbl1Flag.Location = new System.Drawing.Point(188, 9);
+            this.lbl1Flag.Location = new System.Drawing.Point(200, 9);
             this.lbl1Flag.Name = "lbl1Flag";
             this.lbl1Flag.Size = new System.Drawing.Size(62, 16);
             this.lbl1Flag.TabIndex = 5;
@@ -222,7 +222,7 @@
             this.lbl0msg.Location = new System.Drawing.Point(12, 42);
             this.lbl0msg.Multiline = true;
             this.lbl0msg.Name = "lbl0msg";
-            this.lbl0msg.Size = new System.Drawing.Size(408, 71);
+            this.lbl0msg.Size = new System.Drawing.Size(439, 71);
             this.lbl0msg.TabIndex = 6;
             // 
             // AutoUpdateData
@@ -231,7 +231,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(432, 125);
+            this.ClientSize = new System.Drawing.Size(463, 125);
             this.Controls.Add(this.lbl0msg);
             this.Controls.Add(this.lbl1Flag);
             this.Controls.Add(this.groupBox1);
