@@ -249,8 +249,16 @@ namespace AutoUpdateData.Core.dal
             return null;
 
         }
-
-        public static string getSQLColumnsForDeleteByKeys(DataSet dsColumn, string strTablename, string[] tmpkeys, DataRow dvalue)
+        /// <summary>
+        /// true: top 1 exist, false: Delete
+        /// </summary>
+        /// <param name="isForDeleteOrExist"></param>
+        /// <param name="dsColumn"></param>
+        /// <param name="strTablename"></param>
+        /// <param name="tmpkeys"></param>
+        /// <param name="dvalue"></param>
+        /// <returns></returns>
+        public static string getSQLColumnsForDeleteByKeys(bool isForDeleteOrExist, DataSet dsColumn, string strTablename, string[] tmpkeys, DataRow dvalue)
         {
 
             //delete dbo.INVENTORY_PART_TAB where dd='xx' and bb='ddd'
@@ -266,7 +274,14 @@ namespace AutoUpdateData.Core.dal
                 //logger.DebugFormat("*************************表：{0} 的主键：{1}。", strTablename, tmpkeys);
                 var sb = new StringBuilder();
 
-                sb.Append(" delete ");
+                if (isForDeleteOrExist)
+                {
+                    sb.Append(" select top 1 * from ");
+                }
+                else
+                {
+                    sb.Append(" delete ");
+                }
                 sb.Append(" [dbo].[" + strTablename.Trim() + "] where ");
 
                 if (dsColumn != null)
@@ -278,7 +293,7 @@ namespace AutoUpdateData.Core.dal
                         var p = dvalue;
                         if (tmpkeys.Count() == 1)
                         {
-                            sb.Append(tmpkeys[0] + "='" + p[tmpkeys[0]].ToString().Trim() + "'");
+                            sb.Append(tmpkeys[0] + "='" + p[tmpkeys[0]].ToString().Replace("'", "").Trim() + "'");
                         }
                         else
                         {
@@ -286,11 +301,11 @@ namespace AutoUpdateData.Core.dal
                             {
                                 if (i == 0)
                                 {
-                                    sb.Append(tmpkeys[0] + "='" + p[tmpkeys[0]].ToString().Trim() + "'");
+                                    sb.Append(tmpkeys[0] + "='" + p[tmpkeys[0]].ToString().Replace("'", "").Trim() + "'");
                                 }
                                 else
                                 {
-                                    sb.Append(" and " + tmpkeys[i] + "='" + p[tmpkeys[i]].ToString().Trim() + "'");
+                                    sb.Append(" and " + tmpkeys[i] + "='" + p[tmpkeys[i]].ToString().Replace("'", "").Trim() + "'");
                                 }
                             }
                         }
@@ -311,7 +326,7 @@ namespace AutoUpdateData.Core.dal
         /// <param name="dsColumn"></param>
         /// <param name="strTablename"></param>
         /// <returns></returns>
-        public static string getSQLColumnsForUpdateByKeys(DataSet dsColumn, string[] strkeys, string strTablename, DataRow dvalue)
+        public static string getSQLColumnsForUpdateByKeys(DataSet dsColumn, string strTablename, string[] strkeys, DataRow dvalue)
         {
 
             //UPDATE [dbo].[INVENTORY_PART_TAB]
@@ -352,13 +367,13 @@ namespace AutoUpdateData.Core.dal
                             {
 
 
-                                sb.Append("[" + colname + "]='" + dvalue[colname].ToString() + "',");
+                                sb.Append("[" + colname + "]='" + dvalue[colname].ToString().Replace("'", "").Trim() + "',");
 
                             }
                             else
                             {
 
-                                sb.Append(" [" + colname + "]='" + dvalue[colname].ToString() + "'");
+                                sb.Append(" [" + colname + "]='" + dvalue[colname].ToString().Replace("'", "").Trim() + "'");
                             }
 
                         }
@@ -372,7 +387,7 @@ namespace AutoUpdateData.Core.dal
                             sb.Append(" where ");
                             if (strkeys.Count() == 1)
                             {
-                                sb.Append(strkeys[0] + "='" + dvalue[strkeys[0]].ToString().Trim() + "'");
+                                sb.Append(strkeys[0] + "='" + dvalue[strkeys[0]].ToString().Replace("'", "").Trim() + "'");
                             }
                             else
                             {
@@ -380,11 +395,11 @@ namespace AutoUpdateData.Core.dal
                                 {
                                     if (i == 0)
                                     {
-                                        sb.Append(strkeys[0] + "='" + dvalue[strkeys[0]].ToString().Trim() + "'");
+                                        sb.Append(strkeys[0] + "='" + dvalue[strkeys[0]].ToString().Replace("'", "").Trim() + "'");
                                     }
                                     else
                                     {
-                                        sb.Append(" and " + strkeys[i] + "='" + dvalue[strkeys[i]].ToString().Trim() + "'");
+                                        sb.Append(" and " + strkeys[i] + "='" + dvalue[strkeys[i]].ToString().Replace("'", "").Trim() + "'");
                                     }
 
                                 }
@@ -399,6 +414,7 @@ namespace AutoUpdateData.Core.dal
             return null;
 
         }
+
         /// <summary>
         /// 
         /// </summary>
@@ -431,14 +447,8 @@ namespace AutoUpdateData.Core.dal
 
                     foreach (DataRow row in item.Tables[0].Rows)
                     {
-                        //update mode
-                        updateMode(is1, strSQLinsert, tmpcolDS, item, row);
-                        //gen SQL all
-                        var tmpinstall = OracleDal.getSQLColumnsForInsert(tmpcolDS, item.DataSetName, row);
-                        if (!string.IsNullOrEmpty(tmpinstall))
-                        {
-                            strSQLinsert.Add(tmpinstall);
-                        }
+                        //update mode 1:d
+                        updateMode(strSQLinsert, tmpcolDS, item, row);
                     }
                     //upload to mssql 
                     allExecCount = updateToMSSQL(is1, item, strSQLinsert, setLastValue, "Upload ");
@@ -457,14 +467,9 @@ namespace AutoUpdateData.Core.dal
                         {
                             nextdiffCount++;
 
-                            //update mode
-                            updateMode(is1, strSQLinsert, tmpcolDS, item, item.Tables[0].Rows[i]);
-                            //gen sql by batch
-                            var tmpinstall = OracleDal.getSQLColumnsForInsert(tmpcolDS, item.DataSetName, item.Tables[0].Rows[i]);
-                            if (!string.IsNullOrEmpty(tmpinstall))
-                            {
-                                strSQLinsert.Add(tmpinstall);
-                            }
+                            //update mode and gen SQL
+                            updateMode(strSQLinsert, tmpcolDS, item, item.Tables[0].Rows[i]);
+
 
                             if (nextdiffCount % AutoUpdateData._txt1batchNum == 0)
                             {
@@ -501,11 +506,23 @@ namespace AutoUpdateData.Core.dal
             }
         }
 
-        public static void updateMode(bool _is1, List<String> strSQLinsert, DataSet tmpcolDS, DataSet item, DataRow row)
+        /// <summary>
+        /// Update Mode： 1-Deleted First,Then Adding
+        /// </summary>
+        /// <param name="_is1"></param>
+        /// <param name="strSQLinsert"></param>
+        /// <param name="tmpcolDS"></param>
+        /// <param name="item"></param>
+        /// <param name="row"></param>
+        public static void updateMode(List<String> strSQLinsert, DataSet tmpcolDS, DataSet item, DataRow row)
         {
 
             //get all key for table
             var tmpKeyname = item.DataSetName + "_KEY";
+            var tmpExistForSQL = "";
+            var tmpDeleteForSQL = "";
+            var tmpUpdateForSQL = "";
+
             if (!AutoUpdateData._tableKeyList.ContainsKey(tmpKeyname))
             {
                 logger.DebugFormat("1*****************表：{0},无主键，无法：1-删除后再追加。", item.DataSetName);
@@ -520,13 +537,34 @@ namespace AutoUpdateData.Core.dal
                 }
                 else
                 {
-                    var tmpDeleteForSQL = OracleDal.getSQLColumnsForDeleteByKeys(tmpcolDS, item.DataSetName, tmpkeys, row);
+                    tmpExistForSQL = OracleDal.getSQLColumnsForDeleteByKeys(true, tmpcolDS, item.DataSetName, tmpkeys, row);
 
-                    if (!string.IsNullOrEmpty(tmpDeleteForSQL))
-                    {
-                        strSQLinsert.Add(tmpDeleteForSQL);
-                    }
+                    tmpDeleteForSQL = OracleDal.getSQLColumnsForDeleteByKeys(false, tmpcolDS, item.DataSetName, tmpkeys, row);
+
+                    tmpUpdateForSQL = OracleDal.getSQLColumnsForUpdateByKeys(tmpcolDS, item.DataSetName, tmpkeys, row);
+
+
+
+
                 }
+            }
+
+            //var tmpExitThis = DbHelperSQL.Exists(tmpExistForSQL);
+            //if (tmpExitThis)
+            //{
+
+            //}
+            // for mode 1
+            if (!string.IsNullOrEmpty(tmpDeleteForSQL))
+            {
+                strSQLinsert.Add(tmpDeleteForSQL);
+            }
+            //for insert
+            //gen sql by batch
+            var tmpinstall = OracleDal.getSQLColumnsForInsert(tmpcolDS, item.DataSetName, row);
+            if (!string.IsNullOrEmpty(tmpinstall))
+            {
+                strSQLinsert.Add(tmpinstall);
             }
 
 
