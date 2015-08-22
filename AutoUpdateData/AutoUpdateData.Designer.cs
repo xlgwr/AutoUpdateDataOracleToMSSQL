@@ -78,35 +78,35 @@
             this.tmenu2Set,
             this.tmenu3Exit});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(117, 92);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(153, 114);
             this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
             // 
             // tmenu0Start
             // 
             this.tmenu0Start.Name = "tmenu0Start";
-            this.tmenu0Start.Size = new System.Drawing.Size(116, 22);
-            this.tmenu0Start.Text = "开始(&S)";
+            this.tmenu0Start.Size = new System.Drawing.Size(152, 22);
+            this.tmenu0Start.Text = "Start(&S)";
             this.tmenu0Start.Click += new System.EventHandler(this.tmenu0Start_Click);
             // 
             // tmenu1Stop
             // 
             this.tmenu1Stop.Name = "tmenu1Stop";
-            this.tmenu1Stop.Size = new System.Drawing.Size(116, 22);
-            this.tmenu1Stop.Text = "停止(&T)";
+            this.tmenu1Stop.Size = new System.Drawing.Size(152, 22);
+            this.tmenu1Stop.Text = "Stop(&T)";
             this.tmenu1Stop.Click += new System.EventHandler(this.tmenu1Stop_Click);
             // 
             // tmenu2Set
             // 
             this.tmenu2Set.Name = "tmenu2Set";
-            this.tmenu2Set.Size = new System.Drawing.Size(116, 22);
-            this.tmenu2Set.Text = "设置(&C)";
+            this.tmenu2Set.Size = new System.Drawing.Size(152, 22);
+            this.tmenu2Set.Text = "SetUp(&C)";
             this.tmenu2Set.Click += new System.EventHandler(this.tmenu2Set_Click);
             // 
             // tmenu3Exit
             // 
             this.tmenu3Exit.Name = "tmenu3Exit";
-            this.tmenu3Exit.Size = new System.Drawing.Size(116, 22);
-            this.tmenu3Exit.Text = "退出(&E)";
+            this.tmenu3Exit.Size = new System.Drawing.Size(152, 22);
+            this.tmenu3Exit.Text = "Exit(&E)";
             this.tmenu3Exit.Click += new System.EventHandler(this.tmenu3Exit_Click);
             // 
             // groupBox1

@@ -193,9 +193,9 @@ namespace AutoUpdateData
         /// 执行多条SQL语句，实现数据库事务。
         /// </summary>
         /// <param name="SQLStringList">多条SQL语句</param>		
-        public static int ExecuteSqlTran(List<String> SQLStringList,bool is1or2)
+        public static int ExecuteSqlTran(List<String> SQLStringList, bool is1or2)
         {
-            var tmpcount=SQLStringList.Count;
+            var tmpcount = SQLStringList.Count;
             if (is1or2)
             {
                 tmpcount = tmpcount / 2;
@@ -221,10 +221,22 @@ namespace AutoUpdateData
                         }
                     }
                     tx.Commit();
+
+                    if (count==1)
+                    {
+                        return count;
+                    }
+
+                    if (count == tmpcount)
+                    {
+                        return tmpcount;
+                    }
+
                     if (is1or2)
                     {
                         count = count / 2;
                     }
+                    
                     return count;
                 }
                 catch

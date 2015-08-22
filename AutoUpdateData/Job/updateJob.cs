@@ -76,6 +76,8 @@ namespace AutoUpdateData.Service.Job
 
                                 tmpds.DataSetName = td[0].Trim();
 
+                                //test
+                                
                                 switch (item.Value)
                                 {
                                     case 1:
@@ -142,7 +144,7 @@ namespace AutoUpdateData.Service.Job
                                         tmpds.DataSetName = td[0].Trim();
                                         break;
                                     case 2:
-                                        //key: 0 table | add Id 2 | order by 3 from config file
+                                        //key: 0 table | add Id 2 | order by 3 |datefrom config file
                                         //get the last ID
 
                                         //get from SQL by id;
@@ -162,7 +164,20 @@ namespace AutoUpdateData.Service.Job
 
                                         //get all count form oracle db
 
-                                        allCount = OracleDal.GetCount(td[0].Trim(), tmpwhere);
+                                        OracleParameter[] parameters2 = { new OracleParameter(":gxsj", OracleDbType.Varchar2, 10) };
+                                        parameters2[0].Value = DateTime.Now.AddDays(-3).ToString("yyyy-MM-dd") + " 00:00:00";// HH   
+
+                                        if (tmpTRANSACTION_ID == 1)
+                                        {
+                                            logger.DebugFormat("******************************{0} 初始更新，加限时间-3天。", td[0]);
+                                            tmpwhere += " and " + td[3] + ">to_date(:gxsj,'yyyy-MM-dd HH24:mi:ss')";
+                                            allCount = OracleDal.GetCount(td[0].Trim(), tmpwhere, parameters2);
+                                        }
+                                        else
+                                        {
+                                            allCount = OracleDal.GetCount(td[0].Trim(), tmpwhere);
+                                        }
+
                                         logger.DebugFormat("*********Table: {0},已上传：{1} ,Oracle 现在有数据：{2}.当日：{3}", td[0], preNum, allCount, DateTime.Now.ToString("yyyyMMdd"));
 
                                         if (preNum >= allCount)
@@ -178,7 +193,15 @@ namespace AutoUpdateData.Service.Job
                                             {
                                                 tmporderby = "";
                                             }
-                                            tmpds = OracleDal.GetData(td[0].Trim(), tmpwhere, tmporderby, preNum, tmptoUpdate);
+                                            if (tmpTRANSACTION_ID == 1)
+                                            {
+                                                tmpds = OracleDal.GetData(td[0].Trim(), tmpwhere, tmporderby, preNum, tmptoUpdate, parameters2);
+                                            }
+                                            else
+                                            {
+                                                tmpds = OracleDal.GetData(td[0].Trim(), tmpwhere, tmporderby, preNum, tmptoUpdate);
+                                            }
+
 
                                         }
 
@@ -303,11 +326,12 @@ namespace AutoUpdateData.Service.Job
                                         break;
                                 }
                                 //**************************同步表
-                                OracleDal.StartToMSSQL(_is1, tmpds, tmpKeyLast);
+                                OracleDal.StartToMSSQL(_is1, false, tmpds, tmpKeyLast);
 
                                 //for father and son
                                 if (isSon)
                                 {
+                                    var tmpallSonCount = 0;
                                     if (tmpds.Tables.Count > 0)
                                     {
                                         var tmpkeyValue = AutoUpdateData._tableKeyList[tmpKeyname];
@@ -323,6 +347,7 @@ namespace AutoUpdateData.Service.Job
 
                                             foreach (DataRow p in tmpds.Tables[0].Rows)
                                             {
+                                                string sonTmpsonwhere = "";
                                                 try
                                                 {
                                                     var tmpsonwhere = "SELECT * FROM " + td[3].Trim() + " where ";
@@ -348,21 +373,27 @@ namespace AutoUpdateData.Service.Job
                                                         }
 
                                                     }
+                                                    //
+                                                    sonTmpsonwhere = tmpsonwhere;
                                                     //get data
                                                     var tmpSon = OracleDal.Query(tmpsonwhere);
                                                     tmpSon.DataSetName = td[3].Trim();
 
                                                     //**************************同步子表
-                                                    OracleDal.StartToMSSQL(_is1, tmpSon, "");
+                                                    tmpallSonCount += OracleDal.StartToMSSQL(_is1, true, tmpSon, "");
                                                 }
                                                 catch (Exception ex)
                                                 {
                                                     logger.ErrorFormat("****************************更新主表：{0},记录：{1}  -->的子表失败。{2}", td[0], (p[0].ToString() + "," + p[1].ToString() + "," + p[2].ToString()), ex.Message);
+                                                    OracleDal.ilog(td[3].Trim(), allCount, AutoUpdateData._CONTRACT + ",Fail", "AutoUpdateOracleMSSQL: SQL:" + sonTmpsonwhere + " Fail. Error:" + ex.Message, AutoUpdateData._ipAddMac);
+
                                                     continue;
                                                 }
 
 
                                             }
+                                            OracleDal.ilog(td[3].Trim(), tmpallSonCount, AutoUpdateData._CONTRACT + ",Success", "AutoUpdateOracleMSSQL:Update Count:" + tmpallSonCount + " Success.", AutoUpdateData._ipAddMac);
+
 
                                         }
 
@@ -401,7 +432,7 @@ namespace AutoUpdateData.Service.Job
                                     var tmpds = OracleDal.GetData(item.Key, "", "", preNum, tmptoUpdate);
                                     tmpds.DataSetName = item.Key;
 
-                                    OracleDal.StartToMSSQL(_is1, tmpds, "");
+                                    OracleDal.StartToMSSQL(_is1, false, tmpds, "");
 
                                 }
                             }
@@ -409,7 +440,7 @@ namespace AutoUpdateData.Service.Job
                         }
                         catch (Exception ex)
                         {
-                            AutoUpdateData.jobflag("Error:"+ex.Message);
+                            AutoUpdateData.jobflag("Error:" + ex.Message);
                             logger.ErrorFormat("{0}表同步有问题，开始同步下个表。Error:{1}.", item.Key, ex.Message);
                             continue;
                         }

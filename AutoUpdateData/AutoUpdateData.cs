@@ -454,7 +454,7 @@ namespace AutoUpdateData
         private void tmenu3Exit_Click(object sender, EventArgs e)
         {
             this.TopMost = false;
-            if (MessageBox.Show("Are you sure to exit！", "notice", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            if (MessageBox.Show("Are you sure to exit AutoUpdateData！", "Notice", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 try
                 {
@@ -598,7 +598,7 @@ namespace AutoUpdateData
                         tmpds_INVENTORY_PART_TAB.DataSetName = "INVENTORY_PART_TAB";
 
                         //**************************同步 INVENTORY_PART_TAB
-                        OracleDal.StartToMSSQL(true, tmpds_INVENTORY_PART_TAB, "");
+                        OracleDal.StartToMSSQL(true,false,tmpds_INVENTORY_PART_TAB, "");
                         logger.DebugFormat("*************initFirst INVENTORY_PART_TAB 成功.");
                         //
                     }

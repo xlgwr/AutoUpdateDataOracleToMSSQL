@@ -265,7 +265,6 @@ namespace AutoUpdateData.Core.dal
             {
                 //logger.DebugFormat("*************************表：{0} 的主键：{1}。", strTablename, tmpkeys);
                 var sb = new StringBuilder();
-                var sbvalue = new StringBuilder();
 
                 sb.Append(" delete ");
                 sb.Append(" [dbo].[" + strTablename.Trim() + "] where ");
@@ -295,7 +294,7 @@ namespace AutoUpdateData.Core.dal
                                 }
                             }
                         }
-                        return sb.Append(sbvalue.ToString()).ToString();
+                        return sb.ToString();
 
                     }
                 }
@@ -304,28 +303,125 @@ namespace AutoUpdateData.Core.dal
 
         }
 
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="dsColumn"></param>
+        /// <param name="strTablename"></param>
+        /// <returns></returns>
+        public static string getSQLColumnsForUpdateByKeys(DataSet dsColumn, string[] strkeys, string strTablename, DataRow dvalue)
+        {
+
+            //UPDATE [dbo].[INVENTORY_PART_TAB]
+            //   SET [PART_NO] = <PART_NO, varchar(25),>
+            //      ,[CONTRACT] = <CONTRACT, varchar(5),>
+            //      ,[ASSET_CLASS] = <ASSET_CLASS, varchar(2),>
+            //      ,[ACCOUNTING_GROUP] = <ACCOUNTING_GROUP, varchar(5),>
+            //      ,[PRIME_COMMODITY] = <PRIME_COMMODITY, varchar(5),>
+            //      ,[LAST_ACTIVITY_DATE] = <LAST_ACTIVITY_DATE, datetime,>
+            //      ,[HAZARD_CODE] = <HAZARD_CODE, varchar(6),>
+            // WHERE <搜索条件,,>
+
+            var sb = new StringBuilder();
+
+            sb.Append(" UPDATE ");
+            sb.Append(" [dbo].[" + strTablename.Trim() + "] SET ");
+
+            if (dsColumn != null)
+            {
+                if (dsColumn.Tables.Count > 0)
+                {
+                    var tb = dsColumn.Tables[0];
+                    if (tb.Rows.Count > 0)
+                    {
+                        var tmpcount = tb.Rows.Count;
+                        for (int i = 0; i < tmpcount; i++)
+                        {
+
+                            var colname = tb.Rows[i]["COLUMN_NAME"].ToString();
+
+                            if (strkeys.Contains(colname))
+                            {
+                                //remove keys
+                                continue;
+                            }
+
+                            if (i < tmpcount - 1)
+                            {
+
+
+                                sb.Append("[" + colname + "]='" + dvalue[colname].ToString() + "',");
+
+                            }
+                            else
+                            {
+
+                                sb.Append(" [" + colname + "]='" + dvalue[colname].ToString() + "'");
+                            }
+
+                        }
+                        //where
+                        if (strkeys.Count() <= 0)
+                        {
+                            return null;
+                        }
+                        else
+                        {
+                            sb.Append(" where ");
+                            if (strkeys.Count() == 1)
+                            {
+                                sb.Append(strkeys[0] + "='" + dvalue[strkeys[0]].ToString().Trim() + "'");
+                            }
+                            else
+                            {
+                                for (int i = 0; i < strkeys.Count(); i++)
+                                {
+                                    if (i == 0)
+                                    {
+                                        sb.Append(strkeys[0] + "='" + dvalue[strkeys[0]].ToString().Trim() + "'");
+                                    }
+                                    else
+                                    {
+                                        sb.Append(" and " + strkeys[i] + "='" + dvalue[strkeys[i]].ToString().Trim() + "'");
+                                    }
+
+                                }
+                            }
+
+                            return sb.ToString();
+                        }
+
+                    }
+                }
+            }
+            return null;
+
+        }
         /// <summary>
         /// 
         /// </summary>
         /// <param name="is1"></param>
         /// <param name="item"></param>
         /// <param name="setLastValue"></param>
-        public static void StartToMSSQL(bool is1, DataSet item, string setLastValue)
+        public static int StartToMSSQL(bool is1, bool isSon, DataSet item, string setLastValue)
         {
-
+            var allExecCount = 0;
             if (item.Tables.Count <= 0)
             {
                 logger.DebugFormat("开始同步表：{0},表中无任何记录。", item.DataSetName);
-                return;
+                return allExecCount;
             }
             logger.DebugFormat("开始同步表：{0}，更新条数为：{1}。更新方式：{2}", item.DataSetName, item.Tables[0].Rows.Count, AutoUpdateData._updatemode);
+
+            //get Allcount
+            var allCount = item.Tables[0].Rows.Count;
             try
             {
                 //get colmuns
                 var tmpcolDS = OracleDal.GetTableColumns(item.DataSetName);
 
-                //get Allcount
-                var allCount = item.Tables[0].Rows.Count;
                 //gen sql
 
                 if (allCount <= AutoUpdateData._txt1batchNum)
@@ -345,7 +441,7 @@ namespace AutoUpdateData.Core.dal
                         }
                     }
                     //upload to mssql 
-                    updateToMSSQL(is1, item, strSQLinsert, setLastValue, "Upload ");
+                    allExecCount = updateToMSSQL(is1, item, strSQLinsert, setLastValue, "Upload ");
 
                 }
                 else
@@ -377,7 +473,7 @@ namespace AutoUpdateData.Core.dal
                         }
 
                         //upload to mssql 
-                        updateToMSSQL(is1, item, strSQLinsert, setLastValue, "Upload ");
+                        allExecCount += updateToMSSQL(is1, item, strSQLinsert, setLastValue, "Upload ");
 
 
                         tmpCount++;
@@ -385,10 +481,23 @@ namespace AutoUpdateData.Core.dal
                     } while (nextdiffCount < allCount);
 
                 }
+                if (!isSon)
+                {
+                    ilog(item.DataSetName, allCount, AutoUpdateData._CONTRACT + ",Success", "AutoUpdateOracleMSSQL:Update Count:" + allCount + " Success.", AutoUpdateData._ipAddMac);
+
+                }
+                return allExecCount;
+
             }
             catch (Exception ex)
             {
+                if (!isSon)
+                {
+                    ilog(item.DataSetName, allCount, AutoUpdateData._CONTRACT + ",Fail", "AutoUpdateOracleMSSQL:Update Count:" + allCount + " Fail. Error:" + ex.Message, AutoUpdateData._ipAddMac);
+
+                }
                 logger.ErrorFormat("*************{0}:更新出现问题，继续同步下个表.error：{1}", item.DataSetName, ex.Message);
+                return 0;
             }
         }
 
@@ -422,8 +531,9 @@ namespace AutoUpdateData.Core.dal
 
 
         }
-        private static void updateToMSSQL(bool _is1, DataSet item, List<string> strSQLinsert, string setLastValue, string msg)
+        private static int updateToMSSQL(bool _is1, DataSet item, List<string> strSQLinsert, string setLastValue, string msg)
         {
+            var tmpcount = strSQLinsert.Count;
             try
             {
 
@@ -438,7 +548,6 @@ namespace AutoUpdateData.Core.dal
                     {
                         getNum = 0;
                     }
-                    var tmpcount = strSQLinsert.Count;
                     if (_is1)
                     {
                         tmpcount = tmpcount / 2;
@@ -458,19 +567,19 @@ namespace AutoUpdateData.Core.dal
                     }
 
                     logger.DebugFormat(msg + " Table:[{0}],Success Count:{1}", item.DataSetName, dd);
-                    ilog(item.DataSetName, dd, AutoUpdateData._CONTRACT + ",Success", "AutoUpdateOracleMSSQL:Update Count:" + dd + " Success.", AutoUpdateData._ipAddMac);
+                    //ilog(item.DataSetName, dd, AutoUpdateData._CONTRACT + ",Success", "AutoUpdateOracleMSSQL:Update Count:" + dd + " Success.", AutoUpdateData._ipAddMac);
 
                 }
                 else
                 {
-                    ilog(item.DataSetName, dd, AutoUpdateData._CONTRACT + ",Fail", "AutoUpdateOracleMSSQL:Update Count:" + dd + " Fail.", AutoUpdateData._ipAddMac);
+                    //ilog(item.DataSetName, dd, AutoUpdateData._CONTRACT + ",Fail", "AutoUpdateOracleMSSQL:Update Count:" + dd + " Fail.", AutoUpdateData._ipAddMac);
                     logger.DebugFormat(msg + " Fail Table:[{0}],Success Count:{1}", item.DataSetName, dd);
                 }
-
+                return dd;
             }
             catch (Exception ex)
             {
-
+                //logger.ErrorFormat(msg + " Fail Table:[{0}],Success Count:{1},Msg:{2}.", item.DataSetName, tmpcount, ex.Message);
                 throw new Exception(ex.Message);
             }
 
