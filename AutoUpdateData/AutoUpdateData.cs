@@ -197,7 +197,7 @@ namespace AutoUpdateData
                 {
                    // _scheduler.DeleteJob(_upload_job.Key);
                     jobflag("Wait Other Job to Complete.Please Wait.Thank Your.");
-                    _scheduler.Shutdown(true);
+                    _scheduler.Shutdown();//true
                     _scheduler = StdSchedulerFactory.GetDefaultScheduler();
                     _scheduler.Start();
                     lbl0msg.Text = "Restart Success,and restart OK.";                    
@@ -633,8 +633,12 @@ namespace AutoUpdateData
         private void reStartRToolStripMenuItem_Click(object sender, EventArgs e)
         {
             //
+            _isRestart = true;
             tInitIni(false);
             updateJob(true);
+            
         }
+
+        public static bool _isRestart { get; set; }
     }
 }

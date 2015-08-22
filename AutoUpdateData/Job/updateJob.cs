@@ -24,7 +24,7 @@ namespace AutoUpdateData.Service.Job
                 return;
             }
             AutoUpdateData._isUploading = true;
-
+            AutoUpdateData._isRestart = false;
             //get sql update mode
             //1-删除后再追加 2-直接更新
             if (AutoUpdateData._updatemode.StartsWith("1"))
@@ -77,7 +77,7 @@ namespace AutoUpdateData.Service.Job
                                 tmpds.DataSetName = td[0].Trim();
 
                                 //test
-                                
+
                                 switch (item.Value)
                                 {
                                     case 1:
@@ -455,12 +455,16 @@ namespace AutoUpdateData.Service.Job
             }
             catch (Exception ex)
             {
-                AutoUpdateData.jobflag("Error:" + ex.Message);
-                logger.Error(ex);
+                if (!AutoUpdateData._isRestart)
+                {
+                    AutoUpdateData.jobflag("Error:" + ex.Message);
+                    logger.Error(ex);
+                }
             }
             finally
             {
                 AutoUpdateData._isUploading = false;
+                AutoUpdateData._isRestart = false;
             }
 
         }
