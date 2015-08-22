@@ -41,7 +41,7 @@ namespace AutoUpdateData.Service.Job
             }
 
             logger.DebugFormat("执行更新任务!!!!!!!!!!!!!!!");
-            AutoUpdateData.jobflag("Is Runing,Next Time:" + context.NextFireTimeUtc.Value.DateTime);
+            AutoUpdateData.jobflag("Is Runing, Next Exec Job Time:" + context.NextFireTimeUtc.Value.DateTime);
             try
             {
                 //init even tInitIniToday
@@ -170,7 +170,7 @@ namespace AutoUpdateData.Service.Job
                                         if (tmpTRANSACTION_ID == 1)
                                         {
                                             logger.DebugFormat("******************************{0} 初始更新，加限时间-3天。", td[0]);
-                                            tmpwhere += " and " + td[3] + ">to_date(:gxsj,'yyyy-MM-dd HH24:mi:ss')";
+                                            tmpwhere += " and " + td[3] + ">=to_date(:gxsj,'yyyy-MM-dd HH24:mi:ss')";
                                             allCount = OracleDal.GetCount(td[0].Trim(), tmpwhere, parameters2);
                                         }
                                         else
@@ -220,7 +220,7 @@ namespace AutoUpdateData.Service.Job
                                             AutoUpdateData._iniToday.IniWriteValue("TableKeyLastValue", tmpKeyLast, tmpLastWhereDateTime.ToString());
                                         }
 
-                                        tmpwhere += " and " + td[1] + ">to_date(:gxsj,'yyyy-MM-dd HH24:mi:ss')";
+                                        tmpwhere += " and " + td[1] + ">=to_date(:gxsj,'yyyy-MM-dd HH24:mi:ss')";
                                         OracleParameter[] parameters3 = { new OracleParameter(":gxsj", OracleDbType.Varchar2, 10) };
                                         //no time
 
@@ -269,7 +269,7 @@ namespace AutoUpdateData.Service.Job
                                             tmpORG_START_DATE = DateTime.Now;
                                         }
                                         // set tmpwhere
-                                        tmpwhere += " and " + td[1] + ">to_date(:gxsj,'yyyy-MM-dd HH24:mi:ss')";
+                                        tmpwhere += " and " + td[1] + ">=to_date(:gxsj,'yyyy-MM-dd HH24:mi:ss')";
                                         OracleParameter[] parameters4 = { new OracleParameter(":gxsj", OracleDbType.Varchar2, 10) };
                                         //no time
                                         parameters4[0].Value = DateTime.Now.ToString("yyyy-MM-dd") + " 00:00:00";// HH

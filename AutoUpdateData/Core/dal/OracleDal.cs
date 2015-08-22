@@ -410,10 +410,10 @@ namespace AutoUpdateData.Core.dal
             var allExecCount = 0;
             if (item.Tables.Count <= 0)
             {
-                logger.DebugFormat("开始同步表：{0},表中无任何记录。", item.DataSetName);
+                logger.DebugFormat("#####################################开始同步表：{0},表中无任何记录。", item.DataSetName);
                 return allExecCount;
             }
-            logger.DebugFormat("开始同步表：{0}，更新条数为：{1}。更新方式：{2}", item.DataSetName, item.Tables[0].Rows.Count, AutoUpdateData._updatemode);
+            logger.DebugFormat("#####################################开始同步表：{0}，更新条数为：{1}。更新方式：{2}", item.DataSetName, item.Tables[0].Rows.Count, AutoUpdateData._updatemode);
 
             //get Allcount
             var allCount = item.Tables[0].Rows.Count;

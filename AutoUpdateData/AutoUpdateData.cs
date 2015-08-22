@@ -99,14 +99,27 @@ namespace AutoUpdateData
             this.TopMost = true;
             this.btn0Save.Enabled = false;
             this.groupBox1.Enabled = false;
+            this.lbl0msg.ReadOnly = true;
+            this.lbl0msg.Multiline = true;
+            lbl0msg.WordWrap = true;
+            lbl0msg.ScrollBars = ScrollBars.Both;
 
 
             _tableList = new Dictionary<string, int>();
             _tableKeyList = new Dictionary<string, string>();
             _dsList = new List<DataSet>();
             _isUploading = false;
+
+
+
+            _txt0Rtime = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["Common.retime"]);
+            _txt1batchNum = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["Common.batchNum"]);
+            _updatemode = System.Configuration.ConfigurationManager.AppSettings["Common.updateWay"];
+
             _CONTRACT = System.Configuration.ConfigurationManager.AppSettings["CONTRACT"].ToString();
             _PRIME_COMMODITY = System.Configuration.ConfigurationManager.AppSettings["PRIME_COMMODITY"].ToString();
+
+
 
             if (string.IsNullOrEmpty(_CONTRACT))
             {
@@ -166,9 +179,6 @@ namespace AutoUpdateData
         }
         void initSet()
         {
-            _txt0Rtime = Convert.ToInt32(txt0Rtime.Text);
-            _txt1batchNum = Convert.ToInt32(txt1batchNum.Text);
-            _updatemode = cbox0updateWay.Text;
 
             logger.Debug("====================以下参数修改后需重启生效===================");
             logger.DebugFormat("====================Synchronization(min):{0}", _txt0Rtime);
@@ -184,15 +194,12 @@ namespace AutoUpdateData
             {
                 if (!_scheduler.IsShutdown)
                 {
-                    _scheduler.DeleteJob(_upload_job.Key);
-                    _scheduler.Shutdown();
+                   // _scheduler.DeleteJob(_upload_job.Key);
+                    jobflag("Wait Other Job to Complete.Please Wait.Thank Your.");
+                    _scheduler.Shutdown(true);
                     _scheduler = StdSchedulerFactory.GetDefaultScheduler();
                     _scheduler.Start();
-                    lbl0msg.Text = "Save Success,and restart OK.";
-                    logger.Debug("====================以下参数修改后需重启生效===================");
-                    logger.DebugFormat("====================Synchronization(min):{0}", _txt0Rtime);
-                    logger.DebugFormat("====================Batch Number：{0}", _txt1batchNum);
-                    logger.DebugFormat("====================Update mode：{0}", _updatemode);
+                    lbl0msg.Text = "Restart Success,and restart OK.";                    
                 }
 
             }
@@ -302,6 +309,7 @@ namespace AutoUpdateData
         {
             try
             {
+                
                 var tmpfile = AppDomain.CurrentDomain.BaseDirectory + "\\Set.ini";
 
                 if (!File.Exists(tmpfile))
@@ -328,14 +336,15 @@ namespace AutoUpdateData
 
                 //ini.IniWriteValue("Tables", "CONTRACT", "sh");//sh：上海,tai:泰国,jp:日本
 
-                _ini.IniWriteValue("Common", "retime", System.Configuration.ConfigurationManager.AppSettings["Common.retime"]);
-                _ini.IniWriteValue("Common", "batchNum", System.Configuration.ConfigurationManager.AppSettings["Common.batchNum"]);
+                _ini.IniWriteValue("Common", "retime", _txt0Rtime.ToString());
+                _ini.IniWriteValue("Common", "batchNum", _txt1batchNum.ToString());
                 //1-删除后再追加 2-直接更新
-                _ini.IniWriteValue("Common", "updateWay", System.Configuration.ConfigurationManager.AppSettings["Common.updateWay"]);//2-Direct Update
+                _ini.IniWriteValue("Common", "updateWay", _updatemode);//2-Direct Update
 
                 //init first
                 //_ini.IniWriteValue("InitFirst", "FristDownload", "0");//System.Configuration.ConfigurationManager.AppSettings["InitFirst.FristDownload"]);//0:没有首次导入，1：已首次导入。
                 //_ini.IniWriteValue("InitFirst", "FristDownloadtime", System.Configuration.ConfigurationManager.AppSettings["InitFirst.FristDownloadtime"]);
+
 
 
                 if (isWriteOrRead)
@@ -536,10 +545,12 @@ namespace AutoUpdateData
                 _tmpFlagMsg.Text = msg;
                 if (msg.StartsWith("Error:"))
                 {
+                    _tmpFlagMsg.BackColor = Color.Red;
                     _tmpNotifyIcon.Icon = _stop;
                 }
                 else
                 {
+                    _tmpFlagMsg.BackColor = Color.DarkSeaGreen;
                     _tmpNotifyIcon.Icon = _run;
                 }
             }));
@@ -547,7 +558,7 @@ namespace AutoUpdateData
 
         public static int _txt1batchNum { get; set; }
         public static string _updatemode { get; set; }//1-删除后再追加 2-直接更新
-        public static Label _tmpFlagMsg;
+        public static TextBox _tmpFlagMsg;
         public static NotifyIcon _tmpNotifyIcon;
         public int _txt0Rtime { get; set; }
 
@@ -617,5 +628,12 @@ namespace AutoUpdateData
         public string _getInitFlag { get; set; }
 
         public string _getInitFlagTime { get; set; }
+
+        private void reStartRToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //
+            tInitIni(false);
+            updateJob(true);
+        }
     }
 }

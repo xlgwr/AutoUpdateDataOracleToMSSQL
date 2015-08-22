@@ -23,7 +23,6 @@ namespace AutoUpdateData
         public DbHelperSQL()
         {
         }
-
         #region 公用方法
         /// <summary>
         /// 判断是否存在某表的某个字段

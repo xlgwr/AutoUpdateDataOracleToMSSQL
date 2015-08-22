@@ -24,8 +24,8 @@ namespace AutoUpdateData
         public static string connectionString = System.Configuration.ConfigurationManager.AppSettings["DBOracle11"].ToString();
         public DbHelperOra()
         {
-        }
 
+        }
         #region 公用方法
 
         public static int GetMaxID(string FieldName, string TableName)

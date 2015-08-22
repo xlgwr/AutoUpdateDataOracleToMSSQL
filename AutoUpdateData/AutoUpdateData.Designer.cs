@@ -35,6 +35,7 @@
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.tmenu0Start = new System.Windows.Forms.ToolStripMenuItem();
             this.tmenu1Stop = new System.Windows.Forms.ToolStripMenuItem();
+            this.reStartRToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tmenu2Set = new System.Windows.Forms.ToolStripMenuItem();
             this.tmenu3Exit = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -46,7 +47,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.txt0Rtime = new System.Windows.Forms.TextBox();
             this.lbl1Flag = new System.Windows.Forms.Label();
-            this.lbl0msg = new System.Windows.Forms.Label();
+            this.lbl0msg = new System.Windows.Forms.TextBox();
             this.contextMenuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
@@ -75,37 +76,45 @@
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tmenu0Start,
             this.tmenu1Stop,
+            this.reStartRToolStripMenuItem,
             this.tmenu2Set,
             this.tmenu3Exit});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(153, 114);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(135, 114);
             this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
             // 
             // tmenu0Start
             // 
             this.tmenu0Start.Name = "tmenu0Start";
-            this.tmenu0Start.Size = new System.Drawing.Size(152, 22);
+            this.tmenu0Start.Size = new System.Drawing.Size(134, 22);
             this.tmenu0Start.Text = "Start(&S)";
             this.tmenu0Start.Click += new System.EventHandler(this.tmenu0Start_Click);
             // 
             // tmenu1Stop
             // 
             this.tmenu1Stop.Name = "tmenu1Stop";
-            this.tmenu1Stop.Size = new System.Drawing.Size(152, 22);
+            this.tmenu1Stop.Size = new System.Drawing.Size(134, 22);
             this.tmenu1Stop.Text = "Stop(&T)";
             this.tmenu1Stop.Click += new System.EventHandler(this.tmenu1Stop_Click);
+            // 
+            // reStartRToolStripMenuItem
+            // 
+            this.reStartRToolStripMenuItem.Name = "reStartRToolStripMenuItem";
+            this.reStartRToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.reStartRToolStripMenuItem.Text = "ReStart(&R)";
+            this.reStartRToolStripMenuItem.Click += new System.EventHandler(this.reStartRToolStripMenuItem_Click);
             // 
             // tmenu2Set
             // 
             this.tmenu2Set.Name = "tmenu2Set";
-            this.tmenu2Set.Size = new System.Drawing.Size(152, 22);
+            this.tmenu2Set.Size = new System.Drawing.Size(134, 22);
             this.tmenu2Set.Text = "SetUp(&C)";
             this.tmenu2Set.Click += new System.EventHandler(this.tmenu2Set_Click);
             // 
             // tmenu3Exit
             // 
             this.tmenu3Exit.Name = "tmenu3Exit";
-            this.tmenu3Exit.Size = new System.Drawing.Size(152, 22);
+            this.tmenu3Exit.Size = new System.Drawing.Size(134, 22);
             this.tmenu3Exit.Text = "Exit(&E)";
             this.tmenu3Exit.Click += new System.EventHandler(this.tmenu3Exit_Click);
             // 
@@ -199,7 +208,7 @@
             this.lbl1Flag.AutoSize = true;
             this.lbl1Flag.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.lbl1Flag.ForeColor = System.Drawing.Color.Red;
-            this.lbl1Flag.Location = new System.Drawing.Point(156, 9);
+            this.lbl1Flag.Location = new System.Drawing.Point(188, 9);
             this.lbl1Flag.Name = "lbl1Flag";
             this.lbl1Flag.Size = new System.Drawing.Size(62, 16);
             this.lbl1Flag.TabIndex = 5;
@@ -207,14 +216,14 @@
             // 
             // lbl0msg
             // 
-            this.lbl0msg.AutoSize = true;
-            this.lbl0msg.Font = new System.Drawing.Font("宋体", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.lbl0msg.ForeColor = System.Drawing.Color.Red;
-            this.lbl0msg.Location = new System.Drawing.Point(12, 60);
+            this.lbl0msg.BackColor = System.Drawing.Color.DarkSeaGreen;
+            this.lbl0msg.Font = new System.Drawing.Font("宋体", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.lbl0msg.ForeColor = System.Drawing.Color.Black;
+            this.lbl0msg.Location = new System.Drawing.Point(12, 42);
+            this.lbl0msg.Multiline = true;
             this.lbl0msg.Name = "lbl0msg";
-            this.lbl0msg.Size = new System.Drawing.Size(55, 14);
-            this.lbl0msg.TabIndex = 3;
-            this.lbl0msg.Text = "notice";
+            this.lbl0msg.Size = new System.Drawing.Size(408, 71);
+            this.lbl0msg.TabIndex = 6;
             // 
             // AutoUpdateData
             // 
@@ -222,9 +231,9 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(390, 125);
-            this.Controls.Add(this.lbl1Flag);
+            this.ClientSize = new System.Drawing.Size(432, 125);
             this.Controls.Add(this.lbl0msg);
+            this.Controls.Add(this.lbl1Flag);
             this.Controls.Add(this.groupBox1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "AutoUpdateData";
@@ -252,11 +261,12 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox txt1batchNum;
         private System.Windows.Forms.Label lbl1Flag;
-        public System.Windows.Forms.Label lbl0msg;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.ComboBox cbox0updateWay;
         private System.Windows.Forms.Button btn0InitFirst;
         public System.Windows.Forms.NotifyIcon notifyIcon1;
+        private System.Windows.Forms.ToolStripMenuItem reStartRToolStripMenuItem;
+        private System.Windows.Forms.TextBox lbl0msg;
     }
 }
 
