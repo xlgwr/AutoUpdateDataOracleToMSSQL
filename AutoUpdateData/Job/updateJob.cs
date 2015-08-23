@@ -20,11 +20,11 @@ namespace AutoUpdateData.Service.Job
         {
             if (AutoUpdateData._isUploading)
             {
-                logger.DebugFormat("***************************上个job还在上传中。。。 {0}", context.PreviousFireTimeUtc.Value.DateTime);
+                logger.DebugFormat("***************************Previous job is In Upload. Please wait。。。 {0}", context.PreviousFireTimeUtc.Value.DateTime);
+                AutoUpdateData.jobflag("P Please wait。。。revious job is In Upload:" + context.PreviousFireTimeUtc.Value.DateTime);
                 return;
             }
             AutoUpdateData._isUploading = true;
-            AutoUpdateData._isRestart = false;
             //get sql update mode
             //1-删除后再追加 2-直接更新
             if (AutoUpdateData._updatemode.StartsWith("1"))
@@ -455,17 +455,16 @@ namespace AutoUpdateData.Service.Job
             }
             catch (Exception ex)
             {
-                if (!AutoUpdateData._isRestart)
-                {
-                    AutoUpdateData.jobflag("Error:" + ex.Message);
-                    logger.Error(ex);
-                }
+
+                AutoUpdateData.jobflag("Error:" + ex.Message);
+                logger.Error(ex);
             }
             finally
             {
                 AutoUpdateData._isUploading = false;
-                AutoUpdateData._isRestart = false;
             }
+            AutoUpdateData.jobflag("Current Job is Run Over, Next Exec Job Time:" + context.NextFireTimeUtc.Value.DateTime);
+           
 
         }
         //1-删除后再追加 2-直接更新

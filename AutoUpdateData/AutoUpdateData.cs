@@ -632,13 +632,17 @@ namespace AutoUpdateData
 
         private void reStartRToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //
-            _isRestart = true;
+
+            if (AutoUpdateData._isUploading)
+            {
+                logger.DebugFormat("***************************Previous job is In Upload. Please wait。。。then try Again. ");
+                AutoUpdateData.jobflag("Please wait。。。Previous job is In Upload");
+                return;
+            }
             tInitIni(false);
             updateJob(true);
             
         }
-
-        public static bool _isRestart { get; set; }
+        
     }
 }
