@@ -636,7 +636,7 @@ namespace AutoUpdateData
             if (AutoUpdateData._isUploading)
             {
                 logger.DebugFormat("***************************Previous job is In Upload. Please wait。。。then try Again. ");
-                AutoUpdateData.jobflag("Please wait。。。Previous job is In Upload");
+                AutoUpdateData.jobflag("Please wait。。。Previous job is In Runing.");
                 return;
             }
             tInitIni(false);

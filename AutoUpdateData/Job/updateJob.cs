@@ -463,7 +463,7 @@ namespace AutoUpdateData.Service.Job
             {
                 AutoUpdateData._isUploading = false;
             }
-            AutoUpdateData.jobflag("Current Job is Run Over, Next Exec Job Time:" + context.NextFireTimeUtc.Value.DateTime);
+            AutoUpdateData.jobflag("Notice: Current Job is Run Over, Next Exec Job Time:" + context.NextFireTimeUtc.Value.DateTime);
            
 
         }
