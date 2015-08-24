@@ -448,7 +448,7 @@ namespace AutoUpdateData.Core.dal
                     foreach (DataRow row in item.Tables[0].Rows)
                     {
                         //update mode 1:d
-                        updateMode(strSQLinsert, tmpcolDS, item, row);
+                        updateMode(is1, strSQLinsert, tmpcolDS, item, row);
                     }
                     //upload to mssql 
                     allExecCount = updateToMSSQL(is1, item, strSQLinsert, setLastValue, "Upload ");
@@ -468,7 +468,7 @@ namespace AutoUpdateData.Core.dal
                             nextdiffCount++;
 
                             //update mode and gen SQL
-                            updateMode(strSQLinsert, tmpcolDS, item, item.Tables[0].Rows[i]);
+                            updateMode(is1, strSQLinsert, tmpcolDS, item, item.Tables[0].Rows[i]);
 
 
                             if (nextdiffCount % AutoUpdateData._txt1batchNum == 0)
@@ -488,7 +488,7 @@ namespace AutoUpdateData.Core.dal
                 }
                 if (!isSon)
                 {
-                    ilog(item.DataSetName, allCount, AutoUpdateData._CONTRACT + ",Success", "AutoUpdateOracleMSSQL:Update Count:" + allCount + " Success.", AutoUpdateData._ipAddMac);
+                    ilog(item.DataSetName, allCount, AutoUpdateData._CONTRACT + ",Success," + AutoUpdateData._updatemode, "AutoUpdateOracleMSSQL:Update Count:" + allCount + " Success.", AutoUpdateData._ipAddMac);
 
                 }
                 return allExecCount;
@@ -498,7 +498,7 @@ namespace AutoUpdateData.Core.dal
             {
                 if (!isSon)
                 {
-                    ilog(item.DataSetName, allCount, AutoUpdateData._CONTRACT + ",Fail", "AutoUpdateOracleMSSQL:Update Count:" + allCount + " Fail. Error:" + ex.Message, AutoUpdateData._ipAddMac);
+                    ilog(item.DataSetName, allCount, AutoUpdateData._CONTRACT + ",Fail," + AutoUpdateData._updatemode, "AutoUpdateOracleMSSQL:Update Count:" + allCount + " Fail. Error:" + ex.Message, AutoUpdateData._ipAddMac);
 
                 }
                 logger.ErrorFormat("*************{0}:更新出现问题，继续同步下个表.error：{1}", item.DataSetName, ex.Message);
@@ -514,7 +514,7 @@ namespace AutoUpdateData.Core.dal
         /// <param name="tmpcolDS"></param>
         /// <param name="item"></param>
         /// <param name="row"></param>
-        public static void updateMode(List<String> strSQLinsert, DataSet tmpcolDS, DataSet item, DataRow row)
+        public static void updateMode(bool isOne, List<String> strSQLinsert, DataSet tmpcolDS, DataSet item, DataRow row)
         {
 
             //get all key for table
@@ -544,29 +544,49 @@ namespace AutoUpdateData.Core.dal
                     tmpUpdateForSQL = OracleDal.getSQLColumnsForUpdateByKeys(tmpcolDS, item.DataSetName, tmpkeys, row);
 
 
-
-
                 }
             }
-
-            //var tmpExitThis = DbHelperSQL.Exists(tmpExistForSQL);
-            //if (tmpExitThis)
-            //{
-
-            //}
-            // for mode 1
-            if (!string.IsNullOrEmpty(tmpDeleteForSQL))
+            
+            //update mode 1 or 2
+            if (isOne)
             {
-                strSQLinsert.Add(tmpDeleteForSQL);
+                // for mode 1
+                if (!string.IsNullOrEmpty(tmpDeleteForSQL))
+                {
+                    strSQLinsert.Add(tmpDeleteForSQL);
+                }
+                //for insert
+                //gen sql by batch
+                var tmpinstall = OracleDal.getSQLColumnsForInsert(tmpcolDS, item.DataSetName, row);
+                if (!string.IsNullOrEmpty(tmpinstall))
+                {
+                    strSQLinsert.Add(tmpinstall);
+                }
             }
-            //for insert
-            //gen sql by batch
-            var tmpinstall = OracleDal.getSQLColumnsForInsert(tmpcolDS, item.DataSetName, row);
-            if (!string.IsNullOrEmpty(tmpinstall))
+            else
             {
-                strSQLinsert.Add(tmpinstall);
-            }
+                var tmpExitThis = DbHelperSQL.Exists(tmpExistForSQL);
+                // exit 
+                if (tmpExitThis)
+                {
+                    //for mode 2
+                    if (!string.IsNullOrEmpty(tmpUpdateForSQL))
+                    {
+                        strSQLinsert.Add(tmpUpdateForSQL);
+                    }
 
+                }
+                else
+                {
+                    //for insert
+                    //gen sql by batch
+                    var tmpinstall = OracleDal.getSQLColumnsForInsert(tmpcolDS, item.DataSetName, row);
+                    if (!string.IsNullOrEmpty(tmpinstall))
+                    {
+                        strSQLinsert.Add(tmpinstall);
+                    }
+                }
+            }
 
         }
         private static int updateToMSSQL(bool _is1, DataSet item, List<string> strSQLinsert, string setLastValue, string msg)

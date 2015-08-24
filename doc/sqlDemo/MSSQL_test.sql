@@ -1,4 +1,6 @@
 use nec;
+select * from ilog
+
 select * from INVENTORY_PART_TAB
 select * from INVENTORY_TRANSACTION_HIST_TAB
 select * from N_AIS_SHOP_LIST_PICKED_ACT_TAB order by CONTRACT,N_SHOP_LIST_ID,PART_NO,LOT_BATCH_NO
@@ -7,8 +9,6 @@ select * from SHOP_ORD_TAB
 select * from SHOP_ORDER_OPERATION_TAB
 
 --select * from INVENTORY_PART_TAB where HAZARD_CODE<>null
-
-select * from ilog
 
 --select count(distinct(N_SHOP_LIST_ID)) from N_AIS_SHOP_LIST_PICKED_ACT_TAB
 --select count(distinct(N_TRANSPORT_ORDER_NO))  from N_TRANSPORT_ORDER_TAB

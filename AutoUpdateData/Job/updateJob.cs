@@ -33,11 +33,11 @@ namespace AutoUpdateData.Service.Job
             }
             else if (AutoUpdateData._updatemode.StartsWith("2"))
             {
-                _is1 = true;
+                _is1 = false;
             }
             else
             {
-                _is1 = false;
+                _is1 = true;
             }
 
             logger.DebugFormat("执行更新任务!!!!!!!!!!!!!!!");
@@ -385,14 +385,14 @@ namespace AutoUpdateData.Service.Job
                                                 catch (Exception ex)
                                                 {
                                                     logger.ErrorFormat("****************************更新主表：{0},记录：{1}  -->的子表失败。{2}", td[0], (p[0].ToString() + "," + p[1].ToString() + "," + p[2].ToString()), ex.Message);
-                                                    OracleDal.ilog(td[3].Trim(), allCount, AutoUpdateData._CONTRACT + ",Fail", "AutoUpdateOracleMSSQL: SQL:" + sonTmpsonwhere + " Fail. Error:" + ex.Message, AutoUpdateData._ipAddMac);
+                                                    OracleDal.ilog(td[3].Trim(), allCount, AutoUpdateData._CONTRACT + ",Fail," + AutoUpdateData._updatemode, "AutoUpdateOracleMSSQL: SQL:" + sonTmpsonwhere + " Fail. Error:" + ex.Message, AutoUpdateData._ipAddMac);
 
                                                     continue;
                                                 }
 
 
                                             }
-                                            OracleDal.ilog(td[3].Trim(), tmpallSonCount, AutoUpdateData._CONTRACT + ",Success", "AutoUpdateOracleMSSQL:Update Count:" + tmpallSonCount + " Success.", AutoUpdateData._ipAddMac);
+                                            OracleDal.ilog(td[3].Trim(), tmpallSonCount, AutoUpdateData._CONTRACT + ",Success," + AutoUpdateData._updatemode, "AutoUpdateOracleMSSQL:Update Count:" + tmpallSonCount + " Success.", AutoUpdateData._ipAddMac);
 
 
                                         }
