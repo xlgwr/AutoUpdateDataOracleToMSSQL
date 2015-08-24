@@ -468,6 +468,13 @@ namespace AutoUpdateData
             {
                 try
                 {
+
+                    if (_isUploading)
+                    {
+                        logger.DebugFormat("***************************Exit fail. Previous job is In Upload. Please wait。。。then later try Again. ");
+                        AutoUpdateData.jobflag("Please wait。。。Previous job is In Runing.");
+                        return;
+                    }
                     _scheduler.Shutdown();
                     logger.Info("Quartz服务成功终止");
                 }

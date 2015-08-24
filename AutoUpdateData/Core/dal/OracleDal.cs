@@ -276,7 +276,7 @@ namespace AutoUpdateData.Core.dal
 
                 if (isForDeleteOrExist)
                 {
-                    sb.Append(" select top 1 * from ");
+                    sb.Append(" select count(*) from ");
                 }
                 else
                 {
@@ -433,6 +433,8 @@ namespace AutoUpdateData.Core.dal
 
             //get Allcount
             var allCount = item.Tables[0].Rows.Count;
+            var strSQLinsert = new List<String>();
+
             try
             {
                 //get colmuns
@@ -443,7 +445,6 @@ namespace AutoUpdateData.Core.dal
                 if (allCount <= AutoUpdateData._txt1batchNum)
                 {
                     //init str
-                    var strSQLinsert = new List<String>();
 
                     foreach (DataRow row in item.Tables[0].Rows)
                     {
@@ -462,7 +463,7 @@ namespace AutoUpdateData.Core.dal
                     do
                     {
                         //init str
-                        var strSQLinsert = new List<String>();
+                        strSQLinsert = new List<String>();
                         for (int i = nextdiffCount; i < allCount; i++)
                         {
                             nextdiffCount++;
@@ -522,71 +523,79 @@ namespace AutoUpdateData.Core.dal
             var tmpExistForSQL = "";
             var tmpDeleteForSQL = "";
             var tmpUpdateForSQL = "";
-
-            if (!AutoUpdateData._tableKeyList.ContainsKey(tmpKeyname))
+            var tmpInsertForSQL = "";
+            try
             {
-                logger.DebugFormat("1*****************表：{0},无主键，无法：1-删除后再追加。", item.DataSetName);
-            }
-            else
-            {
-                var tmpkeyValue = AutoUpdateData._tableKeyList[tmpKeyname];
-                var tmpkeys = tmpkeyValue.Split(',');
-                if (tmpkeys.Count() <= 0)
+                if (!AutoUpdateData._tableKeyList.ContainsKey(tmpKeyname))
                 {
-                    logger.DebugFormat("2*****************表：{0},无主键，无法：1-删除后再追加。", item.DataSetName);
+                    logger.DebugFormat("1*****************表：{0},无主键，无法：1-删除后再追加。", item.DataSetName);
                 }
                 else
                 {
-                    tmpExistForSQL = OracleDal.getSQLColumnsForDeleteByKeys(true, tmpcolDS, item.DataSetName, tmpkeys, row);
-
-                    tmpDeleteForSQL = OracleDal.getSQLColumnsForDeleteByKeys(false, tmpcolDS, item.DataSetName, tmpkeys, row);
-
-                    tmpUpdateForSQL = OracleDal.getSQLColumnsForUpdateByKeys(tmpcolDS, item.DataSetName, tmpkeys, row);
-
-
-                }
-            }
-            
-            //update mode 1 or 2
-            if (isOne)
-            {
-                // for mode 1
-                if (!string.IsNullOrEmpty(tmpDeleteForSQL))
-                {
-                    strSQLinsert.Add(tmpDeleteForSQL);
-                }
-                //for insert
-                //gen sql by batch
-                var tmpinstall = OracleDal.getSQLColumnsForInsert(tmpcolDS, item.DataSetName, row);
-                if (!string.IsNullOrEmpty(tmpinstall))
-                {
-                    strSQLinsert.Add(tmpinstall);
-                }
-            }
-            else
-            {
-                var tmpExitThis = DbHelperSQL.Exists(tmpExistForSQL);
-                // exit 
-                if (tmpExitThis)
-                {
-                    //for mode 2
-                    if (!string.IsNullOrEmpty(tmpUpdateForSQL))
+                    var tmpkeyValue = AutoUpdateData._tableKeyList[tmpKeyname];
+                    var tmpkeys = tmpkeyValue.Split(',');
+                    if (tmpkeys.Count() <= 0)
                     {
-                        strSQLinsert.Add(tmpUpdateForSQL);
+                        logger.DebugFormat("2*****************表：{0},无主键，无法：1-删除后再追加。", item.DataSetName);
                     }
+                    else
+                    {
+                        tmpExistForSQL = OracleDal.getSQLColumnsForDeleteByKeys(true, tmpcolDS, item.DataSetName, tmpkeys, row);
 
+                        tmpDeleteForSQL = OracleDal.getSQLColumnsForDeleteByKeys(false, tmpcolDS, item.DataSetName, tmpkeys, row);
+
+                        tmpUpdateForSQL = OracleDal.getSQLColumnsForUpdateByKeys(tmpcolDS, item.DataSetName, tmpkeys, row);
+
+
+                    }
                 }
-                else
+
+                //update mode 1 or 2
+                if (isOne)
                 {
+                    // for mode 1
+                    if (!string.IsNullOrEmpty(tmpDeleteForSQL))
+                    {
+                        strSQLinsert.Add(tmpDeleteForSQL);
+                    }
                     //for insert
                     //gen sql by batch
-                    var tmpinstall = OracleDal.getSQLColumnsForInsert(tmpcolDS, item.DataSetName, row);
-                    if (!string.IsNullOrEmpty(tmpinstall))
+                    tmpInsertForSQL = OracleDal.getSQLColumnsForInsert(tmpcolDS, item.DataSetName, row);
+                    if (!string.IsNullOrEmpty(tmpInsertForSQL))
                     {
-                        strSQLinsert.Add(tmpinstall);
+                        strSQLinsert.Add(tmpInsertForSQL);
+                    }
+                }
+                else
+                {
+                    var tmpExitThis = DbHelperSQL.Exists(tmpExistForSQL);
+                    // exit 
+                    if (tmpExitThis)
+                    {
+                        //for mode 2
+                        if (!string.IsNullOrEmpty(tmpUpdateForSQL))
+                        {
+                            strSQLinsert.Add(tmpUpdateForSQL);
+                        }
+
+                    }
+                    else
+                    {
+                        //for insert
+                        //gen sql by batch
+                        tmpInsertForSQL = OracleDal.getSQLColumnsForInsert(tmpcolDS, item.DataSetName, row);
+                        if (!string.IsNullOrEmpty(tmpInsertForSQL))
+                        {
+                            strSQLinsert.Add(tmpInsertForSQL);
+                        }
                     }
                 }
             }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message + ",SQL:" + tmpExistForSQL + "," + tmpDeleteForSQL + "," + tmpUpdateForSQL + "," + tmpInsertForSQL);
+            }
+
 
         }
         private static int updateToMSSQL(bool _is1, DataSet item, List<string> strSQLinsert, string setLastValue, string msg)

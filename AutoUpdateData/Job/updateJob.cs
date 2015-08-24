@@ -77,7 +77,11 @@ namespace AutoUpdateData.Service.Job
                                 tmpds.DataSetName = td[0].Trim();
 
                                 //test
-
+                                //if (item.Value!=3)
+                                //{
+                                //    continue;
+                                //}
+                                //
                                 switch (item.Value)
                                 {
                                     case 1:
