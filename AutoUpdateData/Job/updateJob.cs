@@ -16,6 +16,10 @@ namespace AutoUpdateData.Service.Job
     {
         private static readonly ILog logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        public static string _typeOfTable { get; set; }
+        public static string _time_start { get; set; }
+        public static string _time_done { get; set; }
+
         public void Execute(Quartz.IJobExecutionContext context)
         {
             if (AutoUpdateData._isUploading)
@@ -44,6 +48,8 @@ namespace AutoUpdateData.Service.Job
             AutoUpdateData.jobflag("Is Runing, Next Exec Job Time:" + context.NextFireTimeUtc.Value.DateTime);
             try
             {
+              
+
                 //init even tInitIniToday
                 AutoUpdateData.tInitIniToday(DateTime.Now.ToString("yyyyMMdd"));
                 //get
@@ -52,10 +58,16 @@ namespace AutoUpdateData.Service.Job
                     logger.Debug("执行数据获取任务!!!!!!!!!!!!!!!");
                     var tmpBatch = AutoUpdateData._txt1batchNum;
                     AutoUpdateData._dsList.Clear();
+
                     foreach (var item in AutoUpdateData._tableList)
                     {
                         try
                         {
+                            //init attr
+                            _typeOfTable = "0";
+                            _time_start = DateTime.Now.ToString();
+                            _time_done = DateTime.Now.ToString();
+
                             if (item.Key.Contains('|'))
                             {
                                 var td = item.Key.Split('|');
@@ -76,6 +88,7 @@ namespace AutoUpdateData.Service.Job
 
                                 tmpds.DataSetName = td[0].Trim();
 
+
                                 //test
                                 //if (item.Value!=3)
                                 //{
@@ -85,7 +98,7 @@ namespace AutoUpdateData.Service.Job
                                 switch (item.Value)
                                 {
                                     case 1:
-                                        //key: 0 table | where 1 | order by 2 from config file
+                                        //key: 0 table | where 1 | order by 2  | type 3
                                         var tmpPC = AutoUpdateData._PRIME_COMMODITY.Split(',');
                                         if (tmpPC.Count() <= 0)
                                         {
@@ -146,9 +159,11 @@ namespace AutoUpdateData.Service.Job
 
                                         }
                                         tmpds.DataSetName = td[0].Trim();
+                                        _typeOfTable = td[3].Trim();
+
                                         break;
                                     case 2:
-                                        //key: 0 table | add Id 2 | order by 3 |datefrom config file
+                                        //key: 0 table | add Id 1 | order by 2 | datefrom 3 | type 4
                                         //get the last ID
 
                                         //get from SQL by id;
@@ -174,8 +189,10 @@ namespace AutoUpdateData.Service.Job
                                         if (tmpTRANSACTION_ID == 1)
                                         {
                                             logger.DebugFormat("******************************{0} 初始更新，加限时间-3天。", td[0]);
+                                            _time_start = DateTime.Now.AddDays(-3).ToString("yyyy-MM-dd") + " 00:00:00";
                                             tmpwhere += " and " + td[3] + ">=to_date(:gxsj,'yyyy-MM-dd HH24:mi:ss')";
                                             allCount = OracleDal.GetCount(td[0].Trim(), tmpwhere, parameters2);
+
                                         }
                                         else
                                         {
@@ -210,9 +227,12 @@ namespace AutoUpdateData.Service.Job
                                         }
 
                                         tmpds.DataSetName = td[0].Trim();
+                                        _typeOfTable = td[4].Trim();
+                                        _time_done = OracleDal.getMaxCol(tmpds, td[3]).ToString();
+
                                         break;
                                     case 3:
-                                        //key: 0 table|1 where|2 order by
+                                        //key: 0 table|1 where|2 order by  | type 3
                                         //get per last datetime
 
                                         var tmpLastWhere = AutoUpdateData._iniToday.IniReadValue("TableKeyLastValue", tmpKeyLast);
@@ -261,9 +281,12 @@ namespace AutoUpdateData.Service.Job
                                         }
 
                                         tmpds.DataSetName = td[0].Trim();
+                                        _typeOfTable = td[3].Trim();
+                                        _time_done = OracleDal.getMaxCol(tmpds, td[1]).ToString();
                                         break;
                                     case 4:
-                                        //key: P|where|C get P：父，C: 子 根据P的Key得到C.的数据。
+                                        //key: P 0|where 1| order by 2 | C 3 | type 4
+                                        //get P：父，C: 子 根据P的Key得到C.的数据。
                                         //get the last ID
                                         var tmpORG_START = AutoUpdateData._iniToday.IniReadValue("TableKeyLastValue", tmpKeyLast);
                                         DateTime tmpORG_START_DATE = DateTime.Now;
@@ -310,6 +333,7 @@ namespace AutoUpdateData.Service.Job
                                         }
 
                                         tmpds.DataSetName = td[0].Trim();
+
                                         //to Get C
                                         if (!AutoUpdateData._tableKeyList.ContainsKey(tmpKeyname))
                                         {
@@ -323,6 +347,9 @@ namespace AutoUpdateData.Service.Job
                                             //logger.DebugFormat("*************************表：{0} 的主键：{1}。", td[0], tmpkeyValue);
                                             isSon = true;
                                         }
+                                        tmpds.DataSetName = td[0].Trim();
+                                        _typeOfTable = td[4].Trim();
+                                        _time_done = OracleDal.getMaxCol(tmpds, td[1]).ToString();
                                         break;
                                     default:
 
@@ -348,7 +375,7 @@ namespace AutoUpdateData.Service.Job
                                         {
                                             logger.DebugFormat("*************************表：{0} 的主键：{1}。", td[0], tmpkeyValue);
                                             logger.DebugFormat("*************************开始更新表：{0}，子表：{1}。", td[0], td[3]);
-
+                                            string sonTmpsonwhereAll = "";
                                             foreach (DataRow p in tmpds.Tables[0].Rows)
                                             {
                                                 string sonTmpsonwhere = "";
@@ -379,6 +406,7 @@ namespace AutoUpdateData.Service.Job
                                                     }
                                                     //
                                                     sonTmpsonwhere = tmpsonwhere;
+                                                    sonTmpsonwhereAll += sonTmpsonwhere + "\n";
                                                     //get data
                                                     var tmpSon = OracleDal.Query(tmpsonwhere);
                                                     tmpSon.DataSetName = td[3].Trim();
@@ -389,14 +417,17 @@ namespace AutoUpdateData.Service.Job
                                                 catch (Exception ex)
                                                 {
                                                     logger.ErrorFormat("****************************更新主表：{0},记录：{1}  -->的子表失败。{2}", td[0], (p[0].ToString() + "," + p[1].ToString() + "," + p[2].ToString()), ex.Message);
-                                                    OracleDal.ilog(td[3].Trim(), allCount, AutoUpdateData._CONTRACT + ",Fail," + AutoUpdateData._updatemode, "AutoUpdateOracleMSSQL: SQL:" + sonTmpsonwhere + " Fail. Error:" + ex.Message, AutoUpdateData._ipAddMac);
+                                                    //OracleDal.ilog(td[3].Trim(), allCount, AutoUpdateData._CONTRACT + ",Fail," + AutoUpdateData._updatemode, "AutoUpdateOracleMSSQL: SQL:" + sonTmpsonwhere + " Fail. Error:" + ex.Message, AutoUpdateData._ipAddMac);
+
+                                                    OracleDal.ilog("error", updateJob._typeOfTable, updateJob._time_start, updateJob._time_done, sonTmpsonwhere, allCount, AutoUpdateData._ipAddMac, AutoUpdateData._CONTRACT + "," + AutoUpdateData._updatemode);
 
                                                     continue;
                                                 }
 
 
                                             }
-                                            OracleDal.ilog(td[3].Trim(), tmpallSonCount, AutoUpdateData._CONTRACT + ",Success," + AutoUpdateData._updatemode, "AutoUpdateOracleMSSQL:Update Count:" + tmpallSonCount + " Success.", AutoUpdateData._ipAddMac);
+                                            //OracleDal.ilog(td[3].Trim(), tmpallSonCount, AutoUpdateData._CONTRACT + ",Success," + AutoUpdateData._updatemode, "AutoUpdateOracleMSSQL:Update Count:" + tmpallSonCount + " Success.", AutoUpdateData._ipAddMac);
+                                            OracleDal.ilog("success", updateJob._typeOfTable, updateJob._time_start, updateJob._time_done, sonTmpsonwhereAll, tmpallSonCount, AutoUpdateData._ipAddMac, AutoUpdateData._CONTRACT + "," + AutoUpdateData._updatemode);
 
 
                                         }
@@ -468,7 +499,7 @@ namespace AutoUpdateData.Service.Job
                 AutoUpdateData._isUploading = false;
             }
             AutoUpdateData.jobflag("Notice: Current Job is Run Over, Next Exec Job Time:" + context.NextFireTimeUtc.Value.DateTime);
-           
+
 
         }
         //1-删除后再追加 2-直接更新

@@ -131,8 +131,8 @@ namespace AutoUpdateData
             _tmpFlagMsg = lbl0msg;
 
 
-            _ipAddMac = OracleDal.getIp();
-            this.Text = "C:[" + _CONTRACT + "], P_C:" + _PRIME_COMMODITY+" -->AutoUpdate:"+_ipAddMac;
+            _ipAddMac = OracleDal.getIp(true);
+            this.Text = "C:[" + _CONTRACT + "], P_C:" + _PRIME_COMMODITY + " -->AutoUpdate:" + _ipAddMac;
 
         }
 
@@ -195,12 +195,12 @@ namespace AutoUpdateData
             {
                 if (!_scheduler.IsShutdown)
                 {
-                   // _scheduler.DeleteJob(_upload_job.Key);
+                    // _scheduler.DeleteJob(_upload_job.Key);
                     jobflag("Wait Other Job to Complete.Please Wait.Thank Your.");
                     _scheduler.Shutdown();//true
                     _scheduler = StdSchedulerFactory.GetDefaultScheduler();
                     _scheduler.Start();
-                    lbl0msg.Text = "Restart Success,and restart OK.";                    
+                    lbl0msg.Text = "Restart Success,and restart OK.";
                 }
 
             }
@@ -310,7 +310,7 @@ namespace AutoUpdateData
         {
             try
             {
-                
+
                 var tmpfile = AppDomain.CurrentDomain.BaseDirectory + "\\Set.ini";
 
                 if (!File.Exists(tmpfile))
@@ -617,7 +617,7 @@ namespace AutoUpdateData
                         tmpds_INVENTORY_PART_TAB.DataSetName = "INVENTORY_PART_TAB";
 
                         //**************************同步 INVENTORY_PART_TAB
-                        OracleDal.StartToMSSQL(true,false,tmpds_INVENTORY_PART_TAB, "");
+                        OracleDal.StartToMSSQL(true, false, tmpds_INVENTORY_PART_TAB, "");
                         logger.DebugFormat("*************initFirst INVENTORY_PART_TAB 成功.");
                         //
                     }
@@ -648,8 +648,8 @@ namespace AutoUpdateData
             }
             tInitIni(false);
             updateJob(true);
-            
+
         }
-        
+
     }
 }

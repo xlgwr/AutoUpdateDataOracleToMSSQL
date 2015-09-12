@@ -11,6 +11,7 @@ using log4net;
 using System.Reflection;
 using System.Net;
 using System.Management;
+using AutoUpdateData.Service.Job;
 
 namespace AutoUpdateData.Core.dal
 {
@@ -172,6 +173,45 @@ namespace AutoUpdateData.Core.dal
                 }
             }
             return tmpColumns;
+        }
+
+        public static DateTime getMaxCol(DataSet ds, string colName)
+        {
+            var tmpresult=DateTime.Now;
+            try
+            {
+                if (ds==null)
+                {
+                    return tmpresult;
+                }
+                if (ds.Tables.Count<0)
+                {
+                    return tmpresult;
+                }
+                if (ds.Tables[0].Rows.Count<=0)
+                {
+                    return tmpresult;
+                }
+
+                foreach (DataRow item in ds.Tables[0].Rows)
+                {
+                    var tmpcolValue = DateTime.Now;
+
+                    if (DateTime.TryParse(item[colName].ToString(), out tmpcolValue))
+                    {
+                        if (tmpcolValue>tmpresult)
+                        {
+                            tmpresult = tmpcolValue;
+                        }
+                    }                    
+                }
+                
+            }
+            catch (Exception)
+            {
+                return tmpresult;
+            }
+            return tmpresult;
         }
         /// <summary>
         /// 
@@ -434,7 +474,7 @@ namespace AutoUpdateData.Core.dal
             //get Allcount
             var allCount = item.Tables[0].Rows.Count;
             var strSQLinsert = new List<String>();
-
+            var strSQLinsertAll = new StringBuilder();
             try
             {
                 //get colmuns
@@ -450,6 +490,10 @@ namespace AutoUpdateData.Core.dal
                     {
                         //update mode 1:d
                         updateMode(is1, strSQLinsert, tmpcolDS, item, row);
+                    }
+                    foreach (var aitem in strSQLinsert)
+                    {
+                        strSQLinsertAll.AppendLine(aitem);
                     }
                     //upload to mssql 
                     allExecCount = updateToMSSQL(is1, item, strSQLinsert, setLastValue, "Upload ");
@@ -477,6 +521,10 @@ namespace AutoUpdateData.Core.dal
                                 break;
                             }
                         }
+                        foreach (var aitem in strSQLinsert)
+                        {
+                            strSQLinsertAll.AppendLine(aitem);
+                        }
 
                         //upload to mssql 
                         allExecCount += updateToMSSQL(is1, item, strSQLinsert, setLastValue, "Upload ");
@@ -489,7 +537,8 @@ namespace AutoUpdateData.Core.dal
                 }
                 if (!isSon)
                 {
-                    ilog(item.DataSetName, allCount, AutoUpdateData._CONTRACT + ",Success," + AutoUpdateData._updatemode, "AutoUpdateOracleMSSQL:Update Count:" + allCount + " Success.", AutoUpdateData._ipAddMac);
+
+                    ilog("success", updateJob._typeOfTable, updateJob._time_start, updateJob._time_done, strSQLinsertAll.ToString(), allCount, AutoUpdateData._ipAddMac, AutoUpdateData._CONTRACT + "," + AutoUpdateData._updatemode);
 
                 }
                 return allExecCount;
@@ -499,7 +548,7 @@ namespace AutoUpdateData.Core.dal
             {
                 if (!isSon)
                 {
-                    ilog(item.DataSetName, allCount, AutoUpdateData._CONTRACT + ",Fail," + AutoUpdateData._updatemode, "AutoUpdateOracleMSSQL:Update Count:" + allCount + " Fail. Error:" + ex.Message, AutoUpdateData._ipAddMac);
+                    ilog("error", updateJob._typeOfTable, updateJob._time_start, updateJob._time_done, strSQLinsertAll.ToString(), allCount, AutoUpdateData._ipAddMac, AutoUpdateData._CONTRACT + "," + AutoUpdateData._updatemode);
 
                 }
                 logger.ErrorFormat("*************{0}:更新出现问题，继续同步下个表.error：{1}", item.DataSetName, ex.Message);
@@ -651,28 +700,34 @@ namespace AutoUpdateData.Core.dal
             }
 
         }
+
         /// <summary>
         /// INSERT INTO [dbo].[iLog]
-        ///  ([lName]
-        ///       ,[ltype]
-        ///      ,[lDesc]
-        ///      ,[ldate]
-        ///      ,[remark])
+        ///[type] [nvarchar](50) NULL,
+        ///[system_id] [nvarchar](50) NULL,
+        ///[time_start] [datetime] NULL,
+        ///[time_done] [datetime] NULL,
+        ///[sql] [text] NULL,
+        ///[size] [int] null,
+        ///[address] [nvarchar](50) null,
+        ///[comment] [text] NULL,
         ///VALUES
-        ///      (<lName, nvarchar(50),>
-        ///     ,<ltype, nvarchar(50),>
-        ///    ,<lDesc, text,>
-        ///      ,<ldate, datetime,>
-        ///      ,<remark, text,>)
         /// </summary>
-        /// <param name="tmpTableName"></param>
-        /// <param name="count"></param>
-        public static void ilog(string tmpTableName, int count, string itype, string idesc, string iremark)
+        /// <param name="type">(error, success)</param>
+        /// <param name="system_id"></param>
+        /// <param name="time_start"> DateTime time_start,</param>
+        /// <param name="time_done"></param>
+        /// <param name="sql"></param>
+        /// <param name="size"></param>
+        /// <param name="address"></param>
+        /// <param name="comment"></param>
+        public static void ilog(string type, string system_id, string time_start, string time_done, string sql, int size, string address, string comment)
         {
             try
-            {
-                var tmpilogsql = "INSERT INTO [dbo].[iLog] ([lName],[ltype],[lDesc],[lvalue],[ldate],[remark]) VALUES (";
-                tmpilogsql += "'" + tmpTableName + "','" + itype + "','" + idesc + "','" + count.ToString() + "',Getdate(),'" + iremark + "')";
+            {   //+ "',Getdate(),'" 
+                sql = sql.Replace("'", "|");
+                var tmpilogsql = "INSERT INTO [dbo].[iLog] ([type],[system_id],[time_start],[time_done],[sql],[size],[address],[comment]) VALUES (";
+                tmpilogsql += "'" + type + "','" + system_id + "','" + time_start + "','" + time_done + "','" + sql + "','" + size + "','" + address + "','" + comment + "')";
                 var tmptoIn = DbHelperSQL.ExecuteSql(tmpilogsql);
             }
             catch (Exception ex)
@@ -684,7 +739,7 @@ namespace AutoUpdateData.Core.dal
         /// ip+mac+version
         /// </summary>
         /// <returns></returns>
-        public static string getIp()
+        public static string getIp(bool isOnlyIp)
         {
             string ip = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
             ManagementClass mc = new ManagementClass("Win32_NetworkAdapterConfiguration");
@@ -693,11 +748,18 @@ namespace AutoUpdateData.Core.dal
             {
                 if (Convert.ToBoolean(nic["ipEnabled"]) == true)
                 {
+                    if (isOnlyIp)
+                    {
+                        ip = (nic["IPAddress"] as String[])[0];//IP地址
+                        break;
+                    }
                     string mac = nic["MacAddress"].ToString();//Mac地址
                     ip += "*" + (nic["IPAddress"] as String[])[0];//IP地址
                     ip += "*" + mac;
                     string ipsubnet = (nic["IPSubnet"] as String[])[0];//子网掩码
                     string ipgateway = (nic["DefaultIPGateway"] as String[])[0];//默认网关
+
+
                     break;
                 }
             }
