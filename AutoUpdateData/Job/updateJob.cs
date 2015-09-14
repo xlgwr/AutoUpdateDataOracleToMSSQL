@@ -17,6 +17,7 @@ namespace AutoUpdateData.Service.Job
         private static readonly ILog logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public static string _typeOfTable { get; set; }
+        public static string _sql { get; set; }
         public static string _time_start { get; set; }
         public static string _time_done { get; set; }
 
@@ -48,7 +49,7 @@ namespace AutoUpdateData.Service.Job
             AutoUpdateData.jobflag("Is Runing, Next Exec Job Time:" + context.NextFireTimeUtc.Value.DateTime);
             try
             {
-              
+
 
                 //init even tInitIniToday
                 AutoUpdateData.tInitIniToday(DateTime.Now.ToString("yyyyMMdd"));
@@ -67,6 +68,7 @@ namespace AutoUpdateData.Service.Job
                             _typeOfTable = "0";
                             _time_start = DateTime.Now.ToString();
                             _time_done = DateTime.Now.ToString();
+                            _sql = "select * from ";
 
                             if (item.Key.Contains('|'))
                             {
@@ -160,7 +162,6 @@ namespace AutoUpdateData.Service.Job
                                         }
                                         tmpds.DataSetName = td[0].Trim();
                                         _typeOfTable = td[3].Trim();
-
                                         break;
                                     case 2:
                                         //key: 0 table | add Id 1 | order by 2 | datefrom 3 | type 4
@@ -229,7 +230,6 @@ namespace AutoUpdateData.Service.Job
                                         tmpds.DataSetName = td[0].Trim();
                                         _typeOfTable = td[4].Trim();
                                         _time_done = OracleDal.getMaxCol(tmpds, td[3]).ToString();
-
                                         break;
                                     case 3:
                                         //key: 0 table|1 where|2 order by  | type 3
@@ -356,6 +356,7 @@ namespace AutoUpdateData.Service.Job
                                         tmpds.DataSetName = td[0].Trim();
                                         break;
                                 }
+                                _sql += td[0].Trim() + " where " + tmpwhere;
                                 //**************************同步表
                                 OracleDal.StartToMSSQL(_is1, false, tmpds, tmpKeyLast);
 

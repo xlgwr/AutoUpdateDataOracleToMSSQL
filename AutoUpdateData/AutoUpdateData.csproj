@@ -157,7 +157,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="AutoUpdateData.sequencediagram" />
     <None Include="job_scheduling_data_2_0.xsd">
       <SubType>Designer</SubType>

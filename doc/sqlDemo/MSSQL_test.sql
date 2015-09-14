@@ -7,6 +7,8 @@ select * from N_AIS_SHOP_LIST_PICKED_ACT_TAB order by CONTRACT,N_SHOP_LIST_ID,PA
 select * from N_TRANSPORT_ORDER_TAB order by CONTRACT,N_TRANSPORT_ORDER_NO
 select * from SHOP_ORD_TAB 
 select * from SHOP_ORDER_OPERATION_TAB
+select * from SHOP_MATERIAL_ALLOC_TAB
+
 
 --select * from INVENTORY_PART_TAB where HAZARD_CODE<>null
 
@@ -19,6 +21,7 @@ select * from SHOP_ORDER_OPERATION_TAB
 --delete N_TRANSPORT_ORDER_TAB
 --delete SHOP_ORD_TAB
 --delete SHOP_ORDER_OPERATION_TAB
+--delete SHOP_MATERIAL_ALLOC_TAB
 --delete ilog
 
 --drop table INVENTORY_PART_TAB
@@ -27,4 +30,5 @@ select * from SHOP_ORDER_OPERATION_TAB
 --drop table N_TRANSPORT_ORDER_TAB
 --drop table SHOP_ORD_TAB
 --drop table SHOP_ORDER_OPERATION_TAB
+--drop table SHOP_MATERIAL_ALLOC_TAB
 

@@ -177,18 +177,18 @@ namespace AutoUpdateData.Core.dal
 
         public static DateTime getMaxCol(DataSet ds, string colName)
         {
-            var tmpresult=DateTime.Now;
+            var tmpresult = DateTime.Now;
             try
             {
-                if (ds==null)
+                if (ds == null)
                 {
                     return tmpresult;
                 }
-                if (ds.Tables.Count<0)
+                if (ds.Tables.Count < 0)
                 {
                     return tmpresult;
                 }
-                if (ds.Tables[0].Rows.Count<=0)
+                if (ds.Tables[0].Rows.Count <= 0)
                 {
                     return tmpresult;
                 }
@@ -199,13 +199,13 @@ namespace AutoUpdateData.Core.dal
 
                     if (DateTime.TryParse(item[colName].ToString(), out tmpcolValue))
                     {
-                        if (tmpcolValue>tmpresult)
+                        if (tmpcolValue > tmpresult)
                         {
                             tmpresult = tmpcolValue;
                         }
-                    }                    
+                    }
                 }
-                
+
             }
             catch (Exception)
             {
@@ -255,7 +255,7 @@ namespace AutoUpdateData.Core.dal
                                 if (dvalue[colname] != null)
                                 {
 
-                                    sbvalue.Append("'" + dvalue[colname].ToString() + "',");
+                                    sbvalue.Append("N'" + dvalue[colname].ToString() + "',");
                                 }
                                 else
                                 {
@@ -272,7 +272,7 @@ namespace AutoUpdateData.Core.dal
                                 //System.DateTime
                                 if (dvalue[colname] != null)
                                 {
-                                    sbvalue.Append("'" + dvalue[colname].ToString() + "' )");
+                                    sbvalue.Append("N'" + dvalue[colname].ToString() + "' )");
                                 }
                                 else
                                 {
@@ -333,7 +333,7 @@ namespace AutoUpdateData.Core.dal
                         var p = dvalue;
                         if (tmpkeys.Count() == 1)
                         {
-                            sb.Append(tmpkeys[0] + "='" + p[tmpkeys[0]].ToString().Replace("'", "").Trim() + "'");
+                            sb.Append(tmpkeys[0] + "=N'" + p[tmpkeys[0]].ToString().Replace("'", "").Trim() + "'");
                         }
                         else
                         {
@@ -341,11 +341,11 @@ namespace AutoUpdateData.Core.dal
                             {
                                 if (i == 0)
                                 {
-                                    sb.Append(tmpkeys[0] + "='" + p[tmpkeys[0]].ToString().Replace("'", "").Trim() + "'");
+                                    sb.Append(tmpkeys[0] + "=N'" + p[tmpkeys[0]].ToString().Replace("'", "").Trim() + "'");
                                 }
                                 else
                                 {
-                                    sb.Append(" and " + tmpkeys[i] + "='" + p[tmpkeys[i]].ToString().Replace("'", "").Trim() + "'");
+                                    sb.Append(" and " + tmpkeys[i] + "=N'" + p[tmpkeys[i]].ToString().Replace("'", "").Trim() + "'");
                                 }
                             }
                         }
@@ -407,13 +407,13 @@ namespace AutoUpdateData.Core.dal
                             {
 
 
-                                sb.Append("[" + colname + "]='" + dvalue[colname].ToString().Replace("'", "").Trim() + "',");
+                                sb.Append("[" + colname + "]=N'" + dvalue[colname].ToString().Replace("'", "").Trim() + "',");
 
                             }
                             else
                             {
 
-                                sb.Append(" [" + colname + "]='" + dvalue[colname].ToString().Replace("'", "").Trim() + "'");
+                                sb.Append(" [" + colname + "]=N'" + dvalue[colname].ToString().Replace("'", "").Trim() + "'");
                             }
 
                         }
@@ -427,7 +427,7 @@ namespace AutoUpdateData.Core.dal
                             sb.Append(" where ");
                             if (strkeys.Count() == 1)
                             {
-                                sb.Append(strkeys[0] + "='" + dvalue[strkeys[0]].ToString().Replace("'", "").Trim() + "'");
+                                sb.Append(strkeys[0] + "=N'" + dvalue[strkeys[0]].ToString().Replace("'", "").Trim() + "'");
                             }
                             else
                             {
@@ -435,11 +435,11 @@ namespace AutoUpdateData.Core.dal
                                 {
                                     if (i == 0)
                                     {
-                                        sb.Append(strkeys[0] + "='" + dvalue[strkeys[0]].ToString().Replace("'", "").Trim() + "'");
+                                        sb.Append(strkeys[0] + "=N'" + dvalue[strkeys[0]].ToString().Replace("'", "").Trim() + "'");
                                     }
                                     else
                                     {
-                                        sb.Append(" and " + strkeys[i] + "='" + dvalue[strkeys[i]].ToString().Replace("'", "").Trim() + "'");
+                                        sb.Append(" and " + strkeys[i] + "=N'" + dvalue[strkeys[i]].ToString().Replace("'", "").Trim() + "'");
                                     }
 
                                 }
@@ -491,10 +491,12 @@ namespace AutoUpdateData.Core.dal
                         //update mode 1:d
                         updateMode(is1, strSQLinsert, tmpcolDS, item, row);
                     }
-                    foreach (var aitem in strSQLinsert)
-                    {
-                        strSQLinsertAll.AppendLine(aitem);
-                    }
+
+                    //foreach (var aitem in strSQLinsert)
+                    //{
+                    //    strSQLinsertAll.AppendLine(aitem);
+                    //}
+
                     //upload to mssql 
                     allExecCount = updateToMSSQL(is1, item, strSQLinsert, setLastValue, "Upload ");
 
@@ -521,10 +523,11 @@ namespace AutoUpdateData.Core.dal
                                 break;
                             }
                         }
-                        foreach (var aitem in strSQLinsert)
-                        {
-                            strSQLinsertAll.AppendLine(aitem);
-                        }
+
+                        //foreach (var aitem in strSQLinsert)
+                        //{
+                        //    strSQLinsertAll.AppendLine(aitem);
+                        //}
 
                         //upload to mssql 
                         allExecCount += updateToMSSQL(is1, item, strSQLinsert, setLastValue, "Upload ");
@@ -537,8 +540,8 @@ namespace AutoUpdateData.Core.dal
                 }
                 if (!isSon)
                 {
-
-                    ilog("success", updateJob._typeOfTable, updateJob._time_start, updateJob._time_done, strSQLinsertAll.ToString(), allCount, AutoUpdateData._ipAddMac, AutoUpdateData._CONTRACT + "," + AutoUpdateData._updatemode);
+                    //strSQLinsertAll.ToString()
+                    ilog("success", updateJob._typeOfTable, updateJob._time_start, updateJob._time_done, updateJob._sql, allCount, AutoUpdateData._ipAddMac, AutoUpdateData._CONTRACT + "," + AutoUpdateData._updatemode);
 
                 }
                 return allExecCount;
@@ -548,7 +551,7 @@ namespace AutoUpdateData.Core.dal
             {
                 if (!isSon)
                 {
-                    ilog("error", updateJob._typeOfTable, updateJob._time_start, updateJob._time_done, strSQLinsertAll.ToString(), allCount, AutoUpdateData._ipAddMac, AutoUpdateData._CONTRACT + "," + AutoUpdateData._updatemode);
+                    ilog("error", updateJob._typeOfTable, updateJob._time_start, updateJob._time_done, updateJob._sql, allCount, AutoUpdateData._ipAddMac, AutoUpdateData._CONTRACT + "," + AutoUpdateData._updatemode);
 
                 }
                 logger.ErrorFormat("*************{0}:更新出现问题，继续同步下个表.error：{1}", item.DataSetName, ex.Message);
