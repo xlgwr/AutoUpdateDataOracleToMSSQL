@@ -33,6 +33,7 @@ namespace AutoUpdateData
 
         public static string _CONTRACT;
         public static string _PRIME_COMMODITY;
+        public static string _N_OBL_PART_TYPE;
         public static Dictionary<string, int> _tableList;
         public static Dictionary<string, string> _tableKeyList;
         public static IList<DataSet> _dsList;
@@ -117,7 +118,8 @@ namespace AutoUpdateData
             _updatemode = System.Configuration.ConfigurationManager.AppSettings["Common.updateWay"];
 
             _CONTRACT = System.Configuration.ConfigurationManager.AppSettings["CONTRACT"].ToString();
-            _PRIME_COMMODITY = System.Configuration.ConfigurationManager.AppSettings["PRIME_COMMODITY"].ToString();
+            //_PRIME_COMMODITY = System.Configuration.ConfigurationManager.AppSettings["PRIME_COMMODITY"].ToString();
+            _N_OBL_PART_TYPE = System.Configuration.ConfigurationManager.AppSettings["N_OBL_PART_TYPE"].ToString();
 
 
 
@@ -132,7 +134,7 @@ namespace AutoUpdateData
 
 
             _ipAddMac = OracleDal.getIp(true);
-            this.Text = "C:[" + _CONTRACT + "], P_C:" + _PRIME_COMMODITY + " -->AutoUpdate:" + _ipAddMac;
+            this.Text = "C:[" + _CONTRACT + "], P_C:" + _N_OBL_PART_TYPE + " -->AutoUpdate:" + _ipAddMac;
 
         }
 
@@ -566,8 +568,8 @@ namespace AutoUpdateData
 
         public static int _txt1batchNum { get; set; }
         public static string _updatemode { get; set; }//1-删除后再追加 2-直接更新
-        public static TextBox _tmpFlagMsg;
-        public static NotifyIcon _tmpNotifyIcon;
+        public static TextBox _tmpFlagMsg=new TextBox();
+        public static NotifyIcon _tmpNotifyIcon=new NotifyIcon();
         public int _txt0Rtime { get; set; }
 
         public string tmptable1 { get; set; }

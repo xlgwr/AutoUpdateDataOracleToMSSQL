@@ -60,6 +60,13 @@ namespace AutoUpdateData.Service.Job
                     var tmpBatch = AutoUpdateData._txt1batchNum;
                     AutoUpdateData._dsList.Clear();
 
+
+                    var tmpwhere = getInSql(AutoUpdateData._CONTRACT, "CONTRACT", false);
+                    if (string.IsNullOrEmpty(tmpwhere))
+                    {
+                        return;
+                    }
+
                     foreach (var item in AutoUpdateData._tableList)
                     {
                         try
@@ -73,8 +80,6 @@ namespace AutoUpdateData.Service.Job
                             if (item.Key.Contains('|'))
                             {
                                 var td = item.Key.Split('|');
-                                var tmpcontarct = AutoUpdateData._CONTRACT;
-                                var tmpwhere = " CONTRACT='" + tmpcontarct + "'";
 
                                 var tmpTableTakeDataNum = "";
                                 int preNum = 0;
@@ -92,45 +97,25 @@ namespace AutoUpdateData.Service.Job
 
 
                                 //test
-                                //if (item.Value!=3)
+                                //if (item.Value != 4)
                                 //{
                                 //    continue;
                                 //}
-                                //
+
                                 switch (item.Value)
                                 {
                                     case 1:
                                         //key: 0 table | where 1 | order by 2  | type 3
-                                        var tmpPC = AutoUpdateData._PRIME_COMMODITY.Split(',');
-                                        if (tmpPC.Count() <= 0)
+                                        var tmpInsql = getInSql(AutoUpdateData._N_OBL_PART_TYPE, td[1].Trim(), true);
+                                        if (string.IsNullOrEmpty(tmpInsql))
                                         {
-                                            logger.ErrorFormat("*********Table: {0} 设置 PRIME_COMMODITY 有问题，value:{1}", td[0], AutoUpdateData._PRIME_COMMODITY);
                                             continue;
-                                        }
-                                        if (tmpPC.Count() == 1)
-                                        {
-                                            tmpwhere += " and " + td[1].Trim() + "='" + AutoUpdateData._PRIME_COMMODITY + "' ";
-
                                         }
                                         else
                                         {
-                                            //in('1','2')
-                                            var tOr = "";
-
-                                            for (int i = 0; i < tmpPC.Count(); i++)
-                                            {
-                                                if (i == 0)
-                                                {
-                                                    tOr = "'" + tmpPC[i].Trim() + "'";
-                                                }
-                                                else
-                                                {
-                                                    tOr += ",'" + tmpPC[i].Trim() + "'";
-                                                }
-                                            }
-
-                                            tmpwhere += " and " + td[1].Trim() + " in(" + tOr + ")";
+                                            tmpwhere += tmpInsql;
                                         }
+
                                         //pre update number
                                         tmpTableTakeDataNum = AutoUpdateData._iniToday.IniReadValue("TableTakeDataNum", td[0].Trim());
 
@@ -505,5 +490,59 @@ namespace AutoUpdateData.Service.Job
         }
         //1-删除后再追加 2-直接更新
         public static bool _is1 { get; set; }
+        public string getInSql(string strValueSplit, string colname, bool hasAnd)
+        {
+            var tmpPC = strValueSplit.Split(',');
+            var tmpInSQL = "";
+            if (tmpPC.Count() <= 0)
+            {
+                logger.ErrorFormat("*********设置 {0} 有问题，value:{1}", colname, strValueSplit);
+                return null;//continue;
+            }
+
+            if (tmpPC.Count() == 1)
+            {
+                tmpInSQL = colname + "='" + strValueSplit + "' ";
+
+                if (hasAnd)
+                {
+                    return " and " + tmpInSQL;
+                }
+                else
+                {
+                    return tmpInSQL;
+                }
+
+
+            }
+            else
+            {
+                //in('1','2')
+                var tOr = "";
+
+                for (int i = 0; i < tmpPC.Count(); i++)
+                {
+                    if (i == 0)
+                    {
+                        tOr = "'" + tmpPC[i].Trim() + "'";
+                    }
+                    else
+                    {
+                        tOr += ",'" + tmpPC[i].Trim() + "'";
+                    }
+                }
+
+                tmpInSQL = colname + " in(" + tOr + ")";
+
+                if (hasAnd)
+                {
+                    return " and " + tmpInSQL;
+                }
+                else
+                {
+                    return tmpInSQL;
+                }
+            }
+        }
     }
 }
