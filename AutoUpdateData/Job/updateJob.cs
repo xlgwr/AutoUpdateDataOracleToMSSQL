@@ -61,11 +61,12 @@ namespace AutoUpdateData.Service.Job
                     AutoUpdateData._dsList.Clear();
 
 
-                    var tmpwhere = getInSql(AutoUpdateData._CONTRACT, "CONTRACT", false);
-                    if (string.IsNullOrEmpty(tmpwhere))
+                    var tmpwhereFirst = getInSql(AutoUpdateData._CONTRACT, "CONTRACT", false);
+                    if (string.IsNullOrEmpty(tmpwhereFirst))
                     {
                         return;
                     }
+                    var tmpwhere = tmpwhereFirst;
 
                     foreach (var item in AutoUpdateData._tableList)
                     {
@@ -76,6 +77,7 @@ namespace AutoUpdateData.Service.Job
                             _time_start = DateTime.Now.ToString();
                             _time_done = DateTime.Now.ToString();
                             _sql = "select * from ";
+                            tmpwhere = tmpwhereFirst;
 
                             if (item.Key.Contains('|'))
                             {
@@ -405,7 +407,7 @@ namespace AutoUpdateData.Service.Job
                                                     logger.ErrorFormat("****************************更新主表：{0},记录：{1}  -->的子表失败。{2}", td[0], (p[0].ToString() + "," + p[1].ToString() + "," + p[2].ToString()), ex.Message);
                                                     //OracleDal.ilog(td[3].Trim(), allCount, AutoUpdateData._CONTRACT + ",Fail," + AutoUpdateData._updatemode, "AutoUpdateOracleMSSQL: SQL:" + sonTmpsonwhere + " Fail. Error:" + ex.Message, AutoUpdateData._ipAddMac);
 
-                                                    OracleDal.ilog("error", updateJob._typeOfTable, updateJob._time_start, updateJob._time_done, sonTmpsonwhere, allCount, AutoUpdateData._ipAddMac, AutoUpdateData._CONTRACT + "," + AutoUpdateData._updatemode);
+                                                    OracleDal.ilog("error", updateJob._typeOfTable, updateJob._time_start, updateJob._time_done, sonTmpsonwhere, allCount, AutoUpdateData._ipAddMac, AutoUpdateData._CONTRACT + "|" + AutoUpdateData._updatemode);
 
                                                     continue;
                                                 }
@@ -413,7 +415,7 @@ namespace AutoUpdateData.Service.Job
 
                                             }
                                             //OracleDal.ilog(td[3].Trim(), tmpallSonCount, AutoUpdateData._CONTRACT + ",Success," + AutoUpdateData._updatemode, "AutoUpdateOracleMSSQL:Update Count:" + tmpallSonCount + " Success.", AutoUpdateData._ipAddMac);
-                                            OracleDal.ilog("success", updateJob._typeOfTable, updateJob._time_start, updateJob._time_done, sonTmpsonwhereAll, tmpallSonCount, AutoUpdateData._ipAddMac, AutoUpdateData._CONTRACT + "," + AutoUpdateData._updatemode);
+                                            OracleDal.ilog("success", updateJob._typeOfTable, updateJob._time_start, updateJob._time_done, sonTmpsonwhereAll, tmpallSonCount, AutoUpdateData._ipAddMac, AutoUpdateData._CONTRACT + "|" + AutoUpdateData._updatemode);
 
 
                                         }

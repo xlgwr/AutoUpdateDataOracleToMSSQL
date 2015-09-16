@@ -541,7 +541,7 @@ namespace AutoUpdateData.Core.dal
                 if (!isSon)
                 {
                     //strSQLinsertAll.ToString()
-                    ilog("success", updateJob._typeOfTable, updateJob._time_start, updateJob._time_done, updateJob._sql, allCount, AutoUpdateData._ipAddMac, AutoUpdateData._CONTRACT + "," + AutoUpdateData._updatemode);
+                    ilog("success", updateJob._typeOfTable, updateJob._time_start, updateJob._time_done, updateJob._sql, allCount, AutoUpdateData._ipAddMac, AutoUpdateData._CONTRACT + "|" + AutoUpdateData._updatemode);
 
                 }
                 return allExecCount;
@@ -551,7 +551,7 @@ namespace AutoUpdateData.Core.dal
             {
                 if (!isSon)
                 {
-                    ilog("error", updateJob._typeOfTable, updateJob._time_start, updateJob._time_done, updateJob._sql, allCount, AutoUpdateData._ipAddMac, AutoUpdateData._CONTRACT + "," + AutoUpdateData._updatemode);
+                    ilog("error", updateJob._typeOfTable, updateJob._time_start, updateJob._time_done, updateJob._sql, allCount, AutoUpdateData._ipAddMac, AutoUpdateData._CONTRACT + "|" + AutoUpdateData._updatemode);
 
                 }
                 logger.ErrorFormat("*************{0}:更新出现问题，继续同步下个表.error：{1}", item.DataSetName, ex.Message);
