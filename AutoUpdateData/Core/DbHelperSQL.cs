@@ -199,7 +199,7 @@ namespace AutoUpdateData
             {
                 tmpcount = tmpcount / 2;
             }
-            logger.DebugFormat("********************马上执行SQL 条数：{0}。", tmpcount);
+            logger.DebugFormat("********************马上执行SQL 条数：{0}.", tmpcount);
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 conn.Open();
@@ -219,6 +219,9 @@ namespace AutoUpdateData
                     for (int n = 0; n < SQLStringList.Count; n++)
                     {
                         string strsql = SQLStringList[n];
+                        //test sql
+                        //logger.Debug(strsql);
+
                         if (strsql.Trim().Length > 1)
                         {
                             cmd.CommandText = strsql;
@@ -246,13 +249,14 @@ namespace AutoUpdateData
 
                     return count;
                 }
-                catch
+                catch(Exception ex)
                 {
                     if (isUsetx)
                     {
                         tx.Rollback();
                         return 0;
                     }
+                    logger.Error(ex);
                     return count;
                 }
             }

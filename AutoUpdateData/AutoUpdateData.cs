@@ -31,6 +31,7 @@ namespace AutoUpdateData
         public static IJobDetail _upload_job;
         public static ITrigger _upload_trigger;
 
+        public static string _DBOracle11DBname;
         public static string _CONTRACT;
         public static string _PRIME_COMMODITY;
         public static string _N_OBL_PART_TYPE;
@@ -118,6 +119,7 @@ namespace AutoUpdateData
             _updatemode = System.Configuration.ConfigurationManager.AppSettings["Common.updateWay"];
 
             _CONTRACT = System.Configuration.ConfigurationManager.AppSettings["CONTRACT"].ToString();
+            _DBOracle11DBname = System.Configuration.ConfigurationManager.AppSettings["DBOracle11DBname"].ToString();
             //_PRIME_COMMODITY = System.Configuration.ConfigurationManager.AppSettings["PRIME_COMMODITY"].ToString();
             _N_OBL_PART_TYPE = System.Configuration.ConfigurationManager.AppSettings["N_OBL_PART_TYPE"].ToString();
 
@@ -568,8 +570,8 @@ namespace AutoUpdateData
 
         public static int _txt1batchNum { get; set; }
         public static string _updatemode { get; set; }//1-删除后再追加 2-直接更新
-        public static TextBox _tmpFlagMsg=new TextBox();
-        public static NotifyIcon _tmpNotifyIcon=new NotifyIcon();
+        public static TextBox _tmpFlagMsg = new TextBox();
+        public static NotifyIcon _tmpNotifyIcon = new NotifyIcon();
         public int _txt0Rtime { get; set; }
 
         public string tmptable1 { get; set; }
@@ -612,7 +614,7 @@ namespace AutoUpdateData
                         _scheduler.Shutdown();
                         //1table INVENTORY_PART_TAB
                         var tmpsql_INVENTORY_PART_TAB = "select * from INVENTORY_PART_TAB where " + tmpcom;
-                        var allCount = OracleDal.GetCount("INVENTORY_PART_TAB", tmpsql_INVENTORY_PART_TAB);
+                        var allCount = OracleDal.GetCount(AutoUpdateData._DBOracle11DBname, "INVENTORY_PART_TAB", tmpsql_INVENTORY_PART_TAB);
                         logger.DebugFormat("*************initFirst INVENTORY_PART_TAB:总有 {0} 条.", allCount);
 
                         var tmpds_INVENTORY_PART_TAB = OracleDal.Query(tmpsql_INVENTORY_PART_TAB);

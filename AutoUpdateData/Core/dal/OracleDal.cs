@@ -25,8 +25,12 @@ namespace AutoUpdateData.Core.dal
         //   con.Dispose();
         private static readonly ILog logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public static int GetCount(string TableName, string strwhere)
+        public static int GetCount(string schema, string TableName, string strwhere)
         {
+            if (!string.IsNullOrEmpty(schema))
+            {
+                TableName = schema.Trim() + "." + TableName;
+            }
             string strsql = "select count(*) from " + TableName;
             if (!string.IsNullOrEmpty(strwhere))
             {
@@ -42,9 +46,12 @@ namespace AutoUpdateData.Core.dal
                 return int.Parse(obj.ToString());
             }
         }
-        public static int GetCount(string TableName, string strwhere, params OracleParameter[] cmdParms)
+        public static int GetCount(string schema, string TableName, string strwhere, params OracleParameter[] cmdParms)
         {
-
+            if (!string.IsNullOrEmpty(schema))
+            {
+                TableName = schema.Trim() + "." + TableName;
+            }
 
             string strsql = "select count(*) from " + TableName;
             if (!string.IsNullOrEmpty(strwhere))
@@ -83,9 +90,14 @@ namespace AutoUpdateData.Core.dal
         /// <param name="tmpwhere"></param>
         /// <param name="rownum"></param>
         /// <returns></returns>
-        public static DataSet GetData(string tablename, string tmpwhere, string orderby, int preNum, int rownumBatch)
+        public static DataSet GetData(string schema, string tablename, string tmpwhere, string orderby, int preNum, int rownumBatch)
         {
             StringBuilder sb = new StringBuilder();
+
+            if (!string.IsNullOrEmpty(schema))
+            {
+                tablename = schema.Trim() + "." + tablename;
+            }
 
             int takeNum = preNum + rownumBatch;
 
@@ -118,9 +130,14 @@ namespace AutoUpdateData.Core.dal
         /// <param name="rownum"></param>
         /// <param name="cmdParms"></param>
         /// <returns></returns>
-        public static DataSet GetData(string tablename, string tmpwhere, string orderby, int preNum, int rownumBatch, params OracleParameter[] cmdParms)
+        public static DataSet GetData(string schema, string tablename, string tmpwhere, string orderby, int preNum, int rownumBatch, params OracleParameter[] cmdParms)
         {
             StringBuilder sb = new StringBuilder();
+
+            if (!string.IsNullOrEmpty(schema))
+            {
+                tablename = schema.Trim() + "." + tablename;
+            }
 
             int takeNum = preNum + rownumBatch;
 
@@ -656,7 +673,7 @@ namespace AutoUpdateData.Core.dal
             try
             {
 
-                var dd = DbHelperSQL.ExecuteSqlTran(strSQLinsert, _is1, false);
+                var dd = DbHelperSQL.ExecuteSqlTran(strSQLinsert, _is1, true);
 
                 if (dd > 0)
                 {
