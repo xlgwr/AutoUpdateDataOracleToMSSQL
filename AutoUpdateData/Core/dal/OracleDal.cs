@@ -68,12 +68,15 @@ namespace AutoUpdateData.Core.dal
                 return int.Parse(obj.ToString());
             }
         }
-        public static DataSet GetTableColumns(string tablename)
+        public static DataSet GetTableColumns(string own, string tablename)
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append("select t.COLUMN_NAME,t.DATA_TYPE,t.DATA_LENGTH,t.NULLABLE,t.COLUMN_ID from user_tab_columns t,user_col_comments c where t.table_name = c.table_name and t.column_name = c.column_name");
-            sb.Append("  and t.table_name = '" + tablename + "'");
-
+            sb.Append("select t.COLUMN_NAME,t.DATA_TYPE,t.DATA_LENGTH,t.NULLABLE,t.COLUMN_ID from all_tab_columns t where");
+            sb.Append(" t.table_name = '" + tablename + "'");
+            if (!string.IsNullOrEmpty(own))
+            {
+                sb.Append(" and  t.owner = '" + own + "'");
+            }
             logger.Debug(sb.ToString());
             var result = DbHelperOra.Query(sb.ToString());
             return result;
@@ -301,8 +304,11 @@ namespace AutoUpdateData.Core.dal
 
                         return sb.Append(sbvalue.ToString()).ToString();
                     }
+
                 }
             }
+            logger.ErrorFormat("********307### {0} has no columns, Please check user id has role to select all table.", strTablename);
+
             return null;
 
         }
@@ -495,7 +501,7 @@ namespace AutoUpdateData.Core.dal
             try
             {
                 //get colmuns
-                var tmpcolDS = OracleDal.GetTableColumns(item.DataSetName);
+                var tmpcolDS = OracleDal.GetTableColumns(AutoUpdateData._DBOracle11DBname,item.DataSetName);
 
                 //gen sql
 
