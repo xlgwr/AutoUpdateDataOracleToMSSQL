@@ -72,10 +72,10 @@ namespace AutoUpdateData.Core.dal
         {
             StringBuilder sb = new StringBuilder();
             sb.Append("select t.COLUMN_NAME,t.DATA_TYPE,t.DATA_LENGTH,t.NULLABLE,t.COLUMN_ID from all_tab_columns t where");
-            sb.Append(" t.table_name = '" + tablename + "'");
+            sb.Append(" lower(t.table_name) = lower('" + tablename + "')");
             if (!string.IsNullOrEmpty(own))
             {
-                sb.Append(" and  t.owner = '" + own + "'");
+                sb.Append(" and  lower(t.owner) = lower('" + own + "')");
             }
             logger.Debug(sb.ToString());
             var result = DbHelperOra.Query(sb.ToString());
@@ -708,14 +708,14 @@ namespace AutoUpdateData.Core.dal
                         AutoUpdateData._iniToday.IniWriteValue("TableKeyLastValue", setLastValue, lastvalue.ToString());
                     }
 
-                    logger.DebugFormat(msg + " Table:[{0}],Success Count:{1}", item.DataSetName, dd);
+                    logger.DebugFormat(msg + " ￥￥￥￥￥￥***** *****##### #######Table:[{0}],Success Count:{1}", item.DataSetName, dd);
                     //ilog(item.DataSetName, dd, AutoUpdateData._CONTRACT + ",Success", "AutoUpdateOracleMSSQL:Update Count:" + dd + " Success.", AutoUpdateData._ipAddMac);
 
                 }
                 else
                 {
                     //ilog(item.DataSetName, dd, AutoUpdateData._CONTRACT + ",Fail", "AutoUpdateOracleMSSQL:Update Count:" + dd + " Fail.", AutoUpdateData._ipAddMac);
-                    logger.DebugFormat(msg + " Fail Table:[{0}],Success Count:{1}", item.DataSetName, dd);
+                    logger.DebugFormat(msg + " $$$$$$$$$$$$**** ******##### #######Fail Table:[{0}],Success Count:{1}", item.DataSetName, dd);
                 }
                 return dd;
             }

@@ -22,36 +22,37 @@
     <add key="DBOracle11" value="user id=nec;password=nec;data source=XE" />
     <!--MSSQL 2008 DB-->
     <add key="DBMSSQL" value="server=192.168.1.5;database=nec;uid=sa;pwd=" />
+    <add key="DBOracle11DBname" value="nec" />
     <!--CONTRACT site sh：shanghai,tai:taihuo,jp:jp-->
-    <add key="CONTRACT" value="sh" />
+    <add key="CONTRACT" value="sh,jp" />
     <!--like: 1,3,5-->
-    <add key="PRIME_COMMODITY" value="1,3,5" /> 
+    <add key="N_OBL_PART_TYPE" value="1,3,5" />
     <!--Synchronization(min):  10-->
     <add key="Common.retime" value="10" />
     <!--Batch Number：   100-->
     <add key="Common.batchNum" value="100" />
     <!--Update Mode： 1-Deleted First,Then Adding，2-Direct Update-->
-    <add key="Common.updateWay" value="1" />    
-    
-    
+    <add key="Common.updateWay" value="1" />
+
+
     <!--Don't Edit below Details-->
     <!--Set -->
     <!--if more split by *-->
     <!--delete then add , talbe|where|order by, no is no order by-->
-    <add key="Tables.table1" value="INVENTORY_PART_TAB|PRIME_COMMODITY|no" />
+    <add key="Tables.table1" value="INVENTORY_PART_TAB|N_OBL_PART_TYPE|no|1" />
     <!--//update,id |where|order by|date, no is no order by-->
-    <add key="Tables.table2" value= "INVENTORY_TRANSACTION_HIST_TAB|TRANSACTION_ID|TRANSACTION_ID asc|DATE_APPLIED" />
+    <add key="Tables.table2" value= "INVENTORY_TRANSACTION_HIST_TAB|TRANSACTION_ID|TRANSACTION_ID asc|DATE_APPLIED|2" />
     <!--//update,time |where|order by, no is no order by-->
-    <add key="Tables.table3" value=  "N_AIS_SHOP_LIST_PICKED_ACT_TAB|N_CREATED_DATE|no*N_TRANSPORT_ORDER_TAB|N_TRANSPORT_DATE|no" />
+    <add key="Tables.table3" value=  "N_AIS_SHOP_LIST_PICKED_ACT_TAB|N_CREATED_DATE|no|3*N_TRANSPORT_ORDER_TAB|N_TRANSPORT_DATE|no|4" />
     <!--//father and son  P|where|order by|C , no is no order by-->
-    <add key="Tables.table4" value= "SHOP_ORD_TAB|ORG_START_DATE|no|SHOP_ORDER_OPERATION_TAB" />
+    <add key="Tables.table4" value= "SHOP_ORD_TAB|ORG_START_DATE|no|SHOP_ORDER_OPERATION_TAB|5*SHOP_ORD_TAB|ORG_START_DATE|no|SHOP_MATERIAL_ALLOC_TAB|6" />
 
-    <!--Keys of table--> 
+    <!--Keys of table-->
     <add key="TablesKey.tableKeys1" value="INVENTORY_PART_TAB_KEY|CONTRACT,PART_NO" />
     <add key="TablesKey.tableKeys2" value="INVENTORY_TRANSACTION_HIST_TAB_KEY|TRANSACTION_ID" />
     <add key="TablesKey.tableKeys3" value="N_AIS_SHOP_LIST_PICKED_ACT_TAB_KEY|CONTRACT,N_SHOP_LIST_ID,PART_NO,LOT_BATCH_NO*N_TRANSPORT_ORDER_TAB_KEY|CONTRACT,N_TRANSPORT_ORDER_NO" />
-    <add key="TablesKey.tableKeys4" value="SHOP_ORD_TAB_KEY|ORDER_NO,RELEASE_NO,SEQUENCE_NO*SHOP_ORDER_OPERATION_TAB_KEY|ORDER_NO,RELEASE_NO,SEQUENCE_NO,OPERATION_NO" />
-    
+    <add key="TablesKey.tableKeys4" value="SHOP_ORD_TAB_KEY|ORDER_NO,RELEASE_NO,SEQUENCE_NO*SHOP_ORDER_OPERATION_TAB_KEY|ORDER_NO,RELEASE_NO,SEQUENCE_NO,OPERATION_NO*SHOP_MATERIAL_ALLOC_TAB_KEY|ORDER_NO,RELEASE_NO,SEQUENCE_NO,LINE_ITEM_NO" />
+
   </appSettings>
 
   <common>
