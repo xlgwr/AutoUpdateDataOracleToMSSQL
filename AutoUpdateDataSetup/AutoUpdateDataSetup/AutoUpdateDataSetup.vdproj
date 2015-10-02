@@ -15,12 +15,6 @@
     {
         "Entry"
         {
-        "MsmKey" = "8:_11B86616E6DC44438FF8AC90BE7C3E00"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_184529ACF2A849C985AB3B5B6EAF25AE"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -28,12 +22,6 @@
         "Entry"
         {
         "MsmKey" = "8:_1C0E2C425F2D438FB62F8ACDE6E72B5B"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_1E335529F05A4570A67EB6B901F1EF42"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -81,6 +69,36 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_7855D28A268011D41BB08FFEB5652E32"
+        "OwnerKey" = "8:_1C0E2C425F2D438FB62F8ACDE6E72B5B"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_7855D28A268011D41BB08FFEB5652E32"
+        "OwnerKey" = "8:_EF7F59FD5AEB679FDF7C055C7DB684F6"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_7855D28A268011D41BB08FFEB5652E32"
+        "OwnerKey" = "8:_81B72153F53841B7A2E0F599FDCFC2F7"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_7855D28A268011D41BB08FFEB5652E32"
+        "OwnerKey" = "8:_338FBFE356184FED85F0981FF614CFA5"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_7855D28A268011D41BB08FFEB5652E32"
+        "OwnerKey" = "8:_C29D1882AE88F6D4470D4F4111A509B4"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_7C3624C655094FDD93484A746B482CF6"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -93,43 +111,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_8D2024EC2730715861C532EE5C1FFBAC"
-        "OwnerKey" = "8:_1C0E2C425F2D438FB62F8ACDE6E72B5B"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_8D2024EC2730715861C532EE5C1FFBAC"
-        "OwnerKey" = "8:_EE67AFCA612DD42789E6C6BE2176AD3B"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_8D2024EC2730715861C532EE5C1FFBAC"
-        "OwnerKey" = "8:_81B72153F53841B7A2E0F599FDCFC2F7"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_8D2024EC2730715861C532EE5C1FFBAC"
-        "OwnerKey" = "8:_338FBFE356184FED85F0981FF614CFA5"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_8D2024EC2730715861C532EE5C1FFBAC"
-        "OwnerKey" = "8:_EAB55D9090CDC4B52B98A0BF40914B32"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_9B5D760B3FA94B1383F0CC6E59190B09"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_9F42BFD85D444F3CACA7A5C424C7CCD5"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -147,32 +129,32 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_B11680F4023845DF92A46C63CF4DD105"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_B96E6244A23A8429A09FA617A2B387E6"
-        "OwnerKey" = "8:_C9B0DC6D27DC4B22BA1AEEF0A71DF7C8"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_C49FCCDF5D014D53A177EF7C7A897864"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_C827103D80B6376725C7491C270052AE"
+        "MsmKey" = "8:_BC9AFDCB37C7593AAF08F79AE4B57C8D"
         "OwnerKey" = "8:_338FBFE356184FED85F0981FF614CFA5"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_C827103D80B6376725C7491C270052AE"
+        "MsmKey" = "8:_BC9AFDCB37C7593AAF08F79AE4B57C8D"
         "OwnerKey" = "8:_C9B0DC6D27DC4B22BA1AEEF0A71DF7C8"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_C29D1882AE88F6D4470D4F4111A509B4"
+        "OwnerKey" = "8:_1C0E2C425F2D438FB62F8ACDE6E72B5B"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_C29D1882AE88F6D4470D4F4111A509B4"
+        "OwnerKey" = "8:_EF7F59FD5AEB679FDF7C055C7DB684F6"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_C29D1882AE88F6D4470D4F4111A509B4"
+        "OwnerKey" = "8:_338FBFE356184FED85F0981FF614CFA5"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -201,25 +183,13 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_EAB55D9090CDC4B52B98A0BF40914B32"
-        "OwnerKey" = "8:_1C0E2C425F2D438FB62F8ACDE6E72B5B"
+        "MsmKey" = "8:_EF7F59FD5AEB679FDF7C055C7DB684F6"
+        "OwnerKey" = "8:_C9B0DC6D27DC4B22BA1AEEF0A71DF7C8"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_EAB55D9090CDC4B52B98A0BF40914B32"
-        "OwnerKey" = "8:_EE67AFCA612DD42789E6C6BE2176AD3B"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_EAB55D9090CDC4B52B98A0BF40914B32"
-        "OwnerKey" = "8:_338FBFE356184FED85F0981FF614CFA5"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_EE67AFCA612DD42789E6C6BE2176AD3B"
+        "MsmKey" = "8:_F589B9DED9D435BA58CDA388847D48E6"
         "OwnerKey" = "8:_C9B0DC6D27DC4B22BA1AEEF0A71DF7C8"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -244,13 +214,13 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_EE67AFCA612DD42789E6C6BE2176AD3B"
+        "OwnerKey" = "8:_EF7F59FD5AEB679FDF7C055C7DB684F6"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_B96E6244A23A8429A09FA617A2B387E6"
+        "OwnerKey" = "8:_F589B9DED9D435BA58CDA388847D48E6"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -286,7 +256,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_C827103D80B6376725C7491C270052AE"
+        "OwnerKey" = "8:_BC9AFDCB37C7593AAF08F79AE4B57C8D"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -298,13 +268,13 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_EAB55D9090CDC4B52B98A0BF40914B32"
+        "OwnerKey" = "8:_C29D1882AE88F6D4470D4F4111A509B4"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_8D2024EC2730715861C532EE5C1FFBAC"
+        "OwnerKey" = "8:_7855D28A268011D41BB08FFEB5652E32"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -412,26 +382,6 @@
         }
         "File"
         {
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_11B86616E6DC44438FF8AC90BE7C3E00"
-            {
-            "SourcePath" = "8:..\\..\\AutoUpdateData\\bin\\Debug\\Quartz.pdb"
-            "TargetName" = "8:Quartz.pdb"
-            "Tag" = "8:"
-            "Folder" = "8:_2B3A4770923D4493B5449F49EE333BF1"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_184529ACF2A849C985AB3B5B6EAF25AE"
             {
             "SourcePath" = "8:..\\..\\AutoUpdateData\\bin\\Debug\\Common.Logging.Log4Net1210.xml"
@@ -467,26 +417,6 @@
                 }
             "SourcePath" = "8:..\\..\\AutoUpdateData\\bin\\Debug\\Quartz.dll"
             "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_2B3A4770923D4493B5449F49EE333BF1"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1E335529F05A4570A67EB6B901F1EF42"
-            {
-            "SourcePath" = "8:..\\..\\AutoUpdateData\\bin\\Debug\\Common.Logging.Core.pdb"
-            "TargetName" = "8:Common.Logging.Core.pdb"
             "Tag" = "8:"
             "Folder" = "8:_2B3A4770923D4493B5449F49EE333BF1"
             "Condition" = "8:"
@@ -676,6 +606,37 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_7855D28A268011D41BB08FFEB5652E32"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:Common.Logging.Core, Version=3.2.0.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_7855D28A268011D41BB08FFEB5652E32"
+                    {
+                    "Name" = "8:Common.Logging.Core.DLL"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:Common.Logging.Core.DLL"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_2B3A4770923D4493B5449F49EE333BF1"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7C3624C655094FDD93484A746B482CF6"
             {
             "SourcePath" = "8:..\\..\\AutoUpdateData\\bin\\Debug\\Common.Logging.Core.xml"
@@ -727,61 +688,10 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_8D2024EC2730715861C532EE5C1FFBAC"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:Common.Logging.Core, Version=3.2.0.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_8D2024EC2730715861C532EE5C1FFBAC"
-                    {
-                    "Name" = "8:Common.Logging.Core.DLL"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:Common.Logging.Core.DLL"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_2B3A4770923D4493B5449F49EE333BF1"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9B5D760B3FA94B1383F0CC6E59190B09"
             {
             "SourcePath" = "8:..\\..\\icon\\unInstall.ico"
             "TargetName" = "8:unInstall.ico"
-            "Tag" = "8:"
-            "Folder" = "8:_2B3A4770923D4493B5449F49EE333BF1"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9F42BFD85D444F3CACA7A5C424C7CCD5"
-            {
-            "SourcePath" = "8:..\\..\\AutoUpdateData\\bin\\Debug\\Common.Logging.Log4Net1210.pdb"
-            "TargetName" = "8:Common.Logging.Log4Net1210.pdb"
             "Tag" = "8:"
             "Folder" = "8:_2B3A4770923D4493B5449F49EE333BF1"
             "Condition" = "8:"
@@ -849,85 +759,14 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B11680F4023845DF92A46C63CF4DD105"
-            {
-            "SourcePath" = "8:..\\..\\AutoUpdateData\\bin\\Debug\\SmartThreadPool.pdb"
-            "TargetName" = "8:SmartThreadPool.pdb"
-            "Tag" = "8:"
-            "Folder" = "8:_2B3A4770923D4493B5449F49EE333BF1"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_B96E6244A23A8429A09FA617A2B387E6"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:Oracle.ManagedDataAccess, Version=4.121.2.0, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_B96E6244A23A8429A09FA617A2B387E6"
-                    {
-                    "Name" = "8:Oracle.ManagedDataAccess.DLL"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:Oracle.ManagedDataAccess.DLL"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_2B3A4770923D4493B5449F49EE333BF1"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C49FCCDF5D014D53A177EF7C7A897864"
-            {
-            "SourcePath" = "8:..\\..\\AutoUpdateData\\bin\\Debug\\Common.Logging.pdb"
-            "TargetName" = "8:Common.Logging.pdb"
-            "Tag" = "8:"
-            "Folder" = "8:_2B3A4770923D4493B5449F49EE333BF1"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_C827103D80B6376725C7491C270052AE"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_BC9AFDCB37C7593AAF08F79AE4B57C8D"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
             "AssemblyAsmDisplayName" = "8:log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_C827103D80B6376725C7491C270052AE"
+                    "_BC9AFDCB37C7593AAF08F79AE4B57C8D"
                     {
                     "Name" = "8:log4net.DLL"
                     "Attributes" = "3:512"
@@ -951,11 +790,42 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_C29D1882AE88F6D4470D4F4111A509B4"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:Common.Logging, Version=3.2.0.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_C29D1882AE88F6D4470D4F4111A509B4"
+                    {
+                    "Name" = "8:Common.Logging.DLL"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:Common.Logging.DLL"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_2B3A4770923D4493B5449F49EE333BF1"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_C9B0DC6D27DC4B22BA1AEEF0A71DF7C8"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:AutoUpdateData, Version=1.0.0.13, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:AutoUpdateData, Version=1.0.0.14, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
                     "_C9B0DC6D27DC4B22BA1AEEF0A71DF7C8"
@@ -1064,20 +934,20 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_EAB55D9090CDC4B52B98A0BF40914B32"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_EF7F59FD5AEB679FDF7C055C7DB684F6"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:Common.Logging, Version=3.2.0.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:Quartz, Version=2.3.3.0, Culture=neutral, PublicKeyToken=f6b8c98a402cc8a4, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_EAB55D9090CDC4B52B98A0BF40914B32"
+                    "_EF7F59FD5AEB679FDF7C055C7DB684F6"
                     {
-                    "Name" = "8:Common.Logging.DLL"
+                    "Name" = "8:Quartz.DLL"
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:Common.Logging.DLL"
+            "SourcePath" = "8:Quartz.DLL"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_2B3A4770923D4493B5449F49EE333BF1"
@@ -1095,20 +965,20 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_EE67AFCA612DD42789E6C6BE2176AD3B"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_F589B9DED9D435BA58CDA388847D48E6"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:Quartz, Version=2.3.3.0, Culture=neutral, PublicKeyToken=f6b8c98a402cc8a4, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:Oracle.ManagedDataAccess, Version=4.121.2.0, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_EE67AFCA612DD42789E6C6BE2176AD3B"
+                    "_F589B9DED9D435BA58CDA388847D48E6"
                     {
-                    "Name" = "8:Quartz.DLL"
+                    "Name" = "8:Oracle.ManagedDataAccess.DLL"
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:Quartz.DLL"
+            "SourcePath" = "8:Oracle.ManagedDataAccess.DLL"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_2B3A4770923D4493B5449F49EE333BF1"
@@ -1205,7 +1075,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:AutoUpdateDataSetup"
         "ProductCode" = "8:{C96A8A3E-4273-4A12-A8D7-96245A8C39E1}"
-        "PackageCode" = "8:{A31C1DEF-4ACF-42E7-BBAB-D850B691398D}"
+        "PackageCode" = "8:{F14F4A24-431A-4882-A1EB-2B9176108414}"
         "UpgradeCode" = "8:{A5925E97-B34C-4363-A6A5-4CB635FD9750}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
