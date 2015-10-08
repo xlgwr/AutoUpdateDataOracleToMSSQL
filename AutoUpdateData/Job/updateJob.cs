@@ -278,18 +278,30 @@ namespace AutoUpdateData.Service.Job
                                         //key: P 0|where 1| order by 2 | C 3 | type 4
                                         //get P：父，C: 子 根据P的Key得到C.的数据。
                                         //get the last ID
-                                        var tmpORG_START = AutoUpdateData._iniToday.IniReadValue("TableKeyLastValue", tmpKeyLast);
-                                        DateTime tmpORG_START_DATE = DateTime.Now;
 
-                                        if (!DateTime.TryParse(tmpORG_START, out tmpORG_START_DATE))
-                                        {
-                                            tmpORG_START_DATE = DateTime.Now;
-                                        }
                                         // set tmpwhere
                                         tmpwhere += " and " + td[1] + ">=to_date(:gxsj,'yyyy-MM-dd HH24:mi:ss')";
                                         OracleParameter[] parameters4 = { new OracleParameter(":gxsj", OracleDbType.Varchar2, 10) };
-                                        //no time
+
+                                        //set time
                                         parameters4[0].Value = DateTime.Now.ToString("yyyy-MM-dd") + " 00:00:00";// HH
+
+
+                                        logger.DebugFormat("****TESTFKG:{0}，ORG_START_DATE:{1}   【0:の場合 PCの日付を抽出条件にする。1:の場合 環境ファイル内の日付（yyyy-mm-dd)を設定し、その日付を抽出条件にする】", AutoUpdateData._TESTFKG, AutoUpdateData._ORG_START_DATE);
+                                        if (AutoUpdateData._TESTFKG.Equals("1"))
+                                        {
+                                            logger.DebugFormat("****使用配置文件中的日期。{0}", AutoUpdateData._ORG_START_DATE);
+                                            parameters4[0].Value = AutoUpdateData._ORG_START_DATE + " 00:00:00";// HH
+                                        }
+                                        var trytmpDD = DateTime.Now;
+                                        var chedkdate = DateTime.TryParse(parameters4[0].Value.ToString(), out trytmpDD);
+                                        if (!chedkdate)
+                                        {
+                                            logger.DebugFormat("**配置文件提供ORG_START_DATE的值不符合要求(yyyy-MM-dd)，value:{0}.则使用当天日期。", AutoUpdateData._ORG_START_DATE, DateTime.Now.ToString("yyyy-MM-dd"));
+                                            logger.ErrorFormat("**配置文件提供ORG_START_DATE的值不符合要求(yyyy-MM-dd)，value:{0}.则使用当天日期。", AutoUpdateData._ORG_START_DATE, DateTime.Now.ToString("yyyy-MM-dd"));
+                                            parameters4[0].Value = DateTime.Now.ToString("yyyy-MM-dd") + " 00:00:00";// HH
+                                        }
+
                                         // parameters4[0].Value = tmpORG_START_DATE.ToString("yyyy-MM-dd") + " 00:00:00";// HH
 
                                         //pre update number
@@ -303,7 +315,8 @@ namespace AutoUpdateData.Service.Job
                                         //get all count form oracle db
 
                                         allCount = OracleDal.GetCount(_tmpOracleDBname, td[0].Trim(), tmpwhere, parameters4);
-                                        logger.DebugFormat("*********Table: {0},已上传：{1} ,Oracle 现在有数据：{2}.当日：{3}", td[0], preNum, allCount, DateTime.Now.ToString("yyyyMMdd"));
+
+                                        logger.DebugFormat("*********Table: {0},已上传：{1} ,Oracle 现在有数据：{2}.>=条件日期：{3}", td[0], preNum, allCount, trytmpDD.ToString("yyyy-MM-dd"));
 
                                         if (preNum >= allCount)
                                         {

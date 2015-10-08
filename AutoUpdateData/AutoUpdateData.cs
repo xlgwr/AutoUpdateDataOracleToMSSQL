@@ -35,6 +35,10 @@ namespace AutoUpdateData
         public static string _CONTRACT;
         public static string _PRIME_COMMODITY;
         public static string _N_OBL_PART_TYPE;
+
+        public static string _TESTFKG;
+        public static string _ORG_START_DATE;
+
         public static Dictionary<string, int> _tableList;
         public static Dictionary<string, string> _tableKeyList;
         public static IList<DataSet> _dsList;
@@ -112,32 +116,40 @@ namespace AutoUpdateData
             _dsList = new List<DataSet>();
             _isUploading = false;
 
-
-
-            _txt0Rtime = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["Common.retime"]);
-            _txt1batchNum = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["Common.batchNum"]);
-            _updatemode = System.Configuration.ConfigurationManager.AppSettings["Common.updateWay"];
-
-            _CONTRACT = System.Configuration.ConfigurationManager.AppSettings["CONTRACT"].ToString();
-            _DBOracle11DBname = System.Configuration.ConfigurationManager.AppSettings["DBOracle11DBname"].ToString();
-            //_PRIME_COMMODITY = System.Configuration.ConfigurationManager.AppSettings["PRIME_COMMODITY"].ToString();
-            _N_OBL_PART_TYPE = System.Configuration.ConfigurationManager.AppSettings["N_OBL_PART_TYPE"].ToString();
-
-
-
-            if (string.IsNullOrEmpty(_CONTRACT))
+            try
             {
-                _CONTRACT = "no CONTRACT,please set,than Run again.";
+                _txt0Rtime = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["Common.retime"]);
+                _txt1batchNum = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["Common.batchNum"]);
+                _updatemode = System.Configuration.ConfigurationManager.AppSettings["Common.updateWay"];
+
+                _CONTRACT = System.Configuration.ConfigurationManager.AppSettings["CONTRACT"].ToString();
+                _DBOracle11DBname = System.Configuration.ConfigurationManager.AppSettings["DBOracle11DBname"].ToString();
+                //_PRIME_COMMODITY = System.Configuration.ConfigurationManager.AppSettings["PRIME_COMMODITY"].ToString();
+                _N_OBL_PART_TYPE = System.Configuration.ConfigurationManager.AppSettings["N_OBL_PART_TYPE"].ToString();
+
+                _TESTFKG = System.Configuration.ConfigurationManager.AppSettings["TESTFKG"].ToString();
+                _ORG_START_DATE = System.Configuration.ConfigurationManager.AppSettings["ORG_START_DATE"].ToString();
+
+
+
+                if (string.IsNullOrEmpty(_CONTRACT))
+                {
+                    _CONTRACT = "no CONTRACT,please set,than Run again.";
+                }
+                tInitIni(false);
+                tInitIniToday(DateTime.Now.ToString("yyyyMMdd"));
+                lbl0msg.Text = "";
+                _tmpFlagMsg = lbl0msg;
+
+
+                _ipAddMac = OracleDal.getIp(true);
+                this.Text = "C:[" + _CONTRACT + "], P_C:" + _N_OBL_PART_TYPE + " -->AutoUpdate:" + _ipAddMac;
+
             }
-            tInitIni(false);
-            tInitIniToday(DateTime.Now.ToString("yyyyMMdd"));
-            lbl0msg.Text = "";
-            _tmpFlagMsg = lbl0msg;
-
-
-            _ipAddMac = OracleDal.getIp(true);
-            this.Text = "C:[" + _CONTRACT + "], P_C:" + _N_OBL_PART_TYPE + " -->AutoUpdate:" + _ipAddMac;
-
+            catch (Exception ex)
+            {
+                logger.Error(ex);
+            }
         }
 
         private void notifyIcon1_DoubleClick(object sender, EventArgs e)
