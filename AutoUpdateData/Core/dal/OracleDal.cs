@@ -48,25 +48,33 @@ namespace AutoUpdateData.Core.dal
         }
         public static int GetCount(string schema, string TableName, string strwhere, params OracleParameter[] cmdParms)
         {
-            if (!string.IsNullOrEmpty(schema))
+            try
             {
-                TableName = schema.Trim() + "." + TableName;
+                if (!string.IsNullOrEmpty(schema))
+                {
+                    TableName = schema.Trim() + "." + TableName;
+                }
+
+                string strsql = "select count(*) from " + TableName;
+                if (!string.IsNullOrEmpty(strwhere))
+                {
+                    strsql += " where " + strwhere;
+                }
+                object obj = GetSingle(strsql, cmdParms);
+                if (obj == null)
+                {
+                    return 0;
+                }
+                else
+                {
+                    return int.Parse(obj.ToString());
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
             }
 
-            string strsql = "select count(*) from " + TableName;
-            if (!string.IsNullOrEmpty(strwhere))
-            {
-                strsql += " where " + strwhere;
-            }
-            object obj = GetSingle(strsql, cmdParms);
-            if (obj == null)
-            {
-                return 0;
-            }
-            else
-            {
-                return int.Parse(obj.ToString());
-            }
         }
         public static DataSet GetTableColumns(string own, string tablename)
         {
@@ -198,6 +206,7 @@ namespace AutoUpdateData.Core.dal
         public static DateTime getMaxCol(DataSet ds, string colName)
         {
             var tmpresult = DateTime.Now;
+            var tmpcolValue = DateTime.Now;
             try
             {
                 if (ds == null)
@@ -212,10 +221,21 @@ namespace AutoUpdateData.Core.dal
                 {
                     return tmpresult;
                 }
+                if (ds.Tables[0].Rows.Count == 1)
+                {
+
+                    if (DateTime.TryParse(ds.Tables[0].Rows[0][colName].ToString(), out tmpcolValue))
+                    {
+                        if (tmpcolValue > tmpresult)
+                        {
+                            tmpresult = tmpcolValue;
+                        }
+                    }
+                    return tmpresult;
+                }
 
                 foreach (DataRow item in ds.Tables[0].Rows)
                 {
-                    var tmpcolValue = DateTime.Now;
 
                     if (DateTime.TryParse(item[colName].ToString(), out tmpcolValue))
                     {
@@ -501,7 +521,7 @@ namespace AutoUpdateData.Core.dal
             try
             {
                 //get colmuns
-                var tmpcolDS = OracleDal.GetTableColumns(AutoUpdateData._DBOracle11DBname,item.DataSetName);
+                var tmpcolDS = OracleDal.GetTableColumns(AutoUpdateData._DBOracle11DBname, item.DataSetName);
 
                 //gen sql
 

@@ -66,6 +66,58 @@ namespace AutoUpdateData
                 return double.Parse(obj.ToString());
             }
         }
+        public static double GetCount(string TableName, string where)
+        {
+            string strsql = "select count(*) from " + TableName;
+            if (!string.IsNullOrEmpty(where))
+            {
+                strsql += " where " + where;
+            }
+            object obj = GetSingle(strsql);
+            if (obj == null)
+            {
+                return 0;
+            }
+            else
+            {
+                return double.Parse(obj.ToString());
+            }
+        }
+
+        /// <summary>
+        /// DateTime.Now.ToString("yyyy-MM-dd") + " 00:00:00";// HH      
+        /// </summary>
+        /// <param name="FieldName"></param>
+        /// <param name="TableName"></param>
+        /// <param name="where"></param>
+        /// <returns></returns>
+        public static string GetTableFieldDateTime(string FieldName, string TableName, string where)
+        {
+            try
+            {
+                string strsql = "select top 1 [" + FieldName + "]  from dbo.[" + TableName + "]";
+                if (!string.IsNullOrEmpty(where))
+                {
+                    strsql += " where " + where;
+                }
+                object obj = GetSingle(strsql);
+                if (obj == null)
+                {
+                    return DateTime.Now.ToString("yyyyMMdd000000");
+                }
+                else
+                {
+                    return DateTime.Parse(obj.ToString()).ToString("yyyyMMddHHmmss");
+                }
+            }
+            catch (Exception)
+            {
+
+                return DateTime.Now.ToString("yyyyMMdd000000");    
+            }
+
+        }
+
         public static bool Exists(string strSql)
         {
             object obj = GetSingle(strSql);
@@ -249,7 +301,7 @@ namespace AutoUpdateData
 
                     return count;
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     if (isUsetx)
                     {

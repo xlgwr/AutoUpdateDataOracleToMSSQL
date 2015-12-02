@@ -23,12 +23,18 @@ namespace AutoUpdateData.Service.Job
 
         public void Execute(Quartz.IJobExecutionContext context)
         {
+
+
             if (AutoUpdateData._isUploading)
             {
                 logger.DebugFormat("***************************Previous job is In Upload. Please wait。。。 {0}", context.PreviousFireTimeUtc.Value.DateTime);
                 AutoUpdateData.jobflag("P Please wait。。。revious job is In Upload:" + context.PreviousFireTimeUtc.Value.DateTime);
                 return;
             }
+
+            DataTable tblPicked;
+            BssLineStock bssLineStock = new BssLineStock();
+
             AutoUpdateData._isUploading = true;
             //get sql update mode
             //1-删除后再追加 2-直接更新
@@ -99,7 +105,7 @@ namespace AutoUpdateData.Service.Job
 
 
                                 //test
-                                //if (item.Value != 1)
+                                //if (item.Value != 3)
                                 //{
                                 //    continue;
                                 //}
@@ -154,6 +160,7 @@ namespace AutoUpdateData.Service.Job
                                         _typeOfTable = td[3].Trim();
                                         break;
                                     case 2:
+
                                         //key: 0 table | add Id 1 | order by 2 | datefrom 3 | type 4
                                         //get the last ID
 
@@ -222,6 +229,7 @@ namespace AutoUpdateData.Service.Job
                                         _time_done = OracleDal.getMaxCol(tmpds, td[3]).ToString();
                                         break;
                                     case 3:
+
                                         //key: 0 table|1 where|2 order by  | type 3
                                         //get per last datetime
 
@@ -233,14 +241,20 @@ namespace AutoUpdateData.Service.Job
                                             tmpLastWhereDateTime = DateTime.Now;
                                             AutoUpdateData._iniToday.IniWriteValue("TableKeyLastValue", tmpKeyLast, tmpLastWhereDateTime.ToString());
                                         }
-
-                                        tmpwhere += " and " + td[1] + ">=to_date(:gxsj,'yyyy-MM-dd HH24:mi:ss')";
+                                        tmpwhere += " and to_char(" + td[1] + ", 'yyyymmddHH24miss') >= :gxsj";
                                         OracleParameter[] parameters3 = { new OracleParameter(":gxsj", OracleDbType.Varchar2, 10) };
                                         //no time
 
-                                        parameters3[0].Value = DateTime.Now.ToString("yyyy-MM-dd") + " 00:00:00";// HH       
+                                        parameters3[0].Value = DateTime.Now.ToString("yyyyMMdd000000");
 
-                                        //parameters3[0].Value = tmpLastWhereDateTime.ToString("yyyy-MM-dd") + " 00:00:00";// HH
+                                        //for N_AIS_SHOP_LIST_PICKED_ACT_TAB
+                                        var tmpnewDateTime =DateTime.Now.ToString("yyyyMMdd000000");   
+                                        if (td[0].Trim().ToUpper().Equals("N_AIS_SHOP_LIST_PICKED_ACT_TAB".ToUpper()))
+                                        {
+                                            tmpnewDateTime = DbHelperSQL.GetTableFieldDateTime("AISPICK_UPD_DATE", "M_CONTOROL", " [KEY-ID]='01'");
+                                            parameters3[0].Value = tmpnewDateTime;
+                                            logger.DebugFormat("**************{0},{1} change to new value:{2}.", td[0], td[1], tmpnewDateTime);
+                                        }
 
                                         //pre update number
                                         tmpTableTakeDataNum = AutoUpdateData._iniToday.IniReadValue("TableTakeDataNum", td[0].Trim());
@@ -273,6 +287,51 @@ namespace AutoUpdateData.Service.Job
                                         tmpds.DataSetName = td[0].Trim();
                                         _typeOfTable = td[3].Trim();
                                         _time_done = OracleDal.getMaxCol(tmpds, td[1]).ToString();
+
+                                        #region new update 2015-12-02
+                                        if (tmpds.Tables.Count > 0 && td[0].Trim().ToUpper().Equals("N_AIS_SHOP_LIST_PICKED_ACT_TAB".ToUpper()))
+                                        {
+                                            logger.DebugFormat("*******开始更新{0}的相关表[M_PARTS_STOCK,M_LINE_PARTS_STOCK]", td[0].Trim());
+                                            //AIS配膳リストピッキング実績-> AIS配膳リストピッキング実績
+                                            tblPicked = tmpds.Tables[0];// bssLineStock.GetPickedActData();
+                                            //更新ライン在庫マス数据
+                                            if (bssLineStock.SetLinePartsStockData(tblPicked) <= 0)
+                                            {
+                                                //TODO： 更新失败
+                                                logger.ErrorFormat("******* {0} 的相关表[M_PARTS_STOCK,M_LINE_PARTS_STOCK] 更新失败", td[0].Trim());
+                                            }
+                                            else
+                                            {
+                                                logger.DebugFormat("******* {0} 的相关表[M_PARTS_STOCK,M_LINE_PARTS_STOCK] 更新Success", td[0].Trim());
+
+                                                var tmpExist = DbHelperSQL.GetCount("M_CONTOROL", "[KEY-ID]='01'");
+                                                var tmpsql = "";
+                                                if (tmpExist > 0)
+                                                {
+                                                    tmpsql = string.Format("UPDATE M_CONTOROL set [AISPICK_UPD_DATE]='{0}' where [KEY-ID]='01'", _time_done);
+                                                }
+                                                else
+                                                {
+                                                    tmpsql = string.Format("INSERT INTO M_CONTOROL([KEY-ID],[AISPICK_UPD_DATE])  VALUES('{0}','{1}')", "01", _time_done);
+                                                }
+
+                                                var tmpdd = DbHelperSQL.ExecuteSql(tmpsql);
+
+                                                if (tmpdd > 0)
+                                                {
+                                                    logger.DebugFormat("*******Success M_CONTOROL 更新时间 AISPICK_UPD_DATE success", td[0].Trim());
+                                                }
+                                                else
+                                                {
+                                                    logger.DebugFormat("*******Error M_CONTOROL 更新时间 AISPICK_UPD_DATE Error", td[0].Trim());
+                                                }
+
+                                            }
+                                        }
+
+
+                                        #endregion
+
                                         break;
                                     case 4:
                                         //key: P 0|where 1| order by 2 | C 3 | type 4

@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>AutoUpdateData</RootNamespace>
     <AssemblyName>AutoUpdateData</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <IsWebBootstrapper>false</IsWebBootstrapper>
@@ -126,6 +126,9 @@
     <Compile Include="Basic\Logging\ILogger.cs" />
     <Compile Include="Basic\Logging\Logger.cs" />
     <Compile Include="Basic\LogHelper.cs" />
+    <Compile Include="Business\BssLineStock.cs" />
+    <Compile Include="Business\Lib_PARTS_STOCK.cs" />
+    <Compile Include="Business\Lib_LINE_PARTS_STOCK.cs" />
     <Compile Include="Core\CommandInfo.cs" />
     <Compile Include="Core\dal\OracleDal.cs" />
     <Compile Include="Core\DbHelperOra.cs" />
