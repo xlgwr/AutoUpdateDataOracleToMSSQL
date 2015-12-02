@@ -103,7 +103,7 @@ namespace AutoUpdateData
                 object obj = GetSingle(strsql);
                 if (obj == null)
                 {
-                    return DateTime.Now.ToString("yyyyMMdd000000");
+                    return DateTime.Now.AddDays(-1).ToString("yyyyMMdd000000");
                 }
                 else
                 {
